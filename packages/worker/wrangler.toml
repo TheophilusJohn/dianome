@@ -6,7 +6,7 @@ compatibility_date = "2026-08-15"
 workers_dev = false
 
 routes = [
-  { pattern = "api.dianome.dev/*", zone_name = "dianome.dev" }
+  { pattern = "api.dianome.dev", custom_domain = true }
 ]
 
 [observability]
