@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<title>dianome spike 00 — frame</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 12px; }
+  button { margin: 0 6px 6px 0; }
+  #status { margin-top: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<p><code>frame.html</code> on <code id="origin"></code></p>
+<button id="t1">T1 Load (partitioned)</button>
+<button id="t2">T2 Load (Storage Access API)</button>
+<button id="t3">T3 Load (SAA handle, Chrome)</button>
+<button id="t5">T5 Fill until refused</button>
+<p id="status">idle</p>
+
+<script type="module">
+import { CACHE_NAME, loadChunk } from './cache.js';
+
+document.getElementById('origin').textContent = location.origin;
+const status = document.getElementById('status');
+const setStatus = (text) => { status.textContent = text; };
+
+// targetOrigin must be the parent's origin, taken from document.referrer.
+// Falling back to '*' is acceptable only for this spike (e.g. when frame.html
+// is opened directly with no referrer); the real SDK must never post to '*'.
+const parentOrigin = document.referrer ? new URL(document.referrer).origin : '*';
+const embedded = window.parent !== window;
+
+function post(msg) {
+  window.parent.postMessage(msg, parentOrigin);
+}
+
+function fail(test, err) {
+  const message = err && err.message ? `${err.name}: ${err.message}` : String(err);
+  setStatus(`${test} error — ${message}`);
+  post({ type: 'error', test, message });
+}
+
+// Run a chunk load through the given CacheStorage and report it.
+async function runLoad(test, cacheStorage) {
+  const { source, ms, bytes } = await loadChunk(cacheStorage);
+  post({ type: 'chunk', test, source, ms, bytes });
+  return { source, ms, bytes };
+}
+
+// T1 — default `caches`, whatever partitioning the browser applies.
+document.getElementById('t1').addEventListener('click', async () => {
+  setStatus('T1 running…');
+  try {
+    const r = await runLoad('T1', caches);
+    setStatus(`T1 done — source=${r.source} ms=${r.ms.toFixed(1)} bytes=${r.bytes}`);
+  } catch (e) { fail('T1', e); }
+});
+
+// T2 — Storage Access API (cookie/storage access, no handle), then default `caches`.
+document.getElementById('t2').addEventListener('click', async () => {
+  setStatus('T2 running…');
+  try {
+    if (typeof document.hasStorageAccess !== 'function' || typeof document.requestStorageAccess !== 'function') {
+      throw new Error('Storage Access API not supported');
+    }
+    let had = await document.hasStorageAccess();
+    if (!had) {
+      // Must stay inside the click handler: SAA needs a user gesture.
+      await document.requestStorageAccess();
+      had = await document.hasStorageAccess();
+    }
+    const r = await runLoad('T2', caches);
+    setStatus(
+      `T2 done — hasStorageAccess=${had} source=${r.source} ms=${r.ms.toFixed(1)} bytes=${r.bytes}\n` +
+      `NOTE for the human: whether a permission prompt appeared cannot be detected programmatically — write it down.`
+    );
+  } catch (e) { fail('T2', e); }
+});
+
+// T3 — SAA handle (Chrome): requestStorageAccess({all:true}) → h.caches.
+document.getElementById('t3').addEventListener('click', async () => {
+  setStatus('T3 running…');
+  try {
+    if (typeof document.requestStorageAccess !== 'function') {
+      throw new Error('document.requestStorageAccess is not a function');
+    }
+    const h = await document.requestStorageAccess({ all: true });
+    if (!h || h.caches === undefined) {
+      throw new Error(`requestStorageAccess({all:true}) resolved without a handle (.caches is undefined); got ${h === undefined ? 'undefined' : typeof h}`);
+    }
+    const r = await runLoad('T3', h.caches);
+    setStatus(
+      `T3 done — source=${r.source} ms=${r.ms.toFixed(1)} bytes=${r.bytes}\n` +
+      `NOTE for the human: record whether a prompt appeared.`
+    );
+  } catch (e) { fail('T3', e); }
+});
+
+// T5 — fill with extra 20 MB entries until QuotaExceededError or a 2 GB cap.
+const FILL_BYTES = 20 * 1024 * 1024;
+const FILL_MB = 20;
+const CAP_MB = 2048;
+
+function randomBytes(n) {
+  // crypto.getRandomValues refuses more than 65,536 bytes per call.
+  const buf = new Uint8Array(n);
+  for (let o = 0; o < n; o += 65536) {
+    crypto.getRandomValues(buf.subarray(o, Math.min(o + 65536, n)));
+  }
+  return buf;
+}
+
+async function clearFill(cache) {
+  const keys = await cache.keys();
+  for (const req of keys) {
+    if (new URL(req.url).pathname.startsWith('/fill/')) await cache.delete(req);
+  }
+}
+
+document.getElementById('t5').addEventListener('click', async () => {
+  setStatus('T5 running…');
+  let cache;
+  let stored = 0;
+  let error = null;
+  try {
+    cache = await caches.open(CACHE_NAME);
+    await clearFill(cache);
+    while (stored * FILL_MB + FILL_MB <= CAP_MB) {
+      const n = stored + 1;
+      const key = new URL(`/fill/${n}`, location.origin).href;
+      setStatus(`T5 storing /fill/${n} (${stored * FILL_MB} MB so far)…`);
+      try {
+        await cache.put(key, new Response(randomBytes(FILL_BYTES), {
+          headers: { 'Content-Type': 'application/octet-stream', 'Content-Length': String(FILL_BYTES) },
+        }));
+      } catch (e) {
+        error = e && e.name ? `${e.name}: ${e.message}` : String(e);
+        break;
+      }
+      stored = n;
+    }
+    const ceilingMB = stored * FILL_MB;
+    const capped = error === null && ceilingMB + FILL_MB > CAP_MB;
+    post({ type: 'fill', ceilingMB, error: error ?? (capped ? `stopped at ${CAP_MB} MB cap` : null) });
+    setStatus(`T5 done — ceiling ${ceilingMB} MB (${stored} entries)${error ? ` — ${error}` : capped ? ` — hit ${CAP_MB} MB cap` : ''}; clearing fill entries…`);
+  } catch (e) {
+    fail('T5', e);
+  } finally {
+    if (cache) {
+      try { await clearFill(cache); setStatus(status.textContent.replace('clearing fill entries…', 'fill entries cleared')); }
+      catch (e) { fail('T5', e); }
+    }
+  }
+});
+
+// Probe request from the parent.
+async function runProbe() {
+  const r = {
+    type: 'probe',
+    quota: null, usage: null, persisted: null,
+    hasAccess: null, saaSupported: false, saaHandleSupported: null,
+  };
+  try {
+    const est = await navigator.storage.estimate();
+    r.quota = est.quota ?? null;
+    r.usage = est.usage ?? null;
+  } catch { /* null */ }
+  try { r.persisted = await navigator.storage.persist(); } catch { /* null */ }
+  try { r.hasAccess = await document.hasStorageAccess(); } catch { /* null */ }
+  r.saaSupported = typeof document.requestStorageAccess === 'function';
+  if (r.saaSupported) {
+    // Without a user gesture this usually rejects (→ null = undetermined; T3
+    // gives the definitive answer). If access was already granted it may
+    // resolve: true when a handle with .caches comes back, false otherwise.
+    try {
+      const h = await document.requestStorageAccess({ all: true });
+      r.saaHandleSupported = !!(h && h.caches !== undefined);
+    } catch { r.saaHandleSupported = null; }
+  }
+  post(r);
+}
+
+window.addEventListener('message', (event) => {
+  if (!embedded || event.source !== window.parent) return;
+  if (parentOrigin !== '*' && event.origin !== parentOrigin) return;
+  const m = event.data;
+  if (m && typeof m === 'object' && m.type === 'probe') runProbe();
+});
+</script>
+</body>
+</html>

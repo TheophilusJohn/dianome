@@ -1,0 +1,10 @@
+/chunks/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+  Timing-Allow-Origin: *
+
+/harness.js
+  Access-Control-Allow-Origin: *
+
+/probe.js
+  Access-Control-Allow-Origin: *

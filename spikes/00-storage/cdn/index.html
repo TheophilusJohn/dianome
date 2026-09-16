@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<title>dianome spike 00 — CDN opt-in</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 16px; max-width: 60ch; }
+  #log { white-space: pre-wrap; font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<h1>dianome model cache</h1>
+<p>
+  This page exists so that your browser records a first-party, top-level visit
+  to this origin (<code id="origin"></code>). Chrome requires such a visit
+  before it will grant storage access to this origin when it is embedded as a
+  frame on another site. Clicking the button below loads the test chunk into
+  the <code>dianome-spike</code> cache through the same code path the embedded
+  frame uses for T1.
+</p>
+<button id="enable">Enable cross-site model cache</button>
+<p id="log"></p>
+
+<script type="module">
+import { loadChunk } from './cache.js';
+
+document.getElementById('origin').textContent = location.origin;
+const logEl = document.getElementById('log');
+const log = (line) => { logEl.textContent += line + '\n'; };
+
+document.getElementById('enable').addEventListener('click', async () => {
+  log('loading…');
+  try {
+    const { source, ms, bytes } = await loadChunk(caches);
+    log(`source=${source} ms=${ms.toFixed(1)} bytes=${bytes}`);
+  } catch (e) {
+    log(`error: ${e && e.message ? `${e.name}: ${e.message}` : String(e)}`);
+  }
+});
+</script>
+</body>
+</html>
