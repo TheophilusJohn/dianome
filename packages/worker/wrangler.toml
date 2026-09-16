@@ -1,0 +1,32 @@
+# api.dianome.dev — manifests, telemetry ingest, aggregated stats.
+# Chunks are NOT served here: they go R2 -> edge cache via cdn.dianome.dev (see docs/briefs/02-edge-brief.md).
+name = "dianome-api"
+main = "src/index.ts"
+compatibility_date = "2026-08-15"
+workers_dev = false
+
+routes = [
+  { pattern = "api.dianome.dev/*", zone_name = "dianome.dev" }
+]
+
+[observability]
+enabled = true
+
+[[r2_buckets]]
+binding = "STORE"
+bucket_name = "dianome"
+# `wrangler dev` talks to the real bucket through the binding (no S3 keys); everything else stays local.
+remote = true
+
+[[analytics_engine_datasets]]
+binding = "TELEMETRY"
+dataset = "dianome_loads"
+
+[[kv_namespaces]]
+binding = "STATS_CACHE"
+id = "7c4f6c0ba5e44b0a82496b3639c90262"
+
+# Secrets (wrangler secret put …; local values in .dev.vars, gitignored):
+#   CF_ACCOUNT_ID      account that owns the dianome_loads dataset
+#   CF_ANALYTICS_TOKEN API token with Account Analytics: Read (Analytics Engine SQL API)
+# GIT_SHA is passed with --var by the dev/deploy scripts (see package.json).

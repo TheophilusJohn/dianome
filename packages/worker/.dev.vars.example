@@ -1,0 +1,3 @@
+# Copy to .dev.vars (gitignored). Without CF_ANALYTICS_TOKEN, GET /v1/stats/loads returns the shape with "degraded": true.
+CF_ACCOUNT_ID=
+CF_ANALYTICS_TOKEN=

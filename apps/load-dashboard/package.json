@@ -1,5 +1,5 @@
 {
-  "name": "manifest-browser",
+  "name": "load-dashboard",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -7,8 +7,6 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "check": "tsc --noEmit",
-    "serve-store": "node serve-store.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

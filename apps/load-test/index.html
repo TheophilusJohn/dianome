@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dianome load test</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 72rem; line-height: 1.4; }
+      form { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 0.8rem; align-items: center; max-width: 48rem; }
+      form button { grid-column: 2; justify-self: start; }
+      input, select { width: 100%; max-width: 40rem; box-sizing: border-box; }
+      #status { color: #666; min-height: 1.4em; }
+      #stats { display: flex; gap: 2rem; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
+      #stats div span { display: block; font-size: 0.8rem; color: #666; }
+      #stats div b { font-size: 1.3rem; }
+      .groups div { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+      .groups span.label { width: 7rem; display: inline-block; }
+      .groups span.count { width: 4rem; text-align: right; }
+      .bar { height: 0.8rem; background: #ddd; width: 20rem; position: relative; }
+      .bar i { display: block; height: 100%; background: #5470c6; }
+      .bar.ok i { background: #3aa655; }
+      .bar.bad i { background: #d33; }
+      pre { background: #f6f6f6; padding: 0.6rem; overflow-x: auto; }
+      .err { color: #b00; }
+    </style>
+  </head>
+  <body>
+    <h1>Dianome load test</h1>
+    <p>Fetches every chunk of one variant from the CDN (6 in flight), verifies each SHA-256 as it lands, then posts a load report to the API. No caching in this phase.</p>
+    <form id="form">
+      <label for="manifest">Manifest URL</label><input id="manifest" type="text" />
+      <label for="cdn">Chunk base URL</label><input id="cdn" type="text" />
+      <label for="variant">Variant</label><select id="variant"><option>q4</option><option>q8</option><option>fp16</option></select>
+      <button type="submit" id="go">Load</button>
+    </form>
+    <p id="status"></p>
+    <section id="stats"></section>
+    <section class="groups" id="groups"></section>
+    <h2>Result</h2>
+    <pre id="result">(none yet)</pre>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
