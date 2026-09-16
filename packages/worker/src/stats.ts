@@ -11,18 +11,20 @@ export const STATS_TTL_SECONDS = 300;
 const DATASET = "dianome_loads";
 const SQL_API = (account: string) => `https://api.cloudflare.com/client/v4/accounts/${account}/analytics_engine/sql`;
 
-const WINDOW = `WHERE timestamp > NOW() - INTERVAL '${WINDOW_HOURS}' HOUR`;
+// Window and weighting. Rows are sampled, so every count is sum(_sample_interval) and quantiles are weighted by it.
+const WINDOW = `WHERE timestamp > NOW() - INTERVAL '${WINDOW_HOURS / 24}' DAY`;
 const P50 = "quantileExactWeighted(0.5)(double3, _sample_interval)";
 const P90 = "quantileExactWeighted(0.9)(double3, _sample_interval)";
+// Guarded so a group with zero chunks yields 0 instead of NaN (which FORMAT JSON emits unquoted and breaks the parser).
+const HIT_RATE = "if(sum(_sample_interval * double2) = 0, 0.0, sum(_sample_interval * double4) / sum(_sample_interval * double2))";
 
 export const QUERIES = {
-  by_country: `SELECT blob5 AS country, sum(_sample_interval) AS loads, ${P50} AS p50_ms, ${P90} AS p90_ms,
-    sum(_sample_interval * double4) / sum(_sample_interval * double2) AS cache_hit_rate
-    FROM ${DATASET} ${WINDOW} GROUP BY country ORDER BY loads DESC LIMIT 250 FORMAT JSON`,
+  by_country: `SELECT blob5 AS country, sum(_sample_interval) AS loads, ${P50} AS p50_ms, ${P90} AS p90_ms, ${HIT_RATE} AS cache_hit_rate
+    FROM ${DATASET} ${WINDOW} GROUP BY blob5 ORDER BY loads DESC LIMIT 250 FORMAT JSON`,
   by_model_variant: `SELECT blob1 AS model, blob2 AS variant, sum(_sample_interval) AS loads, ${P50} AS p50_ms, max(double1) AS bytes
-    FROM ${DATASET} ${WINDOW} GROUP BY model, variant ORDER BY loads DESC LIMIT 250 FORMAT JSON`,
+    FROM ${DATASET} ${WINDOW} GROUP BY blob1, blob2 ORDER BY loads DESC LIMIT 250 FORMAT JSON`,
   by_source: `SELECT blob3 AS source, sum(_sample_interval) AS loads, ${P50} AS p50_ms
-    FROM ${DATASET} ${WINDOW} GROUP BY source ORDER BY loads DESC LIMIT 16 FORMAT JSON`,
+    FROM ${DATASET} ${WINDOW} GROUP BY blob3 ORDER BY loads DESC LIMIT 16 FORMAT JSON`,
 } as const;
 
 type Row = Record<string, unknown>;
@@ -31,13 +33,18 @@ const num = (v: unknown): number => { const n = typeof v === "string" ? Number(v
 const str = (v: unknown): string => (typeof v === "string" ? v : String(v ?? ""));
 const round = (n: number, d = 3): number => Math.round(n * 10 ** d) / 10 ** d;
 
+const iso = (d: Date): string => d.toISOString().replace(/\.\d{3}Z$/, "Z");
+
 export function emptyStats(now = new Date()): LoadStats {
   return {
-    since: new Date(now.getTime() - WINDOW_HOURS * 3_600_000).toISOString().replace(/\.\d{3}Z$/, "Z"),
+    since: iso(new Date(now.getTime() - WINDOW_HOURS * 3_600_000)),
     window_hours: WINDOW_HOURS,
+    computed_at: iso(now),
     by_country: [], by_model_variant: [], by_source: [],
   };
 }
+
+export const hasRows = (s: LoadStats): boolean => s.by_country.length > 0 || s.by_model_variant.length > 0 || s.by_source.length > 0;
 
 async function runQuery(env: Env, sql: string): Promise<Row[]> {
   const res = await fetch(SQL_API(env.CF_ACCOUNT_ID!), {
@@ -46,8 +53,11 @@ async function runQuery(env: Env, sql: string): Promise<Row[]> {
     body: sql,
   });
   if (!res.ok) throw new Error(`analytics sql api ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const body = (await res.json()) as { data?: Row[] };
-  return Array.isArray(body.data) ? body.data : [];
+  const text = await res.text();
+  let body: { data?: Row[] };
+  try { body = JSON.parse(text) as { data?: Row[] }; } catch { throw new Error(`analytics sql api: non-JSON body: ${text.slice(0, 200)}`); }
+  if (!Array.isArray(body.data)) throw new Error(`analytics sql api: no data array: ${text.slice(0, 200)}`);
+  return body.data;
 }
 
 /** Runs the three queries; throws when the SQL API is unreachable or rejects a query. */
@@ -77,8 +87,11 @@ export async function loadStats(env: Env, ctx: ExecutionContext): Promise<Respon
   try {
     const stats = await computeStats(env);
     const text = JSON.stringify(stats);
-    ctx.waitUntil(env.STATS_CACHE.put(STATS_CACHE_KEY, text, { expirationTtl: STATS_TTL_SECONDS }));
-    return new Response(text, { headers: { ...headers, "Content-Type": "application/json; charset=utf-8", "X-Dianome-Stats": "computed" } });
+    // Only a result with rows is worth caching: an empty answer is usually ingestion lag (Analytics Engine
+    // takes a minute or so to surface a point) and must not be pinned for STATS_TTL_SECONDS.
+    if (hasRows(stats)) ctx.waitUntil(env.STATS_CACHE.put(STATS_CACHE_KEY, text, { expirationTtl: STATS_TTL_SECONDS }));
+    const cache = hasRows(stats) ? headers : { "Cache-Control": "no-store" };
+    return new Response(text, { headers: { ...cache, "Content-Type": "application/json; charset=utf-8", "X-Dianome-Stats": hasRows(stats) ? "computed" : "computed:empty-not-cached" } });
   } catch (e) {
     console.error("stats degraded:", (e as Error).message);
     return json({ ...emptyStats(), degraded: true }, { headers: { "Cache-Control": "no-store", "X-Dianome-Stats": "degraded:sql-error" } });

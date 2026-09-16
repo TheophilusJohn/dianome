@@ -36,6 +36,8 @@ export interface SourceStats { source: string; loads: number; p50_ms: number }
 export interface LoadStats {
   since: string;
   window_hours: number;
+  /** When the aggregation ran (ISO 8601). A KV hit returns the cached value, so this lags by up to STATS_TTL_SECONDS. */
+  computed_at: string;
   by_country: CountryStats[];
   by_model_variant: ModelVariantStats[];
   by_source: SourceStats[];

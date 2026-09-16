@@ -5,7 +5,7 @@ interface CountryStats { country: string; loads: number; p50_ms: number; p90_ms:
 interface ModelVariantStats { model: string; variant: string; loads: number; p50_ms: number; bytes: number }
 interface SourceStats { source: string; loads: number; p50_ms: number }
 interface LoadStats {
-  since: string; window_hours: number;
+  since: string; window_hours: number; computed_at?: string;
   by_country: CountryStats[]; by_model_variant: ModelVariantStats[]; by_source: SourceStats[];
   degraded?: boolean;
 }
@@ -69,7 +69,7 @@ const sec = (ms: number): string => `${(ms / 1000).toFixed(1)} s`;
 
 export function render(s: LoadStats): void {
   banner.classList.toggle("on", s.degraded === true);
-  note.textContent = `since ${s.since} · window ${s.window_hours} h (${(s.window_hours / 24).toFixed(0)} days)`;
+  note.textContent = `since ${s.since} · window ${s.window_hours} h (${(s.window_hours / 24).toFixed(0)} days)` + (s.computed_at ? ` · computed ${s.computed_at}` : "");
   app.replaceChildren();
 
   const byCountry = [...s.by_country].sort((a, b) => b.loads - a.loads);

@@ -158,6 +158,32 @@ describe("stats", () => {
     const body = await res.json() as Record<string, unknown>;
     expect(body).toMatchObject({ window_hours: 168, by_country: [], by_model_variant: [], by_source: [], degraded: true });
     expect(body.since).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    expect(body.computed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    expect(await env.STATS_CACHE.get(STATS_CACHE_KEY)).toBeNull();
+  });
+
+  it("does not cache an empty (no rows) result and recomputes on the next request", async () => {
+    let calls = 0;
+    stubSql(() => { calls++; return Response.json({ meta: [], data: [], rows: 0 }); });
+    const res = await call("/v1/stats/loads", {}, over);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("X-Dianome-Stats")).toBe("computed:empty-not-cached");
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+    const body = await res.json() as Record<string, unknown>;
+    expect(body).toMatchObject({ by_country: [], by_model_variant: [], by_source: [] });
+    expect(body.degraded).toBeUndefined();
+    expect(body.computed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    expect(await env.STATS_CACHE.get(STATS_CACHE_KEY)).toBeNull();
+    const again = await call("/v1/stats/loads", {}, over);
+    expect(again.headers.get("X-Dianome-Stats")).toBe("computed:empty-not-cached");
+    expect(calls).toBe(6);
+  });
+
+  it("degrades when the SQL API answers 200 with a non-JSON or shapeless body", async () => {
+    stubSql(() => new Response("<html>login</html>", { status: 200 }));
+    const res = await call("/v1/stats/loads", {}, over);
+    expect(res.headers.get("X-Dianome-Stats")).toBe("degraded:sql-error");
+    expect(await env.STATS_CACHE.get(STATS_CACHE_KEY)).toBeNull();
   });
 
   it("degrades (not 500) when the SQL API errors", async () => {
@@ -184,8 +210,10 @@ describe("stats", () => {
     expect(res.headers.get("X-Dianome-Stats")).toBe("computed");
     expect(res.headers.get("Cache-Control")).toBe("public, max-age=300");
     expect(seen).toHaveLength(3);
-    expect(seen.every((q) => q.includes("FROM dianome_loads") && q.includes("INTERVAL '168' HOUR") && q.endsWith("FORMAT JSON"))).toBe(true);
-    expect(await res.json()).toMatchObject({
+    expect(seen.every((q) => q.includes("FROM dianome_loads") && q.includes("INTERVAL '7' DAY") && q.endsWith("FORMAT JSON"))).toBe(true);
+    const body = await res.json() as Record<string, unknown>;
+    expect(body.computed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    expect(body).toMatchObject({
       window_hours: 168,
       by_country: [{ country: "US", loads: 12, p50_ms: 8100, p90_ms: 15200, cache_hit_rate: 0.41 }],
       by_model_variant: [{ model: "qwen2.5-0.5b-instruct", variant: "q4", loads: 9, p50_ms: 7900, bytes: 323893760 }],
@@ -194,6 +222,7 @@ describe("stats", () => {
     const again = await call("/v1/stats/loads", {}, over);
     expect(again.headers.get("X-Dianome-Stats")).toBe("kv-hit");
     expect(seen).toHaveLength(3);
+    expect(((await again.json()) as Record<string, unknown>).computed_at).toBe(body.computed_at);
     expect(await env.STATS_CACHE.get(STATS_CACHE_KEY)).not.toBeNull();
   });
 });
