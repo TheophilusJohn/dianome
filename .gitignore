@@ -2,3 +2,10 @@ node_modules
 spikes/00-storage/cdn/chunks/test.bin
 .DS_Store
 .wrangler/
+store/
+onnx-export/
+ingest/.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+apps/*/dist/
