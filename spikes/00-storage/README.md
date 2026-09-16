@@ -66,6 +66,10 @@ rules for `/chunks/*`, `/harness.js` and `/probe.js`; nothing sets
 2. Open site A (`https://dianome-spike-a.pages.dev`), run **T1** in the frame.
 3. Open site B (`https://dianome-spike-b.pages.dev`), run **T1**, **T2**,
    **T3**, **T4**, **Probe**, **T5** (T5 last — it fills storage).
+   T1 is read-only: on a miss it fetches but never writes to the cache, so on
+   site B the order T1 → T2 → T3 is unconfounded. Rationale: if T1 seeded the
+   partitioned store, a later T2/T3 hit could come from that seed rather than
+   from site A's cache, and the cross-site question would be unanswerable.
 4. Close and reopen the browser, rerun **T2** / **T3** on B.
 5. Click **Copy results as Markdown** and paste into
    `docs/spikes/00-storage-partitioning.md`. Note by hand whether a prompt was

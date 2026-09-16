@@ -42,34 +42,33 @@ function fail(test, err) {
 }
 
 // Run a chunk load through the given CacheStorage and report it.
-async function runLoad(test, cacheStorage) {
-  const { source, ms, bytes } = await loadChunk(cacheStorage);
+async function runLoad(test, cacheStorage, opts) {
+  const { source, ms, bytes } = await loadChunk(cacheStorage, opts);
   post({ type: 'chunk', test, source, ms, bytes });
   return { source, ms, bytes };
 }
 
 // T1 — default `caches`, whatever partitioning the browser applies.
+// Read-only: a miss is fetched (no-store) but never put, so T1 cannot seed the
+// partitioned store and T2/T3 hits on the same page stay unambiguous.
 document.getElementById('t1').addEventListener('click', async () => {
   setStatus('T1 running…');
   try {
-    const r = await runLoad('T1', caches);
+    const r = await runLoad('T1', caches, { store: false });
     setStatus(`T1 done — source=${r.source} ms=${r.ms.toFixed(1)} bytes=${r.bytes}`);
   } catch (e) { fail('T1', e); }
 });
 
 // T2 — Storage Access API (cookie/storage access, no handle), then default `caches`.
+// requestStorageAccess() must be the first statement in the click handler with
+// no await before it: Safari rejects the call once the gesture has been "left"
+// by a preceding await. hasStorageAccess() is checked afterwards, for logging.
 document.getElementById('t2').addEventListener('click', async () => {
-  setStatus('T2 running…');
   try {
-    if (typeof document.hasStorageAccess !== 'function' || typeof document.requestStorageAccess !== 'function') {
-      throw new Error('Storage Access API not supported');
-    }
-    let had = await document.hasStorageAccess();
-    if (!had) {
-      // Must stay inside the click handler: SAA needs a user gesture.
-      await document.requestStorageAccess();
-      had = await document.hasStorageAccess();
-    }
+    const request = document.requestStorageAccess();
+    setStatus('T2 running…');
+    await request;
+    const had = await document.hasStorageAccess();
     const r = await runLoad('T2', caches);
     setStatus(
       `T2 done — hasStorageAccess=${had} source=${r.source} ms=${r.ms.toFixed(1)} bytes=${r.bytes}\n` +

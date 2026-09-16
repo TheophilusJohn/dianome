@@ -1,3 +1,4 @@
 node_modules
 spikes/00-storage/cdn/chunks/test.bin
 .DS_Store
+.wrangler/
