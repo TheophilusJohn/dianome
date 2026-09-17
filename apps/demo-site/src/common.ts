@@ -5,9 +5,11 @@ const params = new URLSearchParams(location.search);
 export const API = params.get("api") ?? "https://api.dianome.dev";
 export const CDN = params.get("cdn") ?? "https://cdn.dianome.dev";
 export const MODEL = params.get("model") ?? "qwen2.5-0.5b-instruct";
+/** `?diag=1`: embed the frame's diagnostic page visibly and never create the SDK's hidden frame. */
+export const DIAG = params.get("diag") === "1";
 
 export function makeDianome(opts: { telemetry?: boolean; cache?: "auto" | "per-site" | "none" } = {}): Dianome {
-  return new Dianome({ api: API, cdn: CDN, telemetry: opts.telemetry ?? true, cache: opts.cache ?? "auto" });
+  return new Dianome({ api: API, cdn: CDN, telemetry: opts.telemetry ?? true, cache: opts.cache ?? (DIAG ? "per-site" : "auto") });
 }
 
 export const fmtBytes = (n: number): string => (n >= 1e9 ? `${(n / 1e9).toFixed(2)} GB` : n >= 1e6 ? `${(n / 1e6).toFixed(1)} MB` : n >= 1e3 ? `${(n / 1e3).toFixed(0)} KB` : `${n} B`);

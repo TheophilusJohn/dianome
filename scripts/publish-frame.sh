@@ -18,7 +18,7 @@ DIR="$(cd "$(dirname "$0")/.." && pwd)/packages/cache-frame/dist"
 PREFIX="frame/v1"
 CACHE_CONTROL="public, max-age=300"
 
-[ -f "$DIR/frame.js" ] && [ -f "$DIR/index.html" ] && [ -f "$DIR/optin.html" ] || { echo "build first: pnpm --filter cache-frame build" >&2; exit 1; }
+[ -f "$DIR/frame.js" ] && [ -f "$DIR/index.html" ] && [ -f "$DIR/optin.html" ] && [ -f "$DIR/diag.html" ] || { echo "build first: pnpm --filter cache-frame build" >&2; exit 1; }
 
 put() { # put <file> <content-type>
   echo "put $BUCKET/$PREFIX/$1 ($2)"
@@ -27,4 +27,5 @@ put() { # put <file> <content-type>
 put frame.js   "text/javascript; charset=utf-8"
 put index.html "text/html; charset=utf-8"
 put optin.html "text/html; charset=utf-8"
+put diag.html  "text/html; charset=utf-8"
 echo "done: https://cdn.dianome.dev/$PREFIX/index.html"

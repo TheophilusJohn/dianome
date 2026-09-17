@@ -1,5 +1,5 @@
 import type { CrossSiteProgress, CrossSiteResult, LoadSummary, Progress } from "dianome";
-import { API, CDN, MODEL, el, fmtBytes, fmtRate, makeDianome } from "./common";
+import { API, CDN, DIAG, MODEL, el, fmtBytes, fmtRate, makeDianome } from "./common";
 
 el("site").textContent = location.host;
 el("api").textContent = API;
@@ -12,6 +12,20 @@ persisted();
 
 let d = makeDianome({ telemetry: (el("telemetry") as HTMLInputElement).checked });
 el("telemetry").addEventListener("change", () => { d = makeDianome({ telemetry: (el("telemetry") as HTMLInputElement).checked }); });
+
+// ---- ?diag=1: the frame's diagnostic page (Phase 0 T2 harness on the production origins), shown instead of the
+// SDK's hidden frame; the Dianome instance runs per-site so no hidden frame is ever created on this page ----
+if (DIAG) {
+  el<HTMLButtonElement>("enable").disabled = true;
+  xsite.textContent = `diag mode: the SDK frame is not created on this page; below is ${CDN}/frame/v1/diag.html embedded with allow="storage-access". Run its three buttons in order and read its log.`;
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("allow", "storage-access");
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.title = "Dianome cache frame diagnostics";
+  iframe.setAttribute("style", "display:block;width:100%;height:420px;border:1px solid #ccc;border-radius:8px");
+  iframe.src = `${CDN}/frame/v1/diag.html`;
+  mount.replaceChildren(iframe);
+}
 
 // ---- cross-site opt-in: called synchronously from the click handler ----
 el("enable").addEventListener("click", () => {

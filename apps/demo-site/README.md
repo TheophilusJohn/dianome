@@ -5,6 +5,9 @@ One Vite site, three pages:
 - `/` — loads `qwen2.5-0.5b-instruct` (q4) through the SDK with per-group progress, bytes/sec, the source
   breakdown, and an "Enable shared cache" button that calls `enableCrossSiteCache()` from its click handler and
   shows the returned state (the visit link on `needs-visit`, the in-frame button on `needs-click`).
+- `/?diag=1` — embeds the frame's diagnostic page (`frame/v1/diag.html`, the Phase 0 T2 harness on the production
+  origins) visibly instead of the SDK's hidden frame; its three buttons print `hasStorageAccess()`, the result of a
+  plain `requestStorageAccess()` followed by the `dianome-v1` keys, and the keys without a request.
 - `/transformersjs.html` — `dianome/transformersjs` adapter with the ONNX artifact.
 - `/webllm.html` — `dianome/webllm` adapter with the MLC artifact (needs WebGPU).
 

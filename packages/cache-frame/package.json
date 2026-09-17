@@ -2,7 +2,7 @@
   "name": "cache-frame",
   "private": true,
   "version": "1.0.0",
-  "description": "The cross-site cache frame served at cdn.dianome.dev/frame/v1/ (index.html, frame.js, optin.html)",
+  "description": "The cross-site cache frame served at cdn.dianome.dev/frame/v1/ (index.html, frame.js, optin.html, diag.html)",
   "type": "module",
   "scripts": {
     "build": "node build.mjs",

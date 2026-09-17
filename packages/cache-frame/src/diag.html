@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Dianome cache frame diagnostics</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 12px; color: #222; }
+  button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 6px; border: 1px solid #8884; background: #eee; cursor: pointer; margin: 0 6px 6px 0; }
+  pre { white-space: pre-wrap; word-break: break-all; background: #f6f8fa; padding: 8px; border-radius: 6px; font-size: 12px; min-height: 6em; margin: 6px 0 0; }
+  code { font-size: 12px; }
+</style>
+</head>
+<body>
+<p><code id="who"></code></p>
+<button id="has" type="button">hasStorageAccess</button>
+<button id="rsa" type="button">requestStorageAccess then list</button>
+<button id="list" type="button">list only</button>
+<pre id="log"></pre>
+<script>
+  // Phase 0 T2 harness on the production origins (docs/spikes/00-storage-partitioning.md), embedded visibly by the
+  // demo with ?diag=1. Everything runs in THIS document. Rule: nothing here touches `caches` (or any storage)
+  // until the "requestStorageAccess then list" click, whose first statement is the request itself; Firefox fixes
+  // the document's storage principal at that moment, and objects obtained earlier would stay partitioned.
+  // "list only" is the read-only control: it shows what this document sees WITHOUT a grant.
+  const out = document.getElementById("log");
+  const CACHE = "dianome-v1";
+  const MARKER = new URL("/frame/v1/marker", location.origin).href;
+  const t0 = performance.now();
+  const stamp = () => (performance.now() - t0).toFixed(0).padStart(6) + " ms ";
+  const log = (line) => { out.textContent += stamp() + line + "\n"; };
+  const errText = (e) => (e && e.name ? `${e.name}: ${e.message}` : String(e));
+  const family = /firefox\//i.test(navigator.userAgent) ? "firefox" : /chrome\//i.test(navigator.userAgent) ? "chrome" : /safari\//i.test(navigator.userAgent) ? "safari" : "other";
+  let parentOrigin = "(none)";
+  try { if (document.referrer) parentOrigin = new URL(document.referrer).origin; } catch {}
+  document.getElementById("who").textContent = `frame ${location.origin} in ${parentOrigin} · ${family} · embedded=${window.parent !== window} · secure=${isSecureContext}`;
+  if (typeof document.requestStorageAccess !== "function") log("document.requestStorageAccess is missing in this browser");
+
+  async function listKeys(label) {
+    try {
+      const cache = await caches.open(CACHE);
+      const keys = (await cache.keys()).map((r) => r.url.replace(location.origin, ""));
+      const marker = await cache.match(MARKER);
+      log(`${label}: ${keys.length} keys in ${CACHE}; marker ${marker ? "VISIBLE" : "not visible"}`);
+      for (const k of keys.slice(0, 60)) log("  " + k);
+      if (keys.length > 60) log(`  … ${keys.length - 60} more`);
+    } catch (e) { log(`${label}: caches error ${errText(e)}`); }
+  }
+
+  document.getElementById("has").addEventListener("click", async () => {
+    try { log(`hasStorageAccess() = ${await document.hasStorageAccess()}`); }
+    catch (e) { log(`hasStorageAccess() threw ${errText(e)}`); }
+  });
+
+  // requestStorageAccess() is the FIRST statement of the handler: no await, no logging, no storage before it
+  // (Safari rejects after any preceding await; Firefox switches the principal at the grant).
+  document.getElementById("rsa").addEventListener("click", async () => {
+    const request = document.requestStorageAccess();
+    log("requestStorageAccess() called (plain, no argument) as the first statement of the click");
+    try { await request; log("requestStorageAccess() resolved"); }
+    catch (e) { log(`requestStorageAccess() rejected: ${errText(e)}`); }
+    try { log(`hasStorageAccess() = ${await document.hasStorageAccess()}`); } catch (e) { log(`hasStorageAccess() threw ${errText(e)}`); }
+    await listKeys("after request");
+  });
+
+  document.getElementById("list").addEventListener("click", () => listKeys("list only (no request in this click)"));
+</script>
+</body>
+</html>
