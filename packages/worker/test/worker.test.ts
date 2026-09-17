@@ -179,6 +179,31 @@ describe("stats", () => {
     expect(calls).toBe(6);
   });
 
+  it("includes computed_at on both the fresh-compute and the KV-hit path", async () => {
+    stubSql((sql) => Response.json({ meta: [], data: sql.includes("AS source") ? [{ source: "network", loads: 1, p50_ms: 15629 }] : [], rows: 1 }));
+    const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+    const fresh = await call("/v1/stats/loads", {}, over);
+    expect(fresh.headers.get("X-Dianome-Stats")).toBe("computed");
+    const freshBody = await fresh.json() as Record<string, unknown>;
+    expect(freshBody.computed_at).toMatch(ISO);
+    const hit = await call("/v1/stats/loads", {}, over);
+    expect(hit.headers.get("X-Dianome-Stats")).toBe("kv-hit");
+    const hitBody = await hit.json() as Record<string, unknown>;
+    expect(hitBody.computed_at).toMatch(ISO);
+    expect(hitBody.computed_at).toBe(freshBody.computed_at);
+  });
+
+  it("ignores a cached entry without computed_at (written by an older Worker) and recomputes", async () => {
+    await env.STATS_CACHE.put(STATS_CACHE_KEY, JSON.stringify({ since: "2026-09-10T00:01:22Z", window_hours: 168, by_country: [{ country: "US", loads: 1, p50_ms: 1, p90_ms: 1, cache_hit_rate: 0 }], by_model_variant: [], by_source: [] }));
+    stubSql((sql) => Response.json({ meta: [], data: sql.includes("AS source") ? [{ source: "network", loads: 1, p50_ms: 15629 }] : [], rows: 1 }));
+    const res = await call("/v1/stats/loads", {}, over);
+    expect(res.headers.get("X-Dianome-Stats")).toBe("computed");
+    const body = await res.json() as Record<string, unknown>;
+    expect(body.computed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    expect(body.by_source).toEqual([{ source: "network", loads: 1, p50_ms: 15629 }]);
+    expect(JSON.parse((await env.STATS_CACHE.get(STATS_CACHE_KEY))!).computed_at).toBe(body.computed_at);
+  });
+
   it("degrades when the SQL API answers 200 with a non-JSON or shapeless body", async () => {
     stubSql(() => new Response("<html>login</html>", { status: 200 }));
     const res = await call("/v1/stats/loads", {}, over);

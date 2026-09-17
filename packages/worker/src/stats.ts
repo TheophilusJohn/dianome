@@ -6,7 +6,8 @@ import { json } from "./http";
 import type { CountryStats, Env, LoadStats, ModelVariantStats, SourceStats } from "./types";
 
 export const WINDOW_HOURS = 168;
-export const STATS_CACHE_KEY = "stats:loads:v1";
+// v2: entries written by a Worker version without computed_at must not be served; the key bump retires them.
+export const STATS_CACHE_KEY = "stats:loads:v2";
 export const STATS_TTL_SECONDS = 300;
 const DATASET = "dianome_loads";
 const SQL_API = (account: string) => `https://api.cloudflare.com/client/v4/accounts/${account}/analytics_engine/sql`;
@@ -42,6 +43,13 @@ export function emptyStats(now = new Date()): LoadStats {
     computed_at: iso(now),
     by_country: [], by_model_variant: [], by_source: [],
   };
+}
+
+function isCurrentShape(text: string): boolean {
+  try {
+    const v = JSON.parse(text) as Partial<LoadStats>;
+    return typeof v.computed_at === "string" && typeof v.since === "string" && Array.isArray(v.by_country);
+  } catch { return false; }
 }
 
 export const hasRows = (s: LoadStats): boolean => s.by_country.length > 0 || s.by_model_variant.length > 0 || s.by_source.length > 0;
@@ -83,7 +91,10 @@ export async function loadStats(env: Env, ctx: ExecutionContext): Promise<Respon
     return json({ ...emptyStats(), degraded: true }, { headers: { ...headers, "X-Dianome-Stats": "degraded:no-token" } });
   }
   const cached = await env.STATS_CACHE.get(STATS_CACHE_KEY);
-  if (cached) return new Response(cached, { headers: { ...headers, "Content-Type": "application/json; charset=utf-8", "X-Dianome-Stats": "kv-hit" } });
+  // Serve a cached body only if it has the current shape; anything else (an older Worker's entry) is a miss.
+  if (cached && isCurrentShape(cached)) {
+    return new Response(cached, { headers: { ...headers, "Content-Type": "application/json; charset=utf-8", "X-Dianome-Stats": "kv-hit" } });
+  }
   try {
     const stats = await computeStats(env);
     const text = JSON.stringify(stats);
