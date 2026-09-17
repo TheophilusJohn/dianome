@@ -96,3 +96,22 @@ def probes(model, tokens, data_dir, boundaries, skip_collect, notes, device) -> 
 
 if __name__ == "__main__":
     main()
+
+
+@main.command("linear-probe")
+@click.option("--model", default="qwen2.5-0.5b-instruct", show_default=True)
+@click.option("--train-tokens", default=500_000, show_default=True)
+@click.option("--seed", default=1, show_default=True)
+@click.option("--boundaries", default=None, help="comma list; default all 0..L")
+@click.option("--max-epochs", default=5, show_default=True)
+@click.option("--batch", default=1024, show_default=True)
+@click.option("--notes", default=None, help="docs/phase-4-notes.md to update (default: none)")
+@click.option("--device", default=None)
+def linear_probe(model, train_tokens, seed, boundaries, max_epochs, batch, notes, device) -> None:
+    """Linear probe with a large training set from the WikiText-103 train split; held-out set unchanged."""
+    from probes.linear500k import run_linear500k
+
+    lm = _load(model, device)
+    bl = [int(b) for b in boundaries.split(",")] if boundaries else None
+    run_linear500k(lm, target_tokens=train_tokens, seed=seed, boundaries=bl, notes=notes,
+                   linear_kw={"max_epochs": max_epochs, "batch": batch})

@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from typing import Optional
 
 import numpy as np
 import torch
@@ -22,7 +23,8 @@ from .data import DATASET, split_by_document
 
 
 @torch.no_grad()
-def collect(lm: LoadedModel, docs: list[list[int]], data_dir: str, max_seq: int = 1024, seed: int = 0) -> dict:
+def collect(lm: LoadedModel, docs: list[list[int]], data_dir: str, max_seq: int = 1024, seed: int = 0,
+            all_train: bool = False, extra_meta: Optional[dict] = None) -> dict:
     os.makedirs(data_dir, exist_ok=True)
     n = sum(len(d) for d in docs)
     B = lm.L + 1
@@ -52,13 +54,14 @@ def collect(lm: LoadedModel, docs: list[list[int]], data_dir: str, max_seq: int 
     np.save(os.path.join(data_dir, "tokens.npy"), tokens)
     np.save(os.path.join(data_dir, "doc.npy"), doc)
     np.save(os.path.join(data_dir, "pos.npy"), pos)
-    train, val = split_by_document(len(docs), seed=seed)
+    train, val = (list(range(len(docs))), []) if all_train else split_by_document(len(docs), seed=seed)
     meta = {
         "model": lm.id, "dataset": DATASET, "n_documents": len(docs), "n_tokens": n, "max_seq": max_seq,
         "boundaries": B, "d_model": lm.d_model, "vocab": lm.vocab,
         "split": {"by": "document", "seed": seed, "train_docs": train, "val_docs": val,
                   "train_tokens": int(sum(len(docs[i]) for i in train)), "val_tokens": int(sum(len(docs[i]) for i in val))},
         "collect_seconds": time.perf_counter() - t0, "versions": versions(), "device": str(lm.device),
+        **(extra_meta or {}),
     }
     with open(os.path.join(data_dir, "meta.json"), "w") as f:
         json.dump(meta, f, indent=2)

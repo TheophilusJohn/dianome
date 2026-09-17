@@ -51,3 +51,49 @@ def split_by_document(n_docs: int, val_fraction: float = 0.2, seed: int = 0) -> 
     val = sorted(idx[:n_val])
     train = sorted(idx[n_val:])
     return train, val
+
+
+def load_train_documents() -> list[str]:
+    """WikiText-103 *train* split, one string per article (same heading rule as the test split)."""
+    import datasets
+
+    ds = datasets.load_dataset(DATASET["repo"], DATASET["config"], split="train")
+    docs: list[list[str]] = []
+    for line in ds["text"]:
+        if HEADING.match(line):
+            docs.append([line])
+        elif docs:
+            docs[-1].append(line)
+    return ["".join(d) for d in docs]
+
+
+def title_of(doc: str) -> str:
+    return doc.split("\n", 1)[0]
+
+
+def sample_documents(tokenizer, docs: list[str], exclude_titles: set[str], target_tokens: int,
+                     max_doc_tokens: int, seed: int) -> tuple[list[list[int]], list[int]]:
+    """Deterministic sample: shuffle document indices with `seed`, skip any title in
+    `exclude_titles`, tokenize in that order (capped per document) until `target_tokens`.
+    Returns (token lists, the chosen document indices)."""
+    order = list(range(len(docs)))
+    random.Random(seed).shuffle(order)
+    out: list[list[int]] = []
+    chosen: list[int] = []
+    total = 0
+    for i in order:
+        if title_of(docs[i]) in exclude_titles:
+            continue
+        ids = tokenizer(docs[i], add_special_tokens=False).input_ids[:max_doc_tokens]
+        if len(ids) < 8:
+            continue
+        if total + len(ids) > target_tokens:
+            ids = ids[: target_tokens - total]
+            if len(ids) < 8:
+                break
+        out.append(ids)
+        chosen.append(i)
+        total += len(ids)
+        if total >= target_tokens:
+            break
+    return out, chosen

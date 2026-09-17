@@ -55,6 +55,20 @@ def nn_baseline(acts: np.ndarray, y: np.ndarray, embed: torch.Tensor, device: to
     return {"nn_top1": cos1 / n, "nn_top5": cos5 / n, "nn_l2_top1": l21 / n, "nn_l2_top5": l25 / n}
 
 
+@torch.no_grad()
+def _mean_std(X: torch.Tensor, chunk: int = 65536) -> tuple[torch.Tensor, torch.Tensor]:
+    n, d = X.shape
+    s1 = torch.zeros(d, dtype=torch.float64)  # accumulate on the CPU: MPS has no float64
+    s2 = torch.zeros(d, dtype=torch.float64)
+    for i in range(0, n, chunk):
+        x = X[i : i + chunk].float()
+        s1 += x.sum(0).cpu().double()
+        s2 += (x * x).sum(0).cpu().double()
+    mu = s1 / n
+    var = (s2 / n - mu * mu).clamp_min(0)
+    return mu.float().unsqueeze(0).to(X.device), (var.sqrt().float() + 1e-5).unsqueeze(0).to(X.device)
+
+
 def train_linear(
     acts_tr: np.ndarray, y_tr: np.ndarray, acts_va: np.ndarray, y_va: np.ndarray, vocab: int,
     device: torch.device, batch: int = 1024, max_epochs: int = 5, patience: int = 1, lr: float = 2e-3, seed: int = 0,
@@ -69,8 +83,7 @@ def train_linear(
     Ytr = torch.from_numpy(y_tr.astype(np.int64)).to(device)
     Xva = torch.from_numpy(acts_va).to(device)
     Yva = torch.from_numpy(y_va.astype(np.int64)).to(device)
-    mu = Xtr.float().mean(0, keepdim=True)
-    sd = Xtr.float().std(0, keepdim=True) + 1e-5  # standardise inputs; deep boundaries have huge outlier dims
+    mu, sd = _mean_std(Xtr)  # standardise inputs; deep boundaries have huge outlier dims
 
     def evaluate() -> tuple[float, float, float]:
         lin.eval()

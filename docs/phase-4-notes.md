@@ -4,7 +4,7 @@
 
 - **The split path is bit-exact against the full forward at every N tested.** `max_abs_diff` is 0.0 for N ∈ {0, 1, 8, 16, 23, 24} with identical argmax (table under "Correctness gate: max_abs_diff per N"; the fixtures' logits also match `model.forward` at 0.0).
 - **Server cost is roughly linear in the number of server layers, with a floor set by `lm_head`.** On the 0.5B model the ratio `cost(N)/cost(0)` falls from 1.000 at N = 0 to 0.224 at N = 24, where the server runs only the final norm, `lm_head` and sampling; that 22% is the floor no split point gets under (table under "Cost harness"; Mac numbers, the shape is what carries over).
-- **Input tokens stay linearly recoverable from the hidden state at every boundary, so split inference does not hide the prompt from an adversarial server.** Normalised by the 0.8202 vocabulary-coverage ceiling, linear-probe top-1 is 0.995 at boundary 0, 0.807 at boundary 12 and 0.700 at boundary 24 (`linear_top1 / 0.8202`, table under "Privacy band"). Nearest-neighbour against the embedding matrix drops below 0.005 from boundary 1 onward while the trained probes barely move, so nearest-neighbour is not a valid privacy measure.
+- **Input tokens stay linearly recoverable from the hidden state at every boundary, so split inference does not hide the prompt from an adversarial server.** With the 500k-token training set (coverage 0.9728 of held-out tokens), linear-probe top-1 normalised by that coverage is 1.000 at boundary 0, 0.895 at boundary 12 and 0.810 at boundary 24 (raw 0.973 / 0.871 / 0.788; table under "Linear probe, 500k-token training set"). The original 40k-token probe gave 0.995 / 0.807 / 0.700 normalised by its 0.8202 ceiling (table under "Privacy band"); the larger training set raises the normalised numbers at all three boundaries. Nearest-neighbour against the embedding matrix drops below 0.005 from boundary 1 onward while the trained probes barely move, so nearest-neighbour is not a valid privacy measure.
 
 Every number below is pasted from the output of the command shown above it or
 copied from the result file it names, run on 2026-09-17 on this MacBook
@@ -136,6 +136,44 @@ from `tokens.npy`/`doc.npy`): of the 10240 held-out tokens,
 saturate at 0.8202 even at boundary 0, where nearest-neighbour is 1.0. The
 band is therefore read relative to that ceiling; a larger corpus would raise it. Raw per-boundary metrics (top-5 for nn, val losses, epochs,
 per-probe seconds) are in `server/probes/results/band.json`.
+
+## Linear probe, 500k-token training set
+
+```
+$ server/.venv/bin/dianome-server linear-probe --notes docs/phase-4-notes.md
+```
+
+<!-- linear500k:start -->
+Training set: 496 documents, 500000 tokens sampled from `Salesforce/wikitext` `wikitext-103-raw-v1` split `train` (seed 1, each document capped at 1024 tokens, 62 test-split titles excluded, so train and test are disjoint by construction). Held-out set: exactly the Phase 4 one above (10240 tokens from the 10 held-out documents of the test split). `coverage` = fraction of held-out tokens whose type occurs in the training set (9961/10240; 2461/2637 of the held-out token types; the training set has 24957 types). It does not depend on the boundary, so the column is constant. `norm_*` = `linear_*` / coverage. Linear probe: AdamW lr 0.002, batch 1024, up to 3 epochs, patience 1 on held-out loss, inputs standardised per dimension, one boundary at a time, weights discarded. Inversion decoder results are unchanged (table above). Device mps (Apple M4), wall time 15639 s.
+
+| boundary | coverage | linear_top1 | linear_top5 | norm_top1 | norm_top5 | epochs | train_seconds |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | 0.9728 | 0.9727 | 0.9728 | 0.9999 | 1.0000 | 3 | 630.7 |
+| 1 | 0.9728 | 0.9694 | 0.9714 | 0.9966 | 0.9986 | 3 | 629.2 |
+| 2 | 0.9728 | 0.9645 | 0.9705 | 0.9915 | 0.9977 | 3 | 623.4 |
+| 3 | 0.9728 | 0.9563 | 0.9669 | 0.9831 | 0.9940 | 3 | 606.4 |
+| 4 | 0.9728 | 0.9443 | 0.9602 | 0.9708 | 0.9870 | 3 | 625.0 |
+| 5 | 0.9728 | 0.9345 | 0.9546 | 0.9606 | 0.9813 | 3 | 625.2 |
+| 6 | 0.9728 | 0.9175 | 0.9467 | 0.9432 | 0.9732 | 3 | 628.1 |
+| 7 | 0.9728 | 0.9071 | 0.9409 | 0.9325 | 0.9673 | 3 | 602.6 |
+| 8 | 0.9728 | 0.8990 | 0.9324 | 0.9242 | 0.9585 | 3 | 632.2 |
+| 9 | 0.9728 | 0.8870 | 0.9271 | 0.9119 | 0.9531 | 3 | 629.9 |
+| 10 | 0.9728 | 0.8779 | 0.9190 | 0.9025 | 0.9448 | 3 | 632.2 |
+| 11 | 0.9728 | 0.8789 | 0.9188 | 0.9035 | 0.9446 | 3 | 633.5 |
+| 12 | 0.9728 | 0.8706 | 0.9126 | 0.8950 | 0.9382 | 3 | 628.5 |
+| 13 | 0.9728 | 0.8699 | 0.9147 | 0.8943 | 0.9404 | 3 | 628.9 |
+| 14 | 0.9728 | 0.8660 | 0.9117 | 0.8903 | 0.9373 | 3 | 640.5 |
+| 15 | 0.9728 | 0.8724 | 0.9173 | 0.8968 | 0.9430 | 3 | 630.7 |
+| 16 | 0.9728 | 0.8754 | 0.9204 | 0.8999 | 0.9462 | 3 | 628.1 |
+| 17 | 0.9728 | 0.8823 | 0.9253 | 0.9070 | 0.9512 | 3 | 618.8 |
+| 18 | 0.9728 | 0.8715 | 0.9227 | 0.8959 | 0.9485 | 3 | 633.3 |
+| 19 | 0.9728 | 0.8712 | 0.9204 | 0.8956 | 0.9462 | 3 | 627.6 |
+| 20 | 0.9728 | 0.8687 | 0.9209 | 0.8930 | 0.9467 | 3 | 643.3 |
+| 21 | 0.9728 | 0.8588 | 0.9178 | 0.8828 | 0.9435 | 3 | 614.3 |
+| 22 | 0.9728 | 0.8409 | 0.9076 | 0.8645 | 0.9330 | 3 | 616.6 |
+| 23 | 0.9728 | 0.8263 | 0.8980 | 0.8494 | 0.9232 | 3 | 607.2 |
+| 24 | 0.9728 | 0.7881 | 0.8682 | 0.8102 | 0.8925 | 3 | 614.2 |
+<!-- linear500k:end -->
 
 ## Fixtures for Phase 5a
 

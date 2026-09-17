@@ -22,3 +22,4 @@ server/probes/data/
 server/bench/results/*-detail.csv
 server/**/results/*.log
 server/.pytest_cache/
+server/probes/data-train500k/

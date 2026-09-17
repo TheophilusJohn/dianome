@@ -40,6 +40,7 @@ SPLIT_TOKEN=... .venv/bin/dianome-server serve   [--model qwen2.5-0.5b-instruct]
 .venv/bin/dianome-server fixtures --out ../fixtures/qwen2.5-0.5b-instruct/
 .venv/bin/dianome-server bench    [--splits 0,4,8,12,16,20,24] [--gen-tokens 128] [--runs 3]
 .venv/bin/dianome-server probes   [--tokens 50000] [--skip-collect] [--notes ../docs/phase-4-notes.md]
+.venv/bin/dianome-server linear-probe [--train-tokens 500000] [--seed 1] [--max-epochs 3] [--notes ../docs/phase-4-notes.md]
 ```
 
 `serve` refuses to start without `SPLIT_TOKEN`. Every request, the WebSocket
@@ -114,6 +115,16 @@ baseline against the tied embedding matrix; `inversion.py` trains a 2-layer,
 document. `report.py` writes the band table into `docs/phase-4-notes.md`
 between `<!-- probes:start -->` / `<!-- probes:end -->`. Results accumulate in
 `probes/results/band.json`, so an interrupted run resumes per boundary.
+
+`linear-probe` (`probes/linear500k.py`) re-runs only the linear probe with a
+larger training set: ~500k tokens sampled with a fixed seed from the WikiText-103
+*train* split (test-split titles excluded, so train and test are disjoint by
+construction), collected into a second store `probes/data-train500k/` (22 GB,
+gitignored). The held-out set is exactly the Phase 4 one. It reports the
+coverage of held-out tokens by the training vocabulary and coverage-normalised
+top-1/top-5, resumes per boundary from `probes/results/linear-500k.json`, and
+writes its own section into the notes between `<!-- linear500k:start -->` /
+`<!-- linear500k:end -->`.
 
 ## Fixtures
 
