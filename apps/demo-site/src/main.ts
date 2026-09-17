@@ -43,7 +43,7 @@ function showError(where: string, e: unknown): void {
 const STATE_TEXT: Record<CrossSiteResult["state"], string> = {
   granted: "Shared cache active: loads now go through the cdn frame and are shared with other sites.",
   denied: "The browser denied storage access for the cdn frame (site permission). Loads use the per-site cache.",
-  unsupported: "This browser cannot share the cache across sites (Firefox and Safari keep the Cache API partitioned after a Storage Access grant; or no Storage Access API). Loads use the per-site cache.",
+  unsupported: "This browser does not unpartition the Cache API on a storage-access grant (detected by the marker probe), or has no Storage Access API. Loads use the per-site cache.",
   "needs-visit": "The browser has no first-party interaction with the cdn origin yet. Open the link once, click Enable there, and come back:",
   "needs-click": "The browser wants the click inside the cdn frame itself. Click the button below:",
 };

@@ -250,22 +250,13 @@ describe("connectCrossSite", () => {
       await c.call<"hello">({ op: "hello" });
       return c;
     };
-    const base = { cdn: "https://cdn.test", frameUrl: `https://cdn.test/frame/v1/index.html?t=${Math.random()}`, storage, openFrame, returnUrl: "https://site-a.pages.dev/", hasDocument: true, hasStorageAccessApi: true, browser: "chrome" as const, perSite: () => null };
+    const base = { cdn: "https://cdn.test", frameUrl: `https://cdn.test/frame/v1/index.html?t=${Math.random()}`, storage, openFrame, returnUrl: "https://site-a.pages.dev/", hasDocument: true, hasStorageAccessApi: true, visitedReturn: false, perSite: () => null };
     return { storage, opened, servers, clients, platforms, base, fp: () => shared ?? platforms[0]! };
   }
 
-  it("unsupported without the API, on Safari and on Firefox (no frame, no prompt, no visit), persisted; auto mode honours persisted denied/unsupported without opening a frame", async () => {
+  it("unsupported without the API, persisted; auto mode honours persisted denied/unsupported without opening a frame", async () => {
     const h = harness();
     expect((await connectCrossSite({ ...h.base, explicit: true, hasStorageAccessApi: false })).result.state).toBe("unsupported");
-    expect(readPersisted(h.storage)).toBe("unsupported");
-    writePersisted(null, h.storage);
-    expect((await connectCrossSite({ ...h.base, explicit: true, browser: "safari" })).result.state).toBe("unsupported");
-    expect(readPersisted(h.storage)).toBe("unsupported");
-    writePersisted(null, h.storage);
-    const ff = await connectCrossSite({ ...h.base, explicit: true, browser: "firefox" });
-    expect(ff.result).toMatchObject({ state: "unsupported", reason: expect.stringMatching(/firefox keeps the Cache API partitioned/) });
-    expect(ff.result.visitUrl).toBeUndefined();
-    expect(ff.result.mount).toBeUndefined();
     expect(readPersisted(h.storage)).toBe("unsupported");
     expect(h.opened).toHaveLength(0);
     writePersisted("denied", h.storage);
@@ -316,12 +307,36 @@ describe("connectCrossSite", () => {
     expect(later.result.state).toBe("granted");
   });
 
-  it("a frame grant that resolves without a handle ends unsupported (persisted) and the hidden frame is dropped", async () => {
-    const h = harness({ mode: "firefox", silent: "grant" });
+  it("plain grant with the marker visible → granted via plain-globals, without any browser check", async () => {
+    const h = harness({ mode: "no-handle", silent: "grant" });
+    const c = await connectCrossSite({ ...h.base, explicit: false });
+    expect(c.result).toMatchObject({ state: "granted", path: "plain-globals" });
+    expect(c.store).toBeInstanceOf(CrossSiteStore);
+    expect(readPersisted(h.storage)).toBe("granted");
+  });
+
+  it("plain grant, visited flag visible but marker not → unsupported, persisted, hidden frame dropped, no visit link", async () => {
+    const h = harness({ mode: "no-handle", silent: "grant", markerInGlobals: false, visited: "2026-09-17T10:00:00.000Z" });
     const c = await connectCrossSite({ ...h.base, explicit: true });
-    expect(c.result).toMatchObject({ state: "unsupported", reason: expect.stringMatching(/without a storage-access handle/) });
+    expect(c.result).toMatchObject({ state: "unsupported", path: "plain-globals", reason: expect.stringMatching(/visited flag .* visible but marker/) });
+    expect(c.result.visitUrl).toBeUndefined();
     expect(readPersisted(h.storage)).toBe("unsupported");
     expect((h.clients[0]!.port as { closed?: boolean }).closed).toBe(true);
+    // Auto mode afterwards never opens a frame again.
+    const later = await connectCrossSite({ ...h.base, explicit: false });
+    expect(later.result).toMatchObject({ state: "unsupported", reason: "persisted" });
+    expect(h.opened).toHaveLength(1);
+  });
+
+  it("returned from the opt-in visit and still needs-visit → unsupported (no second visit); without the return parameter it stays needs-visit", async () => {
+    const h = harness({ mode: "no-handle", silent: "grant", markerInGlobals: false });
+    const before = await connectCrossSite({ ...h.base, explicit: true, visitedReturn: false });
+    expect(before.result).toMatchObject({ state: "needs-visit", visitUrl: expect.stringContaining("optin.html?return=") });
+    expect(readPersisted(h.storage)).toBeNull();
+    const after = await connectCrossSite({ ...h.base, explicit: true, visitedReturn: true });
+    expect(after.result).toMatchObject({ state: "unsupported", reason: expect.stringMatching(/returned from the opt-in visit/) });
+    expect(after.result.visitUrl).toBeUndefined();
+    expect(readPersisted(h.storage)).toBe("unsupported");
   });
 
   it("adopts per-site chunks into the shared cache on grant, skipping what the frame already has and keeping the per-site copies", async () => {

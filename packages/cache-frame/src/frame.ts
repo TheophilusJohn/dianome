@@ -6,7 +6,7 @@
 // origin; touch `caches`/`indexedDB` only after the grant (FrameServer constructs the store inside grant()).
 
 import { FrameServer, type FramePlatform, type StorageAccessHandle } from "../../sdk/src/cache/frameServer";
-import { epochNow, parseRequest, sameOrigin, stampSent, transferablesOf, versionMismatchId, PROTOCOL_VERSION, type FrameProgress, type FrameResponse, type GrantResult } from "../../sdk/src/cache/protocol";
+import { epochNow, parseRequest, sameOrigin, stampSent, transferablesOf, versionMismatchId, PROTOCOL_VERSION, VISITED_KEY, type FrameProgress, type FrameResponse, type GrantResult } from "../../sdk/src/cache/protocol";
 
 const button = document.getElementById("enable") as HTMLButtonElement;
 const note = document.getElementById("note") as HTMLParagraphElement;
@@ -64,6 +64,7 @@ const platform: FramePlatform = {
   ...(typeof document.hasStorageAccess === "function" ? { hasStorageAccess: () => document.hasStorageAccess() } : {}),
   permissionState: async () => (await navigator.permissions.query({ name: "storage-access" as PermissionName })).state,
   globals: () => ({ caches, indexedDB, storage: navigator.storage }),
+  visitedFlag: () => localStorage.getItem(VISITED_KEY),
   fetch: (url, init) => fetch(url, init),
   inGesture: <T>(run: () => Promise<T>) => new Promise<T>((resolve, reject) => {
     button.disabled = false;

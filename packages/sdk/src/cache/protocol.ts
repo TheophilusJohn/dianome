@@ -21,8 +21,11 @@ export const MARKER_PATH = "/frame/v1/marker";
 export const MARKER_BYTES = 1024;
 
 export type GrantMode = "silent" | "await-click";
-/** The only path to unpartitioned storage: Chrome's storage-access handle (Firefox and Safari keep `caches` partitioned after a grant). */
-export type GrantPath = "chrome-handle";
+/** How the frame reached storage: a storage-access handle (`requestStorageAccess({all: true})` returned one) or the plain grant with the document's own globals. Which one works is detected, never assumed from the browser name. */
+export type GrantPath = "chrome-handle" | "plain-globals";
+export const VISITED_KEY = "dianome:visited";
+/** Query parameter the opt-in page appends to the return URL, so the SDK knows a visit was completed. */
+export const VISITED_RETURN_PARAM = "dianome-visited";
 export type GrantState = "granted" | "unsupported" | "denied" | "needs-visit" | "needs-click";
 
 export interface GrantResult {

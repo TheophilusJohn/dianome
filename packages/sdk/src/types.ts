@@ -103,8 +103,8 @@ export interface CrossSiteResult {
    * decided; `onProgress` reports the stages in between (a permission prompt can keep it pending).
    */
   mount?: (container: HTMLElement, opts?: { onProgress?: (stage: CrossSiteProgress) => void }) => Promise<CrossSiteResult>;
-  /** The grant path that reached unpartitioned storage: Chrome's storage-access handle (the only one). */
-  path?: "chrome-handle";
+  /** How the frame reached storage: a storage-access handle, or the plain grant with the frame's globals (detected, not assumed from the browser). */
+  path?: "chrome-handle" | "plain-globals";
   /** Why the grant ended the way it did (rejection name and message, marker probe, persisted outcome). */
   reason?: string;
   /** `granted`: per-site chunks copied into the shared cache (skipped = the frame already had them). */

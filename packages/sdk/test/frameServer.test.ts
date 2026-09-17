@@ -49,20 +49,37 @@ describe("FrameServer grant", () => {
     }
   });
 
-  it("a grant that resolves WITHOUT a handle (Firefox, Safari) is unsupported: cookie access only, caches stays partitioned", async () => {
-    const fp = await fakePlatform({ mode: "firefox", silent: "grant" });
+  it("plain grant (no handle), marker visible through the globals → granted via plain-globals; the globals are first touched by the grant", async () => {
+    const fp = await fakePlatform({ mode: "no-handle" });
     const s = new FrameServer({ platform: fp.platform });
-    expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ ok: true, result: { state: "unsupported", reason: expect.stringMatching(/without a storage-access handle/) } });
-    expect(fp.rsaCalls).toEqual([{ all: true, inGesture: false }]); // always the {all: true} form: a handle or nothing
-    expect(fp.globalsTouched).toBe(0); // the frame's own globals are never used for chunk storage
+    expect(fp.globalsTouched).toBe(0);
+    const p = s.handle(req({ op: "grant", mode: "await-click" }));
+    fp.click();
+    expect(await p).toMatchObject({ ok: true, result: { state: "granted", path: "plain-globals" } });
+    expect(fp.rsaCalls).toEqual([{ all: true, inGesture: true }]); // the argument is ignored by a browser without handles
+    expect(fp.globalsTouched).toBe(1);
+    const sha = await sha256(new Uint8Array([9]));
+    await s.handle(req({ op: "put", sha, buf: new Uint8Array([9]).buffer }));
+    expect(fp.globalCaches.caches.get(CACHE_NAME)!.entries.has(`https://cdn.test/chunks/${sha}`)).toBe(true);
+    expect(fp.handleCaches.used).toBe(1024); // only the marker
+  });
+
+  it("plain grant, visited flag visible but marker not → unsupported (the Cache API stays partitioned; no second visit)", async () => {
+    const fp = await fakePlatform({ mode: "no-handle", silent: "grant", markerInGlobals: false, visited: "2026-09-17T10:00:00.000Z" });
+    const s = new FrameServer({ platform: fp.platform });
+    const res = await s.handle(req({ op: "grant", mode: "silent" }));
+    expect(res).toMatchObject({ ok: true, result: { state: "unsupported", path: "plain-globals", reason: expect.stringMatching(/visited flag \(2026-09-17T10:00:00.000Z\) visible but marker \/frame\/v1\/marker not/) } });
     expect(s.granted).toBe(false);
     expect(await s.handle(req({ op: "status" }))).toMatchObject({ ok: false, code: "no_grant" });
-    const fp2 = await fakePlatform({ mode: "firefox" });
-    const s2 = new FrameServer({ platform: fp2.platform });
-    const p = s2.handle(req({ op: "grant", mode: "await-click" }));
-    fp2.click();
-    expect(await p).toMatchObject({ result: { state: "unsupported" } });
-    expect(fp2.logs.at(-1)).toMatch(/grant → unsupported: requestStorageAccess resolved without a storage-access handle/);
+    expect(fp.logs.at(-1)).toMatch(/grant → unsupported via plain-globals/);
+  });
+
+  it("plain grant, neither flag nor marker visible → needs-visit; the same probe on the handle path", async () => {
+    const fp = await fakePlatform({ mode: "no-handle", silent: "grant", markerInGlobals: false });
+    expect(await new FrameServer({ platform: fp.platform }).handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "needs-visit", path: "plain-globals" } });
+    const ch = await fakePlatform({ mode: "chrome", silent: "grant", markerInHandle: false, visited: "x" });
+    // Handle path with a visited flag but no marker: the handle should have reached unpartitioned storage, so this is unsupported too.
+    expect(await new FrameServer({ platform: ch.platform }).handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "unsupported", path: "chrome-handle" } });
   });
 
   it("rejection shape without a permissions API: NotAllowedError inside the gesture → needs-visit (no path), reason carries the rejection", async () => {

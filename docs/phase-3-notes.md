@@ -152,7 +152,11 @@ Filled from Theo's runs on the deployed sites on 2026-09-17 (demo pages' status 
 
 Outcome: cross-site is Chrome-only. Firefox does not unpartition the Cache API through Storage Access (the Phase 0
 Firefox hit was a confounded partitioned copy; see the correction appended to `docs/spikes/00-storage-partitioning.md`).
-The SDK now reports `unsupported` on Firefox without loading the frame, prompting, or asking for the visit.
+The SDK detects this by capability, not by browser name: the opt-in page writes the Cache API marker and a
+localStorage "visited" flag on the CDN origin; after a grant the frame that sees the flag but not the marker reports
+`unsupported` (persisted, no second visit), one that sees the marker reports `granted`, one that sees neither asks
+for the visit. The opt-in page's return URL carries `dianome-visited=1`, so a browser that shows neither even after
+the visit (Safari) is also `unsupported` rather than sent back again.
 
 ## Adapters: second-run network counts
 

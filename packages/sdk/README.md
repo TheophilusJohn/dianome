@@ -43,9 +43,7 @@ one raw entry. See `dianome/transformersjs` and `dianome/webllm` for the adapter
 ## Shared (cross-site) cache and what to tell your users
 
 By default a model is cached per site: a second site on a different domain downloads it again. Chrome can share
-one cache across sites through a frame on `cdn.dianome.dev` after the user opts in (Firefox and Safari grant
-cookie access at most and keep the Cache API partitioned, so the SDK reports `unsupported` there without prompting).
-Ask from a click handler:
+one cache across sites through a frame on `cdn.dianome.dev` after the user opts in. Ask from a click handler:
 
 ```ts
 button.onclick = async () => {
@@ -62,8 +60,7 @@ visit to `cdn.dianome.dev` (`needs-visit`). Both outcomes persist, so later visi
 with `cache: "auto"`.
 
 If your page sets `Cross-Origin-Embedder-Policy`, the frame must carry COEP too; the deployed frame does (see
-`scripts/publish-frame.sh`). The frame is never loaded on Firefox or Safari, where the SDK reports `unsupported`
-up front.
+`scripts/publish-frame.sh`).
 
 Suggested wording for your users: *"Enable the shared model cache to keep downloaded models on this device and
 reuse them on other sites that use Dianome. Nothing about you is stored; only model files are shared, and you
@@ -75,8 +72,12 @@ can clear them from your browser's site data for cdn.dianome.dev at any time."*
 | --- | --- | --- | --- |
 | Chrome (cookies allowed) | yes | yes, via `requestStorageAccess({all: true})` | none after the one-time visit |
 | Chrome (third-party cookies blocked) | yes | yes | one "Allow embedded content?" prompt per site, remembered |
-| Firefox | yes | no (a Storage Access grant leaves the Cache API partitioned; the SDK reports `unsupported`) | none |
-| Safari / iOS | yes | no (same; the SDK reports `unsupported`) | none |
+| Firefox | yes | no (a Storage Access grant leaves the Cache API partitioned; the SDK reports `unsupported`) | none after the one-time visit |
+| Safari / iOS | yes | no (same; the SDK reports `unsupported`) | one, once |
+
+Detection is capability-based, not by browser name: after a grant the frame probes for a marker the opt-in page
+wrote into the CDN origin's Cache API, so a browser that later unpartitions storage on grant is picked up without
+an SDK change.
 
 ## Quota
 

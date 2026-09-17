@@ -18,18 +18,22 @@
 <button id="enable" type="button">Enable shared model cache</button>
 <p id="status"></p>
 <script type="module">
-  // Writes a 1 KB marker into the Cache API cache the frame reads through its storage-access grant. Seeing the
-  // marker from inside a frame on another site proves the grant reaches unpartitioned storage (Chrome and
-  // Firefox); Safari never sees it. The top-level visit itself is what Chrome needs before granting.
+  // Writes a 1 KB marker into the Cache API cache and a "visited" flag into localStorage, both top-level on this
+  // origin. From inside a frame on another site, after a storage-access grant: marker visible → the Cache API is
+  // unpartitioned (granted); only the flag visible → the Cache API stays partitioned (unsupported, no second visit);
+  // neither → the visit has not happened yet. The top-level visit itself is what Chrome needs before granting.
   const MARKER = new URL("/frame/v1/marker", location.origin).href;
   const CACHE = "dianome-v1";
+  const VISITED_KEY = "dianome:visited";            // localStorage flag, read by the frame after a grant
+  const RETURN_PARAM = "dianome-visited";           // appended to the return URL so the SDK knows the visit happened
   const status = document.getElementById("status");
   const params = new URLSearchParams(location.search);
-  const ret = (() => { try { const u = new URL(params.get("return") ?? ""); return u.protocol === "https:" || u.protocol === "http:" ? u.href : null; } catch { return null; } })();
+  const ret = (() => { try { const u = new URL(params.get("return") ?? ""); if (u.protocol !== "https:" && u.protocol !== "http:") return null; u.searchParams.set(RETURN_PARAM, "1"); return u.href; } catch { return null; } })();
   document.getElementById("enable").addEventListener("click", async () => {
     try {
       const cache = await caches.open(CACHE);
       await cache.put(MARKER, new Response(new Uint8Array(1024), { headers: { "Content-Type": "application/octet-stream", "Content-Length": "1024" } }));
+      try { localStorage.setItem(VISITED_KEY, new Date().toISOString()); } catch {}
       status.textContent = ret ? "Enabled. Returning…" : "Enabled. You can close this page.";
       if (ret) location.href = ret;
     } catch (e) {

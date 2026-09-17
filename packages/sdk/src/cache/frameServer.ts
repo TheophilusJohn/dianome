@@ -1,15 +1,18 @@
-// The frame side of the protocol, with the browser surface injected so every path is unit-testable:
-// Chrome (`requestStorageAccess({all: true})` → handle.caches), a grant without a handle (Firefox, Safari: cookie
-// access only, `caches` stays partitioned → unsupported), denied, needs-visit (no first-party interaction yet), and
-// the marker probe that catches a handle that still sees partitioned storage. packages/cache-frame wires it to the
-// real document. See docs/spikes/00-storage-partitioning.md, "Correction (2026-09-17)".
+// The frame side of the protocol, with the browser surface injected so every path is unit-testable. Capability
+// detection, never browser names: `requestStorageAccess({all: true})` either returns a storage-access handle (Chrome
+// today) or resolves as a plain grant, after which the document's own globals are tried. Either way the marker
+// probe decides whether the storage reached is unpartitioned: the opt-in page wrote a marker into the Cache API and
+// a "visited" flag into localStorage on the CDN origin, top-level. Marker visible → granted. Flag visible but marker
+// not → the grant reaches unpartitioned localStorage but the Cache API stays partitioned (Firefox as of the 2026-09-17
+// correction in docs/spikes/00) → unsupported. Neither → needs-visit. A browser that later unpartitions the Cache API
+// on a plain grant is picked up by the same probe without an SDK change.
 //
-// Structural rule: nothing touches `caches`/`indexedDB` before the grant. The store is constructed only inside
-// `grant()`, from the handle; the frame's own globals are never used for chunk storage.
+// Structural rule: nothing touches `caches`/`indexedDB`/`localStorage` before the grant; the store is constructed
+// only inside `grant()`, from the handle or the globals the grant made usable.
 
 import { isQuotaError } from "../errors";
 import { PerSiteStore } from "./persite";
-import { hopSince, markerUrlFor, MARKER_PATH, PROTOCOL_VERSION, type FrameErrorCode, type FrameRequest, type FrameResponse, type FrameResultOf, type GrantMode, type GrantProgress, type GrantResult, type HelloResult } from "./protocol";
+import { hopSince, markerUrlFor, MARKER_PATH, PROTOCOL_VERSION, type FrameErrorCode, type FrameRequest, type FrameResponse, type FrameResultOf, type GrantMode, type GrantPath, type GrantProgress, type GrantResult, type HelloResult } from "./protocol";
 import { CACHE_NAME, type ChunkStore } from "./types";
 
 /** What `requestStorageAccess({all: true})` resolves to in Chrome (subset we use). */
@@ -21,6 +24,8 @@ export interface StorageAccessHandle {
 
 export interface FramePlatform {
   origin: string;
+  /** The opt-in page's "visited" flag in the CDN origin's localStorage; read only after a grant. */
+  visitedFlag?: () => string | null;
   /** Diagnostic sink (the frame logs to its console; the parent sees it in DevTools). */
   log?: (message: string) => void;
   /** Present when document.requestStorageAccess exists. `all: true` returns a handle in Chrome, nothing elsewhere. */
@@ -112,8 +117,8 @@ export class FrameServer {
     if (this.store && this.grantResult) return this.grantResult;
     if (!this.p.requestStorageAccess) return this.remember({ state: "unsupported", reason: "document.requestStorageAccess missing" });
     const rsa = this.p.requestStorageAccess;
-    // The request is the first statement inside the gesture. `{all: true}` yields a storage-access handle in
-    // Chrome; a browser that resolves without one has granted cookie access only.
+    // The request is the first statement inside the gesture. `{all: true}` yields a storage-access handle where the
+    // browser supports one; elsewhere the argument is ignored and this is the plain grant.
     const attempt = (): Promise<StorageAccessHandle | undefined | void> => {
       progress?.("requesting");
       return rsa({ all: true });
@@ -135,8 +140,11 @@ export class FrameServer {
       const g = this.p.globals();
       return this.adopt({ caches: handle.caches, indexedDB: handle.indexedDB ?? g.indexedDB, ...(handle.estimate ? { storage: { estimate: handle.estimate } } : g.storage ? { storage: g.storage } : {}) }, "chrome-handle");
     }
-    // Resolved without a handle (Firefox, Safari): cookie access only; `caches` stays partitioned (spike 00 correction).
-    return this.remember({ state: "unsupported", reason: "requestStorageAccess resolved without a storage-access handle: this browser does not unpartition the Cache API" });
+    // Plain grant: no handle; the globals are whatever the grant made of them. The marker probe decides.
+    let has = true;
+    try { has = this.p.hasStorageAccess ? await this.p.hasStorageAccess() : true; } catch { /* assume granted */ }
+    if (!has) return this.remember({ state: "unsupported", reason: "requestStorageAccess resolved without a handle and hasStorageAccess() is false" });
+    return this.adopt(this.p.globals(), "plain-globals");
   }
 
   private async afterRejection(e: unknown, mode: GrantMode): Promise<GrantResult> {
@@ -146,24 +154,31 @@ export class FrameServer {
     if (perm === "denied") return this.remember({ state: "denied", reason });
     // Without a gesture the request is expected to fail unless the permission is persisted: ask for the click.
     if (mode === "silent") return this.remember({ state: "needs-click", reason });
-    // Rejected inside a gesture with the permission still at "prompt": Chrome has no first-party interaction with
-    // this origin yet. The top-level opt-in visit provides it.
+    // Rejected inside a gesture with the permission still at "prompt" (or no permissions API): the browser has no
+    // first-party interaction with this origin yet. The top-level opt-in visit provides it.
     return this.remember({ state: "needs-visit", reason: `${reason} (permission: ${perm})` });
   }
 
-  private async adopt(o: { caches: CacheStorage; indexedDB: IDBFactory; storage?: Pick<StorageManager, "estimate"> }, path: "chrome-handle"): Promise<GrantResult> {
-    // Probe: the opt-in page wrote a 1 KB marker top-level. If it is not visible through the granted storage,
-    // either the storage is still partitioned (Safari-like) or the visit never happened; the visit fixes both
-    // cases where they are fixable, so ask for it.
+  private async adopt(o: { caches: CacheStorage; indexedDB: IDBFactory; storage?: Pick<StorageManager, "estimate"> }, path: GrantPath): Promise<GrantResult> {
+    // Probe: the opt-in page wrote a 1 KB marker into the Cache API top-level. Visible through the granted storage
+    // → unpartitioned → granted.
     let marker: Response | undefined;
     try {
       marker = await (await o.caches.open(CACHE_NAME)).match(markerUrlFor(this.p.origin));
     } catch (e) {
       return this.remember({ state: "unsupported", path, reason: `probe failed: ${(e as Error)?.message ?? String(e)}` });
     }
-    if (!marker) return this.remember({ state: "needs-visit", path, reason: `marker ${MARKER_PATH} not visible after grant (no top-level visit yet, or storage still partitioned)` });
-    this.store = this.makeStore(o);
-    return this.remember({ state: "granted", path });
+    if (marker) {
+      this.store = this.makeStore(o);
+      return this.remember({ state: "granted", path });
+    }
+    // No marker. The opt-in page also set a "visited" flag in localStorage on this origin. If the grant lets this
+    // document read that flag, the visit happened and the Cache API is what stays partitioned: unsupported, and the
+    // user is not sent to the opt-in page again. Otherwise the visit is what is missing.
+    let visited: string | null = null;
+    try { visited = this.p.visitedFlag ? this.p.visitedFlag() : null; } catch { visited = null; }
+    if (visited) return this.remember({ state: "unsupported", path, reason: `visited flag (${visited}) visible but marker ${MARKER_PATH} not: the Cache API stays partitioned after the grant` });
+    return this.remember({ state: "needs-visit", path, reason: `marker ${MARKER_PATH} not visible after grant (no top-level visit yet, or storage still partitioned)` });
   }
 
   private remember(r: GrantResult): GrantResult {

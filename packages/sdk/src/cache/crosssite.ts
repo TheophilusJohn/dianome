@@ -3,11 +3,10 @@
 // and transfers ArrayBuffers. The frame fetches chunks itself (same-origin), so the parent never fetches on this
 // path. See docs/briefs/03-sdk-brief.md and docs/spikes/00-storage-partitioning.md for the browser rules.
 
-import { detectBrowser, type Browser } from "../device";
 import { PerSiteStore } from "./persite";
 import { AbortedError, ChunkError, DianomeError } from "../errors";
 import type { CrossSiteResult } from "../types";
-import { epochNow, frameUrlFor, hopSince, optinUrlFor, parseProgress, parseResponse, sameOrigin, stampSent, transferablesOf, PROTOCOL_VERSION, type FrameErrorCode, type FrameOp, type FrameRequest, type FrameResultOf, type GrantProgress, type GrantResult } from "./protocol";
+import { epochNow, frameUrlFor, hopSince, optinUrlFor, parseProgress, parseResponse, sameOrigin, stampSent, transferablesOf, PROTOCOL_VERSION, VISITED_RETURN_PARAM, type FrameErrorCode, type FrameOp, type FrameRequest, type FrameResultOf, type GrantProgress, type GrantResult } from "./protocol";
 import type { ChunkStore, ChunkStoreStatus } from "./types";
 
 export const CROSSSITE_KEY = "dianome:crosssite";
@@ -227,7 +226,8 @@ export interface CrossSiteConnectOptions {
   /** Called when a grant completes after `mount()`, so the owner can adopt the store. */
   onGranted?: ((store: CrossSiteStore) => void) | undefined;
   // Injection points (tests).
-  browser?: Browser | undefined;
+  /** True when the current URL carries the opt-in page's return parameter (default: read from location). */
+  visitedReturn?: boolean | undefined;
   storage?: Storage | undefined;
   openFrame?: FrameOpener | undefined;
   returnUrl?: string | undefined;
@@ -312,10 +312,10 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   if (!hasDoc) return { store: null, result: { state: "unsupported", reason: "no document" } };
   const hasApi = opts.hasStorageAccessApi ?? (typeof document !== "undefined" && typeof document.requestStorageAccess === "function");
   if (!hasApi) { writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", reason: "document.requestStorageAccess missing" } }; }
-  const browser = opts.browser ?? detectBrowser(typeof navigator !== "undefined" ? navigator.userAgent : "");
-  // Only Chrome's storage-access handle reaches unpartitioned storage. Firefox and Safari grant cookie access at
-  // most and keep `caches` partitioned (docs/spikes/00, correction 2026-09-17): no frame, no prompt, no visit.
-  if (browser === "safari" || browser === "firefox") { writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", reason: `${browser} keeps the Cache API partitioned after a Storage Access grant (spike 00 correction)` } }; }
+  // No browser-name checks: what the grant reaches is detected by the frame's marker probe. The one host-side fact
+  // used is whether the user just came back from the opt-in page (its return URL carries a query parameter): a
+  // browser that still shows neither the visited flag nor the marker after that is unsupported, not "visit again".
+  const visitedReturn = opts.visitedReturn ?? (typeof location !== "undefined" && new URL(location.href).searchParams.has(VISITED_RETURN_PARAM));
   if (!opts.explicit) {
     const p = readPersisted(storage);
     if (p === "denied" || p === "unsupported") return { store: null, result: { state: p, reason: "persisted" } };
@@ -346,7 +346,9 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
       case "granted": writePersisted("granted", storage); return { store: new CrossSiteStore(c), result: { state: "granted", ...extra } };
       case "denied": writePersisted("denied", storage); return { store: null, result: { state: "denied", ...extra } };
       case "unsupported": writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", ...extra } };
-      case "needs-visit": return { store: null, result: { state: "needs-visit", visitUrl, ...extra } };
+      case "needs-visit":
+        if (visitedReturn) { writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", ...extra, reason: `returned from the opt-in visit and the frame still cannot see the marker${g.reason ? ` (${g.reason})` : ""}` } }; }
+        return { store: null, result: { state: "needs-visit", visitUrl, ...extra } };
       case "needs-click": return { store: null, result: { state: "needs-click", ...extra } };
     }
   };
