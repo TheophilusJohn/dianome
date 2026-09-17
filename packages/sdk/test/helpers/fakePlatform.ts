@@ -55,7 +55,14 @@ export async function fakePlatform(o: FakePlatformOptions = {}): Promise<FakePla
   let pendingGesture: (() => void) | null = null;
   const self: FakePlatform = {
     handleCaches, globalCaches, handleIdb, globalIdb, globalsTouched: 0, rsaCalls: [], fetches: [], faults: new Map(), logs: [],
-    click() { const p = pendingGesture; pendingGesture = null; p?.(); },
+    // Like the real button (disabled until a grant is waiting): a click before inGesture() is registered waits for it.
+    click() {
+      const fire = (): void => {
+        const p = pendingGesture;
+        if (p) { pendingGesture = null; p(); } else setTimeout(fire, 1);
+      };
+      fire();
+    },
     platform: {
       origin,
       browser: o.browser ?? (mode === "firefox" ? "firefox" : "chrome"),

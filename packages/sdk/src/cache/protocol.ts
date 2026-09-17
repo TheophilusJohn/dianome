@@ -24,7 +24,13 @@ export type GrantMode = "silent" | "await-click";
 export type GrantPath = "chrome-handle" | "firefox-globals";
 export type GrantState = "granted" | "unsupported" | "denied" | "needs-visit" | "needs-click";
 
-export interface GrantResult { state: GrantState; path?: GrantPath; reason?: string }
+export interface GrantResult {
+  state: GrantState;
+  path?: GrantPath;
+  reason?: string;
+  /** This document called requestStorageAccess for this outcome (its storage principal may have just switched). Absent for cached results and for access-at-load grants. */
+  viaRequest?: true;
+}
 
 export type FrameRequest = FrameRequestBody & { /** Epoch ms stamped by the parent right before posting. */ sentAt?: number };
 

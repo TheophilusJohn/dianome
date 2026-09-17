@@ -115,6 +115,20 @@ now calls the plain `requestStorageAccess()` on Firefox (`{all: true}` elsewhere
 `[dianome frame] requestStorageAccess…` and `grant → <state>` lines to its console, and posts progress notes
 (`waiting-click`, `clicked`, `requesting`) that the demo renders while a permission prompt may be pending.
 
+### Firefox: recreate the frame after a grant; adopt per-site chunks (2026-09-16, not yet deployed)
+
+On the deployed demo, Firefox reported `marker /frame/v1/marker not visible after grant` even after the opt-in visit.
+Audit of the frame: every storage op is refused with `no_grant` before a grant (`FrameServer.need()`), `hello` only
+calls `hasStorageAccess()`, and `globals()` is first read inside `grant()`, so nothing touched `caches` before the
+grant. What can happen is a grant that ran in a document *before* the visit: Firefox fixes that document's storage
+principal at its first grant, so a later grant in the same document still sees the partitioned view (spike 00,
+Firefox T2 note). Changes: the SDK now destroys and recreates the hidden frame after any grant on the
+`firefox-globals` path and runs the marker probe in the fresh document, where `hasStorageAccess()` is already true
+at load and the globals are used without another `requestStorageAccess()`; a Firefox document that already ran a
+grant refuses a second one. After `granted`, the host origin's per-site chunks are copied into the shared cache
+(frame `has` first; per-site copies stay) and reported as `adopted` on the result. Unit-tested; to be re-checked on
+the deployed demo after the frame is republished.
+
 WebGPU note: `navigator.gpu` is absent on `about:blank` (not a secure context) and present on `http://localhost`
 in Playwright Chromium headless (`maxBufferSize` 1073741824), headed (4294967292) and Google Chrome 152 headed
 (4294967292); probed with a one-off script on 2026-09-16.

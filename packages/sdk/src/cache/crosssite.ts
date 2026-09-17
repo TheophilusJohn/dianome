@@ -4,6 +4,7 @@
 // path. See docs/briefs/03-sdk-brief.md and docs/spikes/00-storage-partitioning.md for the browser rules.
 
 import { detectBrowser, type Browser } from "../device";
+import { PerSiteStore } from "./persite";
 import { AbortedError, ChunkError, DianomeError } from "../errors";
 import type { CrossSiteResult } from "../types";
 import { epochNow, frameUrlFor, hopSince, optinUrlFor, parseProgress, parseResponse, sameOrigin, stampSent, transferablesOf, PROTOCOL_VERSION, type FrameErrorCode, type FrameOp, type FrameRequest, type FrameResultOf, type GrantProgress, type GrantResult } from "./protocol";
@@ -216,6 +217,8 @@ export interface FrameOpener {
 
 export interface CrossSiteConnectOptions {
   cdn: string;
+  /** Per-site store whose chunks are adopted into the shared cache after a grant (default: the host origin's; null disables). */
+  perSite?: (() => PerSiteStore | null) | undefined;
   /** Overrides `${cdn}/frame/v1/index.html`. */
   frameUrl?: string | undefined;
   /** True for enableCrossSiteCache(); false for the silent `cache: "auto"` attempt (never prompts, never re-tries a persisted denied/unsupported). */
@@ -273,8 +276,46 @@ async function hiddenClient(url: string, open: FrameOpener): Promise<FrameClient
 }
 
 function dropHidden(url: string, client: FrameClient): void {
-  hiddenClients.delete(url);
+  if (hiddenClients.get(url) !== undefined) hiddenClients.delete(url);
   client.close();
+}
+
+/**
+ * Destroys the hidden frame and opens a fresh document, then runs the silent grant there. Firefox fixes a
+ * document's storage principal at its first grant, so the marker probe is only trustworthy in a document created
+ * after the grant is persisted: one with hasStorageAccess() already true at load (docs/spikes/00, Firefox T2 note).
+ */
+async function freshHiddenGrant(url: string, open: FrameOpener, current: FrameClient, timeoutMs: number): Promise<{ client: FrameClient; g: GrantResult }> {
+  dropHidden(url, current);
+  const client = await hiddenClient(url, open);
+  const g = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
+  return { client, g };
+}
+
+export interface Adopted { chunks: number; bytes: number; skipped: number; /** Adoption stopped early (quota or a frame error); the rest stay per-site only. */ stopped?: string }
+
+/**
+ * Copies the host origin's per-site chunks into the shared cache so a newly granted site does not download again
+ * what it already has. Chunks the frame already holds are skipped; the per-site copies are left in place.
+ */
+export async function adoptPerSite(target: CrossSiteStore, perSite: PerSiteStore | null): Promise<Adopted> {
+  const out: Adopted = { chunks: 0, bytes: 0, skipped: 0 };
+  if (!perSite) return out;
+  let list: { sha: string; bytes: number; modelIds: string[] }[];
+  try { list = await perSite.list(); } catch (e) { out.stopped = `per-site listing failed: ${(e as Error)?.message ?? String(e)}`; return out; }
+  for (const m of list) {
+    try {
+      if (await target.has(m.sha)) { out.skipped++; continue; }
+      const buf = await perSite.get(m.sha);
+      if (!buf) { out.skipped++; continue; } // metadata without a body: nothing to adopt
+      await target.put(m.sha, buf, m.modelIds[0]);
+      out.chunks++; out.bytes += buf.byteLength;
+    } catch (e) {
+      out.stopped = `${(e as Error)?.name ?? "Error"}: ${(e as Error)?.message ?? String(e)}`;
+      break;
+    }
+  }
+  return out;
 }
 
 export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<CrossSiteConnection> {
@@ -293,6 +334,17 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   const url = opts.frameUrl ?? frameUrlFor(opts.cdn);
   const returnUrl = opts.returnUrl ?? (typeof location !== "undefined" ? location.href : "");
   const visitUrl = optinUrlFor(new URL(url).origin, returnUrl);
+  const timeoutMs = opts.timeoutMs ?? DEFAULT_CALL_TIMEOUT_MS;
+  const perSite = opts.perSite ?? (() => (PerSiteStore.supported() ? new PerSiteStore({ cdn: opts.cdn }) : null));
+  /** Granted outcomes pass through here: adopt the per-site chunks and report the count. */
+  const finish = async (conn: CrossSiteConnection): Promise<CrossSiteConnection> => {
+    if (!conn.store) return conn;
+    let ps: PerSiteStore | null = null;
+    try { ps = perSite(); } catch { ps = null; }
+    const adopted = await adoptPerSite(conn.store, ps);
+    ps?.close();
+    return { store: conn.store, result: { ...conn.result, adopted } };
+  };
 
   let client: FrameClient;
   try { client = await hiddenClient(url, open); }
@@ -310,12 +362,17 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   };
 
   let g: GrantResult;
-  try { g = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs: opts.timeoutMs ?? DEFAULT_CALL_TIMEOUT_MS }); }
-  catch (e) { return { store: null, result: { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` } }; }
+  try {
+    g = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
+    if (g.viaRequest && g.path === "firefox-globals" && (g.state === "granted" || g.state === "needs-visit")) {
+      // The document that just ran the grant may still see partitioned storage; a fresh one decides.
+      ({ client, g } = await freshHiddenGrant(url, open, client, timeoutMs));
+    }
+  } catch (e) { return { store: null, result: { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` } }; }
   if (g.state !== "needs-click" || !opts.explicit) {
     const conn = settle(g, client);
     if (g.state === "unsupported" || g.state === "denied") dropHidden(url, client);
-    return conn;
+    return finish(conn);
   }
 
   // The browser wants the click inside the frame: the developer mounts the frame's button somewhere visible.
@@ -327,16 +384,20 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
     try { vg = await visible.call<"grant">({ op: "grant", mode: "await-click" }, { timeoutMs: null, onProgress: mountOpts.onProgress }); }
     catch (e) { visible.close(); return { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` }; }
     if (vg.state !== "granted") { visible.close(); return settle(vg, visible).result; }
-    // Granted in the visible frame. The permission is now persisted, so the hidden frame should be able to grant
-    // silently; if it can, it becomes the store and the button frame goes away. Otherwise keep the visible
-    // frame (collapsed) as the store for this document.
+    // Granted in the visible frame. The permission is now persisted, so a hidden frame should be able to grant
+    // silently; if it can, it becomes the store and the button frame goes away. On the Firefox path the hidden
+    // frame is recreated first (a fresh document, access already true at load). Otherwise keep the visible frame
+    // (collapsed) as the store for this document.
     let conn: CrossSiteConnection;
     try {
-      const hg = await client.call<"grant">({ op: "grant", mode: "silent" });
+      let hg: GrantResult;
+      if (vg.viaRequest && vg.path === "firefox-globals") ({ client, g: hg } = await freshHiddenGrant(url, open, client, timeoutMs));
+      else hg = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
       conn = hg.state === "granted" ? settle(hg, client) : settle(vg, visible);
     } catch { conn = settle(vg, visible); }
     if (conn.store?.client === client) visible.close();
     else { try { (visible.port.iframe as HTMLIFrameElement | undefined)?.setAttribute("style", hiddenStyle); } catch { /* best effort */ } }
+    conn = await finish(conn);
     if (conn.store) opts.onGranted?.(conn.store);
     return conn.result;
   };

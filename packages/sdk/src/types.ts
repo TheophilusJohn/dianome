@@ -107,6 +107,8 @@ export interface CrossSiteResult {
   path?: "chrome-handle" | "firefox-globals";
   /** Why the grant ended the way it did (rejection name and message, marker probe, persisted outcome). */
   reason?: string;
+  /** `granted`: per-site chunks copied into the shared cache (skipped = the frame already had them). */
+  adopted?: { chunks: number; bytes: number; skipped: number; stopped?: string };
 }
 
 export interface CacheStatus {

@@ -54,6 +54,8 @@ class FrameError extends Error {
 export class FrameServer {
   private store: ChunkStore | null = null;
   private grantResult: GrantResult | null = null;
+  /** Firefox: a grant already ran in this document. Its storage principal is fixed now; a retry needs a new document. */
+  private firefoxGrantRan = false;
   private readonly p: FramePlatform;
   private readonly now: () => number;
   private readonly makeStore: NonNullable<FrameServerOptions["makeStore"]>;
@@ -114,15 +116,31 @@ export class FrameServer {
   async grant(mode: GrantMode, progress?: (stage: GrantProgress) => void): Promise<FrameResultOf<"grant">> {
     if (this.store && this.grantResult) return this.grantResult;
     if (!this.p.requestStorageAccess) return this.remember({ state: "unsupported", reason: "document.requestStorageAccess missing" });
-    // The request is the first statement inside the gesture. Chrome: `{all: true}` yields a handle. Firefox: the
-    // plain call (Phase 0 T2), which resolves without a handle; the globals are unpartitioned from then on.
     const rsa = this.p.requestStorageAccess;
     const firefox = this.p.browser === "firefox";
+    if (firefox) {
+      // Firefox fixes the document's storage principal at its first grant; whatever that grant reached (partitioned
+      // or not) is what this document keeps. A second attempt here cannot change it: the parent recreates the frame.
+      if (this.firefoxGrantRan) return this.remember({ state: "needs-visit", reason: "this frame document already ran a grant; recreate the frame and probe again" });
+      this.firefoxGrantRan = true;
+      // A fresh document that already has storage access at load (grant persisted from an earlier document) uses
+      // the unpartitioned globals directly, without calling requestStorageAccess again (Phase 0 note, brief step 3).
+      let hadAccess = false;
+      try { hadAccess = this.p.hasStorageAccess ? await this.p.hasStorageAccess() : false; } catch { hadAccess = false; }
+      if (hadAccess) {
+        this.log("hasStorageAccess() was already true at load: using the globals without requestStorageAccess()");
+        progress?.("requesting");
+        return this.adopt(this.p.globals(), "firefox-globals");
+      }
+    }
+    // The request is the first statement inside the gesture. Chrome: `{all: true}` yields a handle. Firefox: the
+    // plain call (Phase 0 T2), which resolves without a handle; the globals are unpartitioned from then on.
     const attempt = (): Promise<StorageAccessHandle | undefined | void> => {
       progress?.("requesting");
       return firefox ? rsa() : rsa({ all: true });
     };
     let handle: StorageAccessHandle | undefined | void;
+    const via = (r: GrantResult): GrantResult => ({ ...r, viaRequest: true });
     try {
       if (mode === "await-click") {
         progress?.("waiting-click");
@@ -133,17 +151,17 @@ export class FrameServer {
       this.log(`requestStorageAccess(${firefox ? "" : "{all: true}"}) resolved (${mode}): handle=${handle && handle.caches ? "with caches" : String(handle)}`);
     } catch (e) {
       this.log(`requestStorageAccess rejected (${mode}): ${(e as Error)?.name ?? "Error"}: ${(e as Error)?.message ?? String(e)}`);
-      return this.afterRejection(e, mode);
+      return via(await this.afterRejection(e, mode));
     }
     if (handle && handle.caches) {
       const g = this.p.globals();
-      return this.adopt({ caches: handle.caches, indexedDB: handle.indexedDB ?? g.indexedDB, ...(handle.estimate ? { storage: { estimate: handle.estimate } } : g.storage ? { storage: g.storage } : {}) }, "chrome-handle");
+      return via(await this.adopt({ caches: handle.caches, indexedDB: handle.indexedDB ?? g.indexedDB, ...(handle.estimate ? { storage: { estimate: handle.estimate } } : g.storage ? { storage: g.storage } : {}) }, "chrome-handle"));
     }
     // Firefox path: the grant resolved without a handle; the globals are unpartitioned from here on.
     let has = true;
     try { has = this.p.hasStorageAccess ? await this.p.hasStorageAccess() : true; } catch { /* assume granted */ }
-    if (!has) return this.remember({ state: "unsupported", reason: "requestStorageAccess resolved without a handle and hasStorageAccess() is false" });
-    return this.adopt(this.p.globals(), "firefox-globals");
+    if (!has) return via(this.remember({ state: "unsupported", reason: "requestStorageAccess resolved without a handle and hasStorageAccess() is false" }));
+    return via(await this.adopt(this.p.globals(), "firefox-globals"));
   }
 
   private async afterRejection(e: unknown, mode: GrantMode): Promise<GrantResult> {

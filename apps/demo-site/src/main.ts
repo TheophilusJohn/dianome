@@ -40,6 +40,7 @@ function showXsite(r: CrossSiteResult): void {
   if (r.path) lines.push(`grant path: ${r.path}`);
   if (r.reason) lines.push(`reason: ${r.reason}`);
   lines.push(STATE_TEXT[r.state]);
+  if (r.adopted) lines.push(`adopted ${r.adopted.chunks} per-site chunks (${fmtBytes(r.adopted.bytes)}) into the shared cache, ${r.adopted.skipped} already there${r.adopted.stopped ? `; stopped: ${r.adopted.stopped}` : ""}`);
   xsite.textContent = lines.join("\n");
   if (r.state === "needs-visit" && r.visitUrl) {
     const a = document.createElement("a"); a.href = r.visitUrl; a.textContent = r.visitUrl;

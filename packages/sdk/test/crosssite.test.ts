@@ -8,11 +8,13 @@ import { fetchChunks, type ChunkResult } from "../src/fetcher";
 import type { PlanChunk } from "../src/plan";
 import { sha256 } from "../src/sha";
 import { fakePlatform, type FakePlatformOptions } from "./helpers/fakePlatform";
+import { makeStore } from "./helpers/env";
 
 /** An in-memory port wired straight to a FrameServer (what the real iframe does, minus the browser). */
-function loopback(server: FrameServer, o: { delayMs?: number; drop?: (op: string) => boolean; hopDelayMs?: number } = {}): FramePort {
+function loopback(server: FrameServer, o: { delayMs?: number; drop?: (op: string) => boolean; hopDelayMs?: number } = {}): FramePort & { closed: boolean } {
   const handlers = new Set<(data: unknown) => void>();
   return {
+    closed: false,
     post(msg) {
       const receivedAt = epochNow();
       const req = parseRequest(msg);
@@ -28,7 +30,7 @@ function loopback(server: FrameServer, o: { delayMs?: number; drop?: (op: string
       });
     },
     listen(h) { handlers.add(h); return () => handlers.delete(h); },
-    close() { handlers.clear(); },
+    close() { this.closed = true; handlers.clear(); },
   };
 }
 
@@ -224,22 +226,32 @@ describe("CrossSiteStore", () => {
 });
 
 describe("connectCrossSite", () => {
-  function harness(o: FakePlatformOptions = {}) {
+  /**
+   * One fake platform is shared by every frame document unless `perDoc(n)` returns options for the n-th opened
+   * document (1-based), which then gets its own platform: that is how a "spent" Firefox document and a fresh one
+   * are told apart.
+   */
+  function harness(o: FakePlatformOptions = {}, perDoc?: (n: number) => FakePlatformOptions | null) {
     const storage = memStorage();
     const servers: FrameServer[] = [];
+    const clients: FrameClient[] = [];
+    const platforms: Awaited<ReturnType<typeof fakePlatform>>[] = [];
     const opened: { url: string; visible: boolean }[] = [];
-    let fp: Awaited<ReturnType<typeof fakePlatform>>;
+    let shared: Awaited<ReturnType<typeof fakePlatform>> | undefined;
     const openFrame = async (url: string, visibleIn: HTMLElement | null) => {
       opened.push({ url, visible: visibleIn !== null });
-      fp ??= await fakePlatform(o);
+      const own = perDoc?.(opened.length);
+      const fp = own ? await fakePlatform({ ...o, ...own }) : (shared ??= await fakePlatform(o));
+      platforms.push(fp);
       const server = new FrameServer({ platform: fp.platform });
       servers.push(server);
       const c = new FrameClient(loopback(server));
+      clients.push(c);
       await c.call<"hello">({ op: "hello" });
       return c;
     };
-    const base = { cdn: "https://cdn.test", frameUrl: `https://cdn.test/frame/v1/index.html?t=${Math.random()}`, storage, openFrame, returnUrl: "https://site-a.pages.dev/", hasDocument: true, hasStorageAccessApi: true, browser: "chrome" as const };
-    return { storage, opened, servers, base, fp: () => fp };
+    const base = { cdn: "https://cdn.test", frameUrl: `https://cdn.test/frame/v1/index.html?t=${Math.random()}`, storage, openFrame, returnUrl: "https://site-a.pages.dev/", hasDocument: true, hasStorageAccessApi: true, browser: "chrome" as const, perSite: () => null };
+    return { storage, opened, servers, clients, platforms, base, fp: () => shared ?? platforms[0]! };
   }
 
   it("unsupported without the API or on Safari, persisted; auto mode honours persisted denied/unsupported without opening a frame", async () => {
@@ -318,6 +330,94 @@ describe("connectCrossSite", () => {
     expect(r2).toMatchObject({ state: "needs-visit", visitUrl: expect.stringContaining("/frame/v1/optin.html?return="), reason: "NotAllowedError: requestStorageAccess not allowed (permission: unknown)" });
     expect(r2.path).toBeUndefined();
     expect(readPersisted(rej.storage)).toBeNull();
+  });
+
+  it("Firefox: the frame is recreated after a grant and the fresh document decides; a pre-grant status call changes nothing", async () => {
+    // Document 1 (hidden): a grant resolves but the marker is not visible (partitioned view, or no visit yet).
+    // Document 2 (recreated): access already true at load, marker visible.
+    const h = harness({ mode: "firefox", browser: "firefox", silent: "grant" }, (n) => (n === 1 ? { markerInGlobals: false } : { hasStorageAccess: true, silent: "reject" }));
+    // A pre-grant op on the hidden document as soon as it is open: refused, and it must not touch the globals.
+    const inner = h.base.openFrame;
+    const openFrame = async (url: string, visibleIn: HTMLElement | null) => {
+      const c = await inner(url, visibleIn);
+      if (h.opened.length === 1) {
+        await expect(c.call<"status">({ op: "status" })).rejects.toMatchObject({ frameCode: "no_grant" });
+        expect(h.platforms[0]!.globalsTouched).toBe(0);
+      }
+      return c;
+    };
+    const c = await connectCrossSite({ ...h.base, openFrame, browser: "firefox", explicit: true });
+    expect(c.result).toMatchObject({ state: "granted", path: "firefox-globals", adopted: { chunks: 0, bytes: 0, skipped: 0 } });
+    expect(h.opened).toEqual([{ url: h.base.frameUrl, visible: false }, { url: h.base.frameUrl, visible: false }]);
+    expect(h.servers[0]!.granted).toBe(false); // the document that ran the grant saw the partitioned view
+    expect(h.platforms[0]!.rsaCalls).toEqual([{ inGesture: false }]);
+    expect(h.servers[1]!.granted).toBe(true); // the fresh document adopted the globals without requestStorageAccess
+    expect(h.platforms[1]!.rsaCalls).toEqual([]);
+    expect((h.clients[0]!.port as { closed?: boolean }).closed).toBe(true);
+    expect(c.store!.client).toBe(h.clients[1]);
+    expect(readPersisted(h.storage)).toBe("granted");
+    // A later auto connect reuses the recreated hidden frame (already granted): no further documents.
+    const later = await connectCrossSite({ ...h.base, openFrame, browser: "firefox", explicit: false });
+    expect(later.result.state).toBe("granted");
+    expect(h.opened).toHaveLength(2);
+  });
+
+  it("Firefox: a fresh document that still cannot see the marker is needs-visit (no infinite recreation)", async () => {
+    const h = harness({ mode: "firefox", browser: "firefox", silent: "grant", markerInGlobals: false }, (n) => (n === 2 ? { hasStorageAccess: true } : null));
+    const c = await connectCrossSite({ ...h.base, browser: "firefox", explicit: true });
+    expect(c.result).toMatchObject({ state: "needs-visit", path: "firefox-globals", visitUrl: expect.stringContaining("optin.html") });
+    expect(h.opened).toHaveLength(2);
+  });
+
+  it("Firefox mount path: after the in-frame click the hidden frame is recreated and becomes the store", async () => {
+    const h = harness({ mode: "firefox", browser: "firefox" }, (n) => (n === 3 ? { hasStorageAccess: true, silent: "reject" } : null));
+    const c = await connectCrossSite({ ...h.base, browser: "firefox", explicit: true });
+    expect(c.result.state).toBe("needs-click");
+    const pending = c.result.mount!({} as HTMLElement);
+    await new Promise((r) => setTimeout(r, 5));
+    h.fp().click();
+    const r = await pending;
+    expect(r).toMatchObject({ state: "granted", path: "firefox-globals" });
+    expect(h.opened.map((o) => o.visible)).toEqual([false, true, false]);
+    expect(h.servers[2]!.granted).toBe(true);
+    expect((h.clients[0]!.port as { closed?: boolean }).closed).toBe(true);
+    expect((h.clients[1]!.port as { closed?: boolean }).closed).toBe(true); // the button frame goes away
+  });
+
+  it("adopts per-site chunks into the shared cache on grant, skipping what the frame already has and keeping the per-site copies", async () => {
+    const chunks = new Map<string, Uint8Array>();
+    for (let i = 0; i < 3; i++) chunks.set(await sha256(new Uint8Array(100 + i).fill(i + 1)), new Uint8Array(100 + i).fill(i + 1));
+    const [sa, sb, sc] = [...chunks.keys()];
+    const { store: perSite } = makeStore({ cdn: "https://cdn.test" });
+    for (const [sha, b] of chunks) await perSite.put(sha, b.slice().buffer as ArrayBuffer, "model-x");
+    const h = harness({ silent: "grant" });
+    // First grant: nothing per-site yet → adopted 0. Pre-fill the frame with one chunk afterwards.
+    const c0 = await connectCrossSite({ ...h.base, explicit: true, perSite: () => null });
+    expect(c0.result.adopted).toEqual({ chunks: 0, bytes: 0, skipped: 0 });
+    await c0.store!.put(sb!, chunks.get(sb!)!.slice().buffer as ArrayBuffer, "model-x");
+    const c = await connectCrossSite({ ...h.base, explicit: true, perSite: () => perSite });
+    expect(c.result).toMatchObject({ state: "granted", adopted: { chunks: 2, bytes: 100 + 102, skipped: 1 } });
+    for (const sha of [sa!, sb!, sc!]) {
+      expect(await c.store!.has(sha), sha).toBe(true);
+      expect(await perSite.has(sha), sha).toBe(true); // per-site copies stay
+    }
+    expect(new Uint8Array((await c.store!.get(sc!))!)).toEqual(chunks.get(sc!));
+    // Owner metadata carried over: the frame's LRU protects model-x's chunks.
+    expect(await c.store!.status()).toMatchObject({ chunks: 3 });
+    // A third connect adopts nothing new.
+    const again = await connectCrossSite({ ...h.base, explicit: true, perSite: () => perSite });
+    expect(again.result.adopted).toEqual({ chunks: 0, bytes: 0, skipped: 3 });
+  });
+
+  it("adoption stops at quota and reports it; the grant still stands", async () => {
+    const big = new Uint8Array(600).fill(7), small = new Uint8Array(10).fill(8);
+    const { store: perSite } = makeStore({ cdn: "https://cdn.test" });
+    await perSite.put(await sha256(small), small.buffer.slice(0), "m");
+    await perSite.put(await sha256(big), big.buffer.slice(0), "m");
+    const h = harness({ silent: "grant", capacity: 1024 + 100 }); // marker (1 KB) + 100 bytes of room
+    const c = await connectCrossSite({ ...h.base, explicit: true, perSite: () => perSite });
+    expect(c.result.state).toBe("granted");
+    expect(c.result.adopted).toMatchObject({ chunks: 1, bytes: 10, skipped: 0, stopped: expect.stringMatching(/QuotaExceededError/) });
   });
 
   it("needs-visit carries the opt-in URL with the return address; denied is persisted", async () => {
