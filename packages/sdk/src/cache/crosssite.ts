@@ -276,20 +276,8 @@ async function hiddenClient(url: string, open: FrameOpener): Promise<FrameClient
 }
 
 function dropHidden(url: string, client: FrameClient): void {
-  if (hiddenClients.get(url) !== undefined) hiddenClients.delete(url);
+  hiddenClients.delete(url);
   client.close();
-}
-
-/**
- * Destroys the hidden frame and opens a fresh document, then runs the silent grant there. Firefox fixes a
- * document's storage principal at its first grant, so the marker probe is only trustworthy in a document created
- * after the grant is persisted: one with hasStorageAccess() already true at load (docs/spikes/00, Firefox T2 note).
- */
-async function freshHiddenGrant(url: string, open: FrameOpener, current: FrameClient, timeoutMs: number): Promise<{ client: FrameClient; g: GrantResult }> {
-  dropHidden(url, current);
-  const client = await hiddenClient(url, open);
-  const g = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
-  return { client, g };
 }
 
 export interface Adopted { chunks: number; bytes: number; skipped: number; /** Adoption stopped early (quota or a frame error); the rest stay per-site only. */ stopped?: string }
@@ -325,7 +313,9 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   const hasApi = opts.hasStorageAccessApi ?? (typeof document !== "undefined" && typeof document.requestStorageAccess === "function");
   if (!hasApi) { writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", reason: "document.requestStorageAccess missing" } }; }
   const browser = opts.browser ?? detectBrowser(typeof navigator !== "undefined" ? navigator.userAgent : "");
-  if (browser === "safari") { writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", reason: "WebKit keeps storage partitioned after a grant (Phase 0)" } }; }
+  // Only Chrome's storage-access handle reaches unpartitioned storage. Firefox and Safari grant cookie access at
+  // most and keep `caches` partitioned (docs/spikes/00, correction 2026-09-17): no frame, no prompt, no visit.
+  if (browser === "safari" || browser === "firefox") { writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", reason: `${browser} keeps the Cache API partitioned after a Storage Access grant (spike 00 correction)` } }; }
   if (!opts.explicit) {
     const p = readPersisted(storage);
     if (p === "denied" || p === "unsupported") return { store: null, result: { state: p, reason: "persisted" } };
@@ -362,13 +352,8 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   };
 
   let g: GrantResult;
-  try {
-    g = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
-    if (g.viaRequest && g.path === "firefox-globals" && (g.state === "granted" || g.state === "needs-visit")) {
-      // The document that just ran the grant may still see partitioned storage; a fresh one decides.
-      ({ client, g } = await freshHiddenGrant(url, open, client, timeoutMs));
-    }
-  } catch (e) { return { store: null, result: { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` } }; }
+  try { g = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs }); }
+  catch (e) { return { store: null, result: { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` } }; }
   if (g.state !== "needs-click" || !opts.explicit) {
     const conn = settle(g, client);
     if (g.state === "unsupported" || g.state === "denied") dropHidden(url, client);
@@ -384,15 +369,12 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
     try { vg = await visible.call<"grant">({ op: "grant", mode: "await-click" }, { timeoutMs: null, onProgress: mountOpts.onProgress }); }
     catch (e) { visible.close(); return { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` }; }
     if (vg.state !== "granted") { visible.close(); return settle(vg, visible).result; }
-    // Granted in the visible frame. The permission is now persisted, so a hidden frame should be able to grant
-    // silently; if it can, it becomes the store and the button frame goes away. On the Firefox path the hidden
-    // frame is recreated first (a fresh document, access already true at load). Otherwise keep the visible frame
+    // Granted in the visible frame. The permission is now persisted, so the hidden frame should be able to grant
+    // silently; if it can, it becomes the store and the button frame goes away. Otherwise keep the visible frame
     // (collapsed) as the store for this document.
     let conn: CrossSiteConnection;
     try {
-      let hg: GrantResult;
-      if (vg.viaRequest && vg.path === "firefox-globals") ({ client, g: hg } = await freshHiddenGrant(url, open, client, timeoutMs));
-      else hg = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
+      const hg = await client.call<"grant">({ op: "grant", mode: "silent" }, { timeoutMs });
       conn = hg.state === "granted" ? settle(hg, client) : settle(vg, visible);
     } catch { conn = settle(vg, visible); }
     if (conn.store?.client === client) visible.close();

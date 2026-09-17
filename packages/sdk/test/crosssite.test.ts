@@ -254,12 +254,18 @@ describe("connectCrossSite", () => {
     return { storage, opened, servers, clients, platforms, base, fp: () => shared ?? platforms[0]! };
   }
 
-  it("unsupported without the API or on Safari, persisted; auto mode honours persisted denied/unsupported without opening a frame", async () => {
+  it("unsupported without the API, on Safari and on Firefox (no frame, no prompt, no visit), persisted; auto mode honours persisted denied/unsupported without opening a frame", async () => {
     const h = harness();
     expect((await connectCrossSite({ ...h.base, explicit: true, hasStorageAccessApi: false })).result.state).toBe("unsupported");
     expect(readPersisted(h.storage)).toBe("unsupported");
     writePersisted(null, h.storage);
     expect((await connectCrossSite({ ...h.base, explicit: true, browser: "safari" })).result.state).toBe("unsupported");
+    expect(readPersisted(h.storage)).toBe("unsupported");
+    writePersisted(null, h.storage);
+    const ff = await connectCrossSite({ ...h.base, explicit: true, browser: "firefox" });
+    expect(ff.result).toMatchObject({ state: "unsupported", reason: expect.stringMatching(/firefox keeps the Cache API partitioned/) });
+    expect(ff.result.visitUrl).toBeUndefined();
+    expect(ff.result.mount).toBeUndefined();
     expect(readPersisted(h.storage)).toBe("unsupported");
     expect(h.opened).toHaveLength(0);
     writePersisted("denied", h.storage);
@@ -310,78 +316,12 @@ describe("connectCrossSite", () => {
     expect(later.result.state).toBe("granted");
   });
 
-  it("Firefox: the whole flow uses the plain call and reports path firefox-globals; a rejection in the gesture is needs-visit with the reason", async () => {
-    const ok = harness({ mode: "firefox", browser: "firefox" });
-    const c1 = await connectCrossSite({ ...ok.base, browser: "firefox", explicit: true });
-    expect(c1.result.state).toBe("needs-click");
-    const pending = c1.result.mount!({} as HTMLElement);
-    await new Promise((r) => setTimeout(r, 5));
-    ok.fp().click();
-    const r1 = await pending;
-    expect(r1).toMatchObject({ state: "granted", path: "firefox-globals" });
-    expect(ok.fp().rsaCalls.every((c) => c.all === undefined)).toBe(true);
-
-    const rej = harness({ mode: "firefox", browser: "firefox", gesture: "reject", permission: "throws" });
-    const c2 = await connectCrossSite({ ...rej.base, browser: "firefox", explicit: true });
-    const p2 = c2.result.mount!({} as HTMLElement);
-    await new Promise((r) => setTimeout(r, 5));
-    rej.fp().click();
-    const r2 = await p2;
-    expect(r2).toMatchObject({ state: "needs-visit", visitUrl: expect.stringContaining("/frame/v1/optin.html?return="), reason: "NotAllowedError: requestStorageAccess not allowed (permission: unknown)" });
-    expect(r2.path).toBeUndefined();
-    expect(readPersisted(rej.storage)).toBeNull();
-  });
-
-  it("Firefox: the frame is recreated after a grant and the fresh document decides; a pre-grant status call changes nothing", async () => {
-    // Document 1 (hidden): a grant resolves but the marker is not visible (partitioned view, or no visit yet).
-    // Document 2 (recreated): access already true at load, marker visible.
-    const h = harness({ mode: "firefox", browser: "firefox", silent: "grant" }, (n) => (n === 1 ? { markerInGlobals: false } : { hasStorageAccess: true, silent: "reject" }));
-    // A pre-grant op on the hidden document as soon as it is open: refused, and it must not touch the globals.
-    const inner = h.base.openFrame;
-    const openFrame = async (url: string, visibleIn: HTMLElement | null) => {
-      const c = await inner(url, visibleIn);
-      if (h.opened.length === 1) {
-        await expect(c.call<"status">({ op: "status" })).rejects.toMatchObject({ frameCode: "no_grant" });
-        expect(h.platforms[0]!.globalsTouched).toBe(0);
-      }
-      return c;
-    };
-    const c = await connectCrossSite({ ...h.base, openFrame, browser: "firefox", explicit: true });
-    expect(c.result).toMatchObject({ state: "granted", path: "firefox-globals", adopted: { chunks: 0, bytes: 0, skipped: 0 } });
-    expect(h.opened).toEqual([{ url: h.base.frameUrl, visible: false }, { url: h.base.frameUrl, visible: false }]);
-    expect(h.servers[0]!.granted).toBe(false); // the document that ran the grant saw the partitioned view
-    expect(h.platforms[0]!.rsaCalls).toEqual([{ inGesture: false }]);
-    expect(h.servers[1]!.granted).toBe(true); // the fresh document adopted the globals without requestStorageAccess
-    expect(h.platforms[1]!.rsaCalls).toEqual([]);
+  it("a frame grant that resolves without a handle ends unsupported (persisted) and the hidden frame is dropped", async () => {
+    const h = harness({ mode: "firefox", silent: "grant" });
+    const c = await connectCrossSite({ ...h.base, explicit: true });
+    expect(c.result).toMatchObject({ state: "unsupported", reason: expect.stringMatching(/without a storage-access handle/) });
+    expect(readPersisted(h.storage)).toBe("unsupported");
     expect((h.clients[0]!.port as { closed?: boolean }).closed).toBe(true);
-    expect(c.store!.client).toBe(h.clients[1]);
-    expect(readPersisted(h.storage)).toBe("granted");
-    // A later auto connect reuses the recreated hidden frame (already granted): no further documents.
-    const later = await connectCrossSite({ ...h.base, openFrame, browser: "firefox", explicit: false });
-    expect(later.result.state).toBe("granted");
-    expect(h.opened).toHaveLength(2);
-  });
-
-  it("Firefox: a fresh document that still cannot see the marker is needs-visit (no infinite recreation)", async () => {
-    const h = harness({ mode: "firefox", browser: "firefox", silent: "grant", markerInGlobals: false }, (n) => (n === 2 ? { hasStorageAccess: true } : null));
-    const c = await connectCrossSite({ ...h.base, browser: "firefox", explicit: true });
-    expect(c.result).toMatchObject({ state: "needs-visit", path: "firefox-globals", visitUrl: expect.stringContaining("optin.html") });
-    expect(h.opened).toHaveLength(2);
-  });
-
-  it("Firefox mount path: after the in-frame click the hidden frame is recreated and becomes the store", async () => {
-    const h = harness({ mode: "firefox", browser: "firefox" }, (n) => (n === 3 ? { hasStorageAccess: true, silent: "reject" } : null));
-    const c = await connectCrossSite({ ...h.base, browser: "firefox", explicit: true });
-    expect(c.result.state).toBe("needs-click");
-    const pending = c.result.mount!({} as HTMLElement);
-    await new Promise((r) => setTimeout(r, 5));
-    h.fp().click();
-    const r = await pending;
-    expect(r).toMatchObject({ state: "granted", path: "firefox-globals" });
-    expect(h.opened.map((o) => o.visible)).toEqual([false, true, false]);
-    expect(h.servers[2]!.granted).toBe(true);
-    expect((h.clients[0]!.port as { closed?: boolean }).closed).toBe(true);
-    expect((h.clients[1]!.port as { closed?: boolean }).closed).toBe(true); // the button frame goes away
   });
 
   it("adopts per-site chunks into the shared cache on grant, skipping what the frame already has and keeping the per-site copies", async () => {

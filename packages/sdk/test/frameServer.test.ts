@@ -49,76 +49,34 @@ describe("FrameServer grant", () => {
     }
   });
 
-  it("Firefox: plain requestStorageAccess() as the first statement of the gesture, no handle; the store is built on the globals only after the grant", async () => {
-    const fp = await fakePlatform({ mode: "firefox" });
+  it("a grant that resolves WITHOUT a handle (Firefox, Safari) is unsupported: cookie access only, caches stays partitioned", async () => {
+    const fp = await fakePlatform({ mode: "firefox", silent: "grant" });
     const s = new FrameServer({ platform: fp.platform });
-    expect(fp.globalsTouched).toBe(0);
-    const stages: string[] = [];
-    const p = s.handle(req({ op: "grant", mode: "await-click" }), undefined, (st) => stages.push(st));
-    await new Promise((r) => setTimeout(r, 2));
-    expect(stages).toEqual(["waiting-click"]);
-    fp.click();
-    expect(await p).toMatchObject({ ok: true, result: { state: "granted", path: "firefox-globals" } });
-    expect(fp.rsaCalls).toEqual([{ inGesture: true }]); // no {all: true} on Firefox
-    expect(stages).toEqual(["waiting-click", "clicked", "requesting"]);
-    expect(fp.globalsTouched).toBe(1);
-    expect(fp.logs.some((l) => /requestStorageAccess\(\) resolved \(await-click\)/.test(l))).toBe(true);
-    expect(fp.logs.at(-1)).toMatch(/grant → granted via firefox-globals/);
-    const sha = await sha256(new Uint8Array([9]));
-    await s.handle(req({ op: "put", sha, buf: new Uint8Array([9]).buffer }));
-    expect(fp.globalCaches.caches.get(CACHE_NAME)!.entries.has(`https://cdn.test/chunks/${sha}`)).toBe(true);
-    expect(fp.handleCaches.used).toBe(1024); // only the marker
+    expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ ok: true, result: { state: "unsupported", reason: expect.stringMatching(/without a storage-access handle/) } });
+    expect(fp.rsaCalls).toEqual([{ all: true, inGesture: false }]); // always the {all: true} form: a handle or nothing
+    expect(fp.globalsTouched).toBe(0); // the frame's own globals are never used for chunk storage
+    expect(s.granted).toBe(false);
+    expect(await s.handle(req({ op: "status" }))).toMatchObject({ ok: false, code: "no_grant" });
+    const fp2 = await fakePlatform({ mode: "firefox" });
+    const s2 = new FrameServer({ platform: fp2.platform });
+    const p = s2.handle(req({ op: "grant", mode: "await-click" }));
+    fp2.click();
+    expect(await p).toMatchObject({ result: { state: "unsupported" } });
+    expect(fp2.logs.at(-1)).toMatch(/grant → unsupported: requestStorageAccess resolved without a storage-access handle/);
   });
 
-  it("Firefox: hasStorageAccess() already true at load → globals used directly, requestStorageAccess never called", async () => {
-    const fp = await fakePlatform({ mode: "firefox", silent: "reject", hasStorageAccess: true });
-    const s = new FrameServer({ platform: fp.platform });
-    expect(await s.handle(req({ op: "hello" }))).toMatchObject({ result: { hasStorageAccess: true } });
-    expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ ok: true, result: { state: "granted", path: "firefox-globals" } });
-    expect(fp.rsaCalls).toEqual([]);
-    expect(fp.logs.some((l) => /already true at load/.test(l))).toBe(true);
-  });
-
-  it("Firefox: a document that already ran a grant refuses a second one (needs-visit, recreate the frame)", async () => {
-    const fp = await fakePlatform({ mode: "firefox", silent: "grant", markerInGlobals: false });
-    const s = new FrameServer({ platform: fp.platform });
-    expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "needs-visit", path: "firefox-globals" } });
-    // The marker appears later (opt-in visit in another tab); this document still cannot see it.
-    expect(await s.handle(req({ op: "grant", mode: "silent" }, 2))).toMatchObject({ result: { state: "needs-visit", reason: expect.stringMatching(/already ran a grant; recreate the frame/) } });
-    expect(fp.rsaCalls).toHaveLength(1);
-    // Chrome documents may retry (silent reject → click).
-    const ch = await fakePlatform({ mode: "chrome" });
-    const cs = new FrameServer({ platform: ch.platform });
-    await cs.handle(req({ op: "grant", mode: "silent" }));
-    const p = cs.handle(req({ op: "grant", mode: "await-click" }, 2));
-    ch.click();
-    expect(await p).toMatchObject({ result: { state: "granted" } });
-  });
-
-  it("Firefox rejection shape: NotAllowedError inside the gesture with no permissions API → needs-visit (no path), reason carries the rejection", async () => {
-    // Firefox rejects requestStorageAccess() when the user has not interacted with the origin top-level (or dismissed
-    // its prompt) and its permissions.query has no "storage-access" name: the frame sees a TypeError from query().
-    const fp = await fakePlatform({ mode: "firefox", gesture: "reject", permission: "throws" });
+  it("rejection shape without a permissions API: NotAllowedError inside the gesture → needs-visit (no path), reason carries the rejection", async () => {
+    const fp = await fakePlatform({ mode: "chrome", gesture: "reject", permission: "throws" });
     const s = new FrameServer({ platform: fp.platform });
     const p = s.handle(req({ op: "grant", mode: "await-click" }));
     fp.click();
     const res = await p;
-    expect(res).toEqual({ v: 1, id: 1, ok: true, ms: expect.any(Number), result: { state: "needs-visit", reason: "NotAllowedError: requestStorageAccess not allowed (permission: unknown)", viaRequest: true } });
-    expect((res as { result: { path?: string } }).result.path).toBeUndefined();
-    expect(fp.rsaCalls).toEqual([{ inGesture: true }]);
+    expect(res).toEqual({ v: 1, id: 1, ok: true, ms: expect.any(Number), result: { state: "needs-visit", reason: "NotAllowedError: requestStorageAccess not allowed (permission: unknown)" } });
+    expect(fp.rsaCalls).toEqual([{ all: true, inGesture: true }]);
     expect(s.granted).toBe(false);
     expect(fp.logs).toEqual(expect.arrayContaining([expect.stringMatching(/requestStorageAccess rejected \(await-click\): NotAllowedError/), expect.stringMatching(/grant → needs-visit: NotAllowedError/)]));
-    // The silent attempt rejecting the same way asks for the click first.
-    const fp2 = await fakePlatform({ mode: "firefox", gesture: "reject", permission: "throws" });
+    const fp2 = await fakePlatform({ mode: "chrome", gesture: "reject", permission: "throws" });
     expect(await new FrameServer({ platform: fp2.platform }).handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "needs-click", reason: "NotAllowedError: requestStorageAccess not allowed" } });
-    expect(fp2.rsaCalls).toEqual([{ inGesture: false }]);
-  });
-
-  it("Firefox: a grant that resolves but cannot see the marker (no top-level visit yet) → needs-visit via firefox-globals", async () => {
-    const fp = await fakePlatform({ mode: "firefox", silent: "grant", markerInGlobals: false });
-    const s = new FrameServer({ platform: fp.platform });
-    expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "needs-visit", path: "firefox-globals", reason: expect.stringContaining("marker /frame/v1/marker not visible") } });
-    expect(s.granted).toBe(false);
   });
 
   it("silent grants report only the requesting stage", async () => {
@@ -142,8 +100,8 @@ describe("FrameServer grant", () => {
     expect(await s.handle(req({ op: "status" }))).toMatchObject({ ok: false, code: "no_grant" });
   });
 
-  it("every storage op before a grant answers no_grant without touching caches, indexedDB or storage (Firefox structural rule)", async () => {
-    const fp = await fakePlatform({ mode: "firefox" });
+  it("every storage op before a grant answers no_grant without touching caches, indexedDB or storage (structural rule)", async () => {
+    const fp = await fakePlatform({ mode: "chrome" });
     const s = new FrameServer({ platform: fp.platform });
     const sha = "a".repeat(64);
     for (const r of [req({ op: "hello" }), req({ op: "get", sha }), req({ op: "has", sha }), req({ op: "status" }), req({ op: "evict", shas: [sha] }), req({ op: "evictModel", modelId: "m" }), req({ op: "clear" }), req({ op: "fetch", sha, bytes: 1, modelId: "m" }), req({ op: "put", sha, buf: new ArrayBuffer(1) })]) {
@@ -155,8 +113,8 @@ describe("FrameServer grant", () => {
     // The grant afterwards is the first thing that reaches the globals.
     const p = s.handle(req({ op: "grant", mode: "await-click" }, 99));
     fp.click();
-    expect(await p).toMatchObject({ result: { state: "granted", path: "firefox-globals" } });
-    expect(fp.globalsTouched).toBe(1);
+    expect(await p).toMatchObject({ result: { state: "granted", path: "chrome-handle" } });
+    expect(fp.globalsTouched).toBe(1); // only for indexedDB/estimate fallbacks next to the handle
   });
 });
 

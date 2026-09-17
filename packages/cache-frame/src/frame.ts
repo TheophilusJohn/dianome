@@ -5,7 +5,6 @@
 // Rules enforced here (Phase 0): never post to "*"; accept messages only from window.parent and only from one
 // origin; touch `caches`/`indexedDB` only after the grant (FrameServer constructs the store inside grant()).
 
-import { detectBrowser } from "../../sdk/src/device";
 import { FrameServer, type FramePlatform, type StorageAccessHandle } from "../../sdk/src/cache/frameServer";
 import { epochNow, parseRequest, sameOrigin, stampSent, transferablesOf, versionMismatchId, PROTOCOL_VERSION, type FrameProgress, type FrameResponse, type GrantResult } from "../../sdk/src/cache/protocol";
 
@@ -58,7 +57,6 @@ function showOutcome(g: GrantResult): void {
 
 const platform: FramePlatform = {
   origin: location.origin,
-  browser: detectBrowser(navigator.userAgent),
   log: (m) => console.log(m),
   ...(typeof document.requestStorageAccess === "function"
     ? { requestStorageAccess: (opts?: { all: true }) => (document.requestStorageAccess as (o?: unknown) => Promise<StorageAccessHandle | undefined>)(opts) }

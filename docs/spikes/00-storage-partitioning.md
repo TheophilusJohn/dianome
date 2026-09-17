@@ -10,7 +10,7 @@ Payload 20 MB. Download from Cloudflare measured 1.1–8.7 s across runs (roughl
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Chrome 152.0.7977.84 | network 4256 ms | network 3075 ms | cache 21 ms | transferSize=20971820, 3811 ms | No | 1 click on B (+ one-time Enable on CDN) | Yes — T3 cache 27 ms after full quit, no Enable, no prompt |
 | Chrome (3PC blocked, Incognito) | network 3486 ms | network 3581 ms | cache 21 ms | transferSize=20971820, 2535 ms | Yes, once ("Allow embedded content?"); not repeated on reload | 1 click + Allow | Not testable in Incognito |
-| Firefox 152.0 | network 8694 ms | cache 78 ms | n/a — resolves without a handle | transferSize=20971820, 1114 ms | No (auto-granted after first-party visit) | 1 click | Not tested |
+| Firefox 152.0 | network 8694 ms | network (see correction) | n/a — resolves without a handle | transferSize=20971820, 1114 ms | No (auto-granted after first-party visit) | 1 click | Not tested |
 | Safari 26.5 | network 4256 ms | network 2275 ms (with grant, empty partitioned store) | n/a — prompts, then resolves without a handle | unreliable: transferSize=0 but 3351 ms (network); Safari does not expose transferSize cross-origin | Yes, once | 1 click + Allow, and the call must be synchronous in the gesture | n/a — no cross-site hit |
 
 Cells for T1–T3: `cache <ms>` or `network <ms>` or `error: <message>`. T4: `transferSize=<bytes> <ms>`.
@@ -33,7 +33,7 @@ hardwareConcurrency: Chrome 10, Firefox 10, Safari 8 (capped). maxComputeWorkgro
 
 ## Decision
 
-Green: cross-site cache hit on B after a one-time opt-in plus one click in Chrome (via the `{all: true}` handle) and Firefox (via plain `requestStorageAccess()`); Safari does not unpartition the Cache API and gets per-site caching only.
+Yellow: Chrome only (corrected 2026-09-17, see below). Cross-site cache hit on B after a one-time opt-in plus one click in Chrome (via the `{all: true}` handle); Firefox and Safari do not unpartition the Cache API through Storage Access and get per-site caching only. The original reading was Green with Firefox via plain `requestStorageAccess()`; the Firefox hit was a confounded partitioned copy.
 Consequence for Phase 3: build both paths in the SDK. Cross-site: Chrome handle path, Firefox plain-SAA path, feature-detected. Per-site: Cache API on the developer's origin, always present, and the only path on Safari (and iOS).
 Planner inputs available on every browser: `maxBufferSize`, `maxStorageBufferBindingSize`, `maxComputeWorkgroupStorageSize`, `hardwareConcurrency`, `navigator.storage.estimate()`. `deviceMemory` is Chrome-only. Adapter vendor/architecture is usable in Chrome, empty in Firefox, uninformative in Safari.
 
@@ -50,3 +50,25 @@ Yellow = hit only with a prompt on every site. Red = no hit anywhere. Yellow and
 - Chrome Incognito caps storage at ~900 MB in memory and `estimate()` does not report it; the SDK should treat a `QuotaExceededError` during a write as a signal to fall back to streaming without caching, not as a fatal error.
 - Firefox's 1 GiB `maxBufferSize` is the floor for any single weight buffer; per-layer chunks stay well under it, but a whole-model buffer would not.
 - Resource Timing `transferSize` is not exposed cross-origin in Safari even with `Timing-Allow-Origin`; do not use it for cache-hit telemetry there.
+
+## Correction (2026-09-17)
+
+Firefox does **not** unpartition the Cache API through the Storage Access API. Measured on the production origins
+with the frame's diagnostic page (`cdn.dianome.dev/frame/v1/diag.html`, embedded by `dianome-demo-a.pages.dev/?diag=1`;
+Phase 0 T2 in that document, nothing touched `caches` before the click), Firefox, fresh profile, after the top-level
+opt-in visit that writes the marker. Output as reported by Theo:
+
+```
+requestStorageAccess() resolves
+hasStorageAccess() true
+0 keys in dianome-v1
+marker not visible
+```
+
+So the grant is real (cookie access), but `caches` in the frame stays the partitioned copy: the marker written
+top-level on the same origin is invisible, and the store the SDK fills through that frame is the (site A, cdn)
+partition, not shared with site B. The Phase 0 Firefox T2 "cache 78 ms" was a confounded partitioned copy, not a
+cross-site hit (the harness could not tell the two apart); the row above now reads "network (see correction)". The decision is Yellow: Chrome only. Chrome's `requestStorageAccess({all: true})` handle remains the
+only path to unpartitioned storage; Firefox joins Safari on per-site caching, and the SDK reports `unsupported` on
+Firefox without prompting or visiting.
+

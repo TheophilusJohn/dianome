@@ -2,7 +2,7 @@
 
 Progressive, verified, cached model weights in the browser. `load(modelId)` streams a model's chunks from
 `cdn.dianome.dev`, checks every chunk's SHA-256, caches them per site everywhere (Cache API on your origin) and
-across sites on Chrome and Firefox after a one-time opt-in, and posts one anonymous load report.
+across sites on Chrome after a one-time opt-in, and posts one anonymous load report.
 
 ESM only, types included, zero runtime dependencies.
 
@@ -42,9 +42,10 @@ one raw entry. See `dianome/transformersjs` and `dianome/webllm` for the adapter
 
 ## Shared (cross-site) cache and what to tell your users
 
-By default a model is cached per site: a second site on a different domain downloads it again. Chrome and
-Firefox can share one cache across sites through a frame on `cdn.dianome.dev` after the user opts in. Ask from a
-click handler:
+By default a model is cached per site: a second site on a different domain downloads it again. Chrome can share
+one cache across sites through a frame on `cdn.dianome.dev` after the user opts in (Firefox and Safari grant
+cookie access at most and keep the Cache API partitioned, so the SDK reports `unsupported` there without prompting).
+Ask from a click handler:
 
 ```ts
 button.onclick = async () => {
@@ -61,21 +62,21 @@ visit to `cdn.dianome.dev` (`needs-visit`). Both outcomes persist, so later visi
 with `cache: "auto"`.
 
 If your page sets `Cross-Origin-Embedder-Policy`, the frame must carry COEP too; the deployed frame does (see
-`scripts/publish-frame.sh`). The frame is never needed on Safari, where the SDK reports `unsupported` without
-loading it.
+`scripts/publish-frame.sh`). The frame is never loaded on Firefox or Safari, where the SDK reports `unsupported`
+up front.
 
 Suggested wording for your users: *"Enable the shared model cache to keep downloaded models on this device and
 reuse them on other sites that use Dianome. Nothing about you is stored; only model files are shared, and you
 can clear them from your browser's site data for cdn.dianome.dev at any time."*
 
-## Browser support (measured in Phase 0, `docs/spikes/00-storage-partitioning.md`)
+## Browser support (measured in Phase 0 and corrected 2026-09-17, `docs/spikes/00-storage-partitioning.md`)
 
 | Browser | Per-site cache | Cross-site cache | Prompt |
 | --- | --- | --- | --- |
 | Chrome (cookies allowed) | yes | yes, via `requestStorageAccess({all: true})` | none after the one-time visit |
 | Chrome (third-party cookies blocked) | yes | yes | one "Allow embedded content?" prompt per site, remembered |
-| Firefox | yes | yes, via `requestStorageAccess()` | none after the one-time visit |
-| Safari / iOS | yes | no (storage stays partitioned; the SDK reports `unsupported`) | n/a |
+| Firefox | yes | no (a Storage Access grant leaves the Cache API partitioned; the SDK reports `unsupported`) | none |
+| Safari / iOS | yes | no (same; the SDK reports `unsupported`) | none |
 
 ## Quota
 

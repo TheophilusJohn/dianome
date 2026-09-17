@@ -140,15 +140,19 @@ follow the visit link if shown, click the in-frame button, load the model. Open 
 (`dianome-demo-b.pages.dev`) in the same browser profile, click "Enable shared cache", click the in-frame
 button if shown, load the model. Record the source breakdown the page prints.
 
+Filled from Theo's runs on the deployed sites on 2026-09-17 (demo pages' status text; "hop median" is the demo's
+`postMessage hop median` per chunk):
+
 | Browser (version) | A: enable result | A: load source | B: enable result | B: load source | B: ms | Prompt shown? | Clicks needed on B | Persists after restart |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Chrome | | | | | | | | |
+| Chrome | granted | network, 22.91 s | granted | cross-site-cache, 0.81 s, hop median 21.7 ms | 810 | | | |
 | Chrome (3PC blocked) | | | | | | | | |
-| Firefox | | | | | | | | |
-| Safari | | | | | | | | |
+| Firefox | unsupported (diag: `requestStorageAccess()` resolves, `hasStorageAccess()` true, 0 keys in dianome-v1, marker not visible) | network | unsupported | per-site-cache on the second load | | none | none | n/a |
+| Safari | unsupported | network | unsupported | per-site-cache on the second load | | none | none | n/a |
 
-Expected from Phase 0: Chrome and Firefox show `cross-site-cache` on B; Safari reports `unsupported` and loads
-`network` on B (per-site only).
+Outcome: cross-site is Chrome-only. Firefox does not unpartition the Cache API through Storage Access (the Phase 0
+Firefox hit was a confounded partitioned copy; see the correction appended to `docs/spikes/00-storage-partitioning.md`).
+The SDK now reports `unsupported` on Firefox without loading the frame, prompting, or asking for the visit.
 
 ## Adapters: second-run network counts
 

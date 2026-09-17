@@ -5,12 +5,12 @@ import { CACHE_NAME, chunkUrl } from "../../src/cache/types";
 import { markerUrlFor } from "../../src/cache/protocol";
 import { FakeCacheStorage } from "./fakeCaches";
 
+/** "firefox": requestStorageAccess resolves without a handle (also what Safari does after its prompt). */
 export type Mode = "chrome" | "firefox" | "no-api";
 
 export interface FakePlatformOptions {
   mode?: Mode;
-  /** Browser family handed to the platform (default: "chrome" for mode chrome, "firefox" for mode firefox). */
-  browser?: "chrome" | "firefox" | "safari" | "other";
+
   origin?: string;
   /** What requestStorageAccess does when called without a gesture (silent). Default: reject NotAllowedError. */
   silent?: "grant" | "reject";
@@ -65,7 +65,6 @@ export async function fakePlatform(o: FakePlatformOptions = {}): Promise<FakePla
     },
     platform: {
       origin,
-      browser: o.browser ?? (mode === "firefox" ? "firefox" : "chrome"),
       log: (m) => { self.logs.push(m); },
       hasStorageAccess: async () => granted || (o.hasStorageAccess ?? false),
       permissionState: async () => { if (o.permission === "throws") throw new TypeError("no permissions API"); return o.permission ?? "prompt"; },

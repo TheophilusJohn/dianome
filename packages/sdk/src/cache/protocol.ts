@@ -21,15 +21,14 @@ export const MARKER_PATH = "/frame/v1/marker";
 export const MARKER_BYTES = 1024;
 
 export type GrantMode = "silent" | "await-click";
-export type GrantPath = "chrome-handle" | "firefox-globals";
+/** The only path to unpartitioned storage: Chrome's storage-access handle (Firefox and Safari keep `caches` partitioned after a grant). */
+export type GrantPath = "chrome-handle";
 export type GrantState = "granted" | "unsupported" | "denied" | "needs-visit" | "needs-click";
 
 export interface GrantResult {
   state: GrantState;
   path?: GrantPath;
   reason?: string;
-  /** This document called requestStorageAccess for this outcome (its storage principal may have just switched). Absent for cached results and for access-at-load grants. */
-  viaRequest?: true;
 }
 
 export type FrameRequest = FrameRequestBody & { /** Epoch ms stamped by the parent right before posting. */ sentAt?: number };
