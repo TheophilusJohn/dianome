@@ -1,0 +1,32 @@
+[project]
+name = "dianome-server"
+version = "0.1.0"
+description = "Phase 4: split-inference server (blocks N..L-1 from incoming hidden states), cost harness, privacy probes, Phase 5a fixtures"
+requires-python = ">=3.11"
+dependencies = [
+  "torch>=2.4",
+  "transformers==4.57.1",
+  "safetensors>=0.4",
+  "numpy>=1.26",
+  "websockets>=13",
+  "orjson>=3.10",
+  "datasets>=3.0",
+  "click>=8.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24"]
+
+[project.scripts]
+dianome-server = "dianome_server.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["dianome_server*", "bench*", "probes*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

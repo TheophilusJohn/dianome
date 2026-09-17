@@ -1,0 +1,7 @@
+{
+  "val_tokens": 10240,
+  "val_tokens_seen_in_train": 8399,
+  "val_seen_fraction": 0.82021484375,
+  "train_types": 6731,
+  "val_types": 2637
+}

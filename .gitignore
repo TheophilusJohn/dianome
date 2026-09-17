@@ -16,3 +16,9 @@ packages/sdk/test-results/
 packages/sdk/playwright-report/
 mlc-export/
 packages/sdk/*.tgz
+server/.venv/
+fixtures/**/*.npy
+server/probes/data/
+server/bench/results/*-detail.csv
+server/**/results/*.log
+server/.pytest_cache/

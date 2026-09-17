@@ -1,0 +1,7 @@
+{
+  "gpu": "FILL ME (e.g. NVIDIA A100 80GB)",
+  "usd_per_hour": null,
+  "source": "FILL ME (URL of the price page)",
+  "retrieved": "YYYY-MM-DD",
+  "_note": "Theo fills the real rate before the Phase 7 GPU run. With usd_per_hour null the harness still measures gpu_seconds_per_token and the cost(N)/cost(0) ratio but leaves cost_per_1M_tokens empty. On the Mac there is no meaningful hourly rate; the MPS numbers are Mac-specific."
+}

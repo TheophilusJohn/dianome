@@ -1,0 +1,45 @@
+{
+  "tokenizer": "Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775",
+  "prompts": [
+    {
+      "id": "p0",
+      "tokens": 86,
+      "text": "Explain, in plain language, why a transformer language model can be split between a browser and a server at any layer boundary, and what the client must send across the network for the server to continue. Say what the server must keep between steps, why the split point changes how much the server has to compute, and why the first and last layers are different from the ones in the middle. Keep the answer short and concrete."
+    },
+    {
+      "id": "p1",
+      "tokens": 64,
+      "text": "Write a short product description for a mechanical keyboard aimed at programmers. Mention the switch type, the layout, the build material, the connectivity options, and the warranty. The tone should be confident but not salesy, and the description should fit in a single paragraph that a shop could paste onto a listing page without editing."
+    },
+    {
+      "id": "p2",
+      "tokens": 108,
+      "text": "A small bakery in a coastal town has been losing customers to a new chain store that opened across the street. The owner has thirty years of experience, a loyal but aging clientele, and no online presence. She has about two thousand dollars to spend and three months before the busy summer season. Lay out a practical plan for those three months: what she should change first, what she should leave alone, how she should measure whether it is working, and what she should do if the first month shows no improvement at all. Number the steps."
+    },
+    {
+      "id": "p3",
+      "tokens": 153,
+      "text": "You are given a log file from a web server. Each line has a timestamp, a client address, an HTTP method, a path, a status code, and a response size in bytes. Describe an approach for finding the ten paths that produced the most bytes of 5xx responses in the last hour, without loading the whole file into memory. Then describe how you would turn that one-off analysis into a check that runs every five minutes and alerts when the top path's error bytes exceed a threshold. Discuss where false alarms would come from, how you would suppress them, and what you would log so that someone woken up at three in the morning can tell in under a minute whether the alert is real. Assume a single machine and standard command-line tools."
+    },
+    {
+      "id": "p4",
+      "tokens": 178,
+      "text": "Summarise the following situation and recommend a decision. A research group has trained a language model on a curated corpus of public-domain books. They want to release the weights so that others can reproduce their results, but a colleague has pointed out that some of the books contain outdated medical advice, and another colleague worries that the model can be prompted to reproduce long passages verbatim. The group has limited time before a conference deadline, no legal team, and a strong preference for openness. The options on the table are: release the weights with a written caveat; release only a smaller model trained on a filtered subset; delay the release and ask the university for guidance; or release nothing and publish the paper alone. For each option give the main benefit, the main cost, and who bears that cost. Then choose one and justify the choice in two sentences, noting what evidence would change your mind."
+    },
+    {
+      "id": "p5",
+      "tokens": 209,
+      "text": "Draft the minutes of a fictional meeting between a city planning office and a group of residents about converting a disused railway line into a walking and cycling path. Attendees: the deputy planner, two engineers, a representative of the residents' association, a local shop owner, and a parent who lives beside the line. Points raised: the cost of resurfacing, lighting and safety at night, access for people with limited mobility, the effect on parking, noise during construction, whether the path should allow electric scooters, and how the maintenance budget will be found in later years. Record who raised each point, what the office answered, what was agreed, what was deferred, and which items need a written follow-up. Finish with a list of actions, each with an owner and a date, and a one-sentence note on the overall mood of the room. Keep the language neutral and the record complete enough that someone who missed the meeting could rely on it, but do not pad it with pleasantries or procedural detail that adds nothing."
+    },
+    {
+      "id": "p6",
+      "tokens": 241,
+      "text": "Consider a distributed key-value store with three replicas per key, where writes are acknowledged after two replicas have persisted the value and reads consult a single replica chosen at random. A client writes the value 1, receives an acknowledgement, and immediately reads the key back. Explain precisely under what circumstances the read can return the previous value, and describe two different changes to the protocol that would prevent this, giving for each the cost in latency, availability, or complexity. Then extend the analysis to a situation where one replica has been partitioned from the other two for several minutes and a stream of writes has arrived in the meantime: describe what the partitioned replica knows, what the others know, and what must happen when the partition heals so that no acknowledged write is lost and no reader observes a value that was later overwritten as if it were current. Finally, discuss how you would test this behaviour: what you would inject, what invariants you would check after every operation, and how you would make the test deterministic enough to run in continuous integration without being so constrained that it stops finding real bugs. Where the correct answer depends on an assumption you had to make, state the assumption explicitly rather than choosing the convenient one."
+    },
+    {
+      "id": "p7",
+      "tokens": 82,
+      "text": "Translate the idea of a content-addressed chunk store into an analogy a librarian would recognise, then explain in one paragraph why two files that share a large identical section can be stored without duplicating that section, and what has to be true about where the section starts for that to work. Close with one sentence on why the same idea makes verifying a download simple, and one on what it does not protect against."
+    }
+  ]
+}

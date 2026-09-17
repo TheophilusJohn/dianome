@@ -1,0 +1,292 @@
+{
+  "model": "qwen2.5-0.5b-instruct",
+  "source": {
+    "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "device": "mps",
+  "dtype": "float16",
+  "T": 32,
+  "L": 24,
+  "d_model": 896,
+  "vocab": 151936,
+  "head_dim": 64,
+  "num_attention_heads": 14,
+  "num_key_value_heads": 2,
+  "rms_norm_eps": 1e-06,
+  "rope_theta": 1000000.0,
+  "layout": "row-major, little-endian .npy (numpy v1 header)",
+  "boundary_definition": "\"Split at N\" means the client runs the embedding lookup and transformer blocks 0..N-1 and sends the output of block N-1 (the input to block N) as fp16 [T, d_model]. The server runs blocks N..L-1, the final norm, lm_head, and sampling. N = 0: the client sends token ids and the server runs everything. N = L: the client sends the output of the last block and the server runs only final norm + lm_head + sampling. In this directory: embed.npy is the input to block 0 (boundary 0); block_NN.npy is the output of block NN, i.e. boundary NN+1; the input to block N for N >= 1 is block_{N-1:02d}.npy.",
+  "versions": {
+    "torch": "2.14.0",
+    "transformers": "4.57.1",
+    "numpy": "2.5.3"
+  },
+  "logits_max_abs_diff_vs_model_forward": 0.0,
+  "files": {
+    "block_00.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "5c283de74a3ad8b00653cab268ceae11ee10609b0179db1c076a0d6206c4c2fd",
+      "bytes": 57472
+    },
+    "block_01.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "1eefab8fef68581f30aa927cae6f1777aba3796a56e0963d8935e46c0f070798",
+      "bytes": 57472
+    },
+    "block_02.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "ef9f57f4c72fba7c0bb31e9a224a85ac0082800b4140395d8565fd63c3744ae4",
+      "bytes": 57472
+    },
+    "block_03.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "468bae2369d168ef79e10f5c464bfdb0c5e5526660cb67fa844eda7f04b6b7e8",
+      "bytes": 57472
+    },
+    "block_04.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "f1e6e1a1cc2e0d4924c2d92ab2151266e02f339df02d18e8caaad48458825c89",
+      "bytes": 57472
+    },
+    "block_05.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "5b80188443bb922cc8c1d68a898cac8d1ea5009cedf27df552267a97fc79017c",
+      "bytes": 57472
+    },
+    "block_06.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "54f1a061aaf0989df1e86db06c50e562fc128e8d8ce5d1be37adc92aaf54968b",
+      "bytes": 57472
+    },
+    "block_07.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "6ec9d639dd7f62eb3a2a3659813ff9bf75a6aa0def08a2c96f63100cebc7dcac",
+      "bytes": 57472
+    },
+    "block_08.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "d3d52e3a7474608a5a2ac9797a83c6e7c649502e00bf2ffd2322c5e96f7fa684",
+      "bytes": 57472
+    },
+    "block_09.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "ab24e2c3a786f4faa883a905f302c5f5232db380bc50adb37489fb1c21354aa4",
+      "bytes": 57472
+    },
+    "block_10.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "c49af3b894c2dc3370a35c3d826f19f04bce160747752c25941e07d2488c1682",
+      "bytes": 57472
+    },
+    "block_11.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "cbeece5fb92b551b65e5346fc7b673eaa7764c31ca52da51bbda57d56a8acd26",
+      "bytes": 57472
+    },
+    "block_12.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "dc19b2b7990b8d8c32b30509e361ccc132290d03834ef6187c0e1d4478ffc4fb",
+      "bytes": 57472
+    },
+    "block_13.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "e05d65c6185809e249c338097e9290d026282f8176c660b6d289d6a6b5355b2c",
+      "bytes": 57472
+    },
+    "block_14.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "f94b6d4e0ddc347eb643f943da0045f3e5573bdbb626a1a0be22330a06bb1ba9",
+      "bytes": 57472
+    },
+    "block_15.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "9b3ffd211d314190d737c97108d9282ec2711f6d174d2a083d599052a5aba9c7",
+      "bytes": 57472
+    },
+    "block_16.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "24fe4a411a7796e8b210a3a1c9474eabe66fad3920e62cfacd7391dfba5f099e",
+      "bytes": 57472
+    },
+    "block_17.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "361cb350f7d97af2be1f3d01d4339951a852ebe36cc3a3f2564179fbc1c453f6",
+      "bytes": 57472
+    },
+    "block_18.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "f6f14073317c3fb68aa94d01ff2a187c07e5adad9325d0c5b8dcb22710edaa3b",
+      "bytes": 57472
+    },
+    "block_19.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "d1f79878400336d273f1bccad2b9188fadf9c6ec0c377d708c1252f51edd1565",
+      "bytes": 57472
+    },
+    "block_20.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "98abbd93c9111a4d609a6443c06964db91429f6c28c4b1e384d8501ebdb71ab4",
+      "bytes": 57472
+    },
+    "block_21.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "c02f8fba09a7029ec5a6cdc5dd96e1ba42097f6be815d0c61ebccd518256dbe7",
+      "bytes": 57472
+    },
+    "block_22.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "8ffb34c45bba5c1b62b8e12111b37a605c8992f777ac470c2f2aa07c6351083f",
+      "bytes": 57472
+    },
+    "block_23.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "298657e97ff318382e18574ea9bcfde5785f59048b5d391ed7feae6c71560b0b",
+      "bytes": 57472
+    },
+    "embed.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "060f6881bf96cd3594af891f7557d44024e1a92df9b0d3381f34979c5dd08fd2",
+      "bytes": 57472
+    },
+    "final_norm.npy": {
+      "shape": [
+        32,
+        896
+      ],
+      "dtype": "float16",
+      "sha256": "8a43d493297def76449c83fb367f739627e827f9e1712b4d32249a7b3e874623",
+      "bytes": 57472
+    },
+    "logits.npy": {
+      "shape": [
+        32,
+        151936
+      ],
+      "dtype": "float16",
+      "sha256": "ec3abbb640d10809abd6d8626cf590835e8d539e63202fb19b2d3075108e7743",
+      "bytes": 9724032
+    },
+    "prompt.json": {
+      "sha256": "ae3a53ac761c73b06751e2904e76541b8f52b7b2182452a3909fde7ef1ffeb82"
+    },
+    "rope_cos.npy": {
+      "shape": [
+        32,
+        64
+      ],
+      "dtype": "float16",
+      "sha256": "96a9298e9a4f1e388c0e347be8582a1dcee377968903f9f1b60e2ce3215a4fb2",
+      "bytes": 4224
+    },
+    "rope_sin.npy": {
+      "shape": [
+        32,
+        64
+      ],
+      "dtype": "float16",
+      "sha256": "746966853cab6baaa0ad8505a28e34804730ab7917999c75dace383eda550778",
+      "bytes": 4224
+    }
+  }
+}
