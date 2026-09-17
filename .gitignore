@@ -10,3 +10,4 @@ __pycache__/
 *.egg-info/
 apps/*/dist/
 .dev.vars
+.env.r2
