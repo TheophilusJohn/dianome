@@ -9,7 +9,8 @@
 
 import { isQuotaError } from "../errors";
 import { PerSiteStore } from "./persite";
-import { markerUrlFor, MARKER_PATH, PROTOCOL_VERSION, type FrameErrorCode, type FrameRequest, type FrameResponse, type FrameResultOf, type GrantMode, type GrantResult, type HelloResult } from "./protocol";
+import type { Browser } from "../device";
+import { hopSince, markerUrlFor, MARKER_PATH, PROTOCOL_VERSION, type FrameErrorCode, type FrameRequest, type FrameResponse, type FrameResultOf, type GrantMode, type GrantProgress, type GrantResult, type HelloResult } from "./protocol";
 import { CACHE_NAME, type ChunkStore } from "./types";
 
 /** What `requestStorageAccess({all: true})` resolves to in Chrome (subset we use). */
@@ -21,6 +22,10 @@ export interface StorageAccessHandle {
 
 export interface FramePlatform {
   origin: string;
+  /** Browser family (UA-derived, nothing finer). Firefox gets the plain requestStorageAccess() call. */
+  browser?: Browser;
+  /** Diagnostic sink (the frame logs to its console; the parent sees it in DevTools). */
+  log?: (message: string) => void;
   /** Present when document.requestStorageAccess exists. `all: true` returns a handle in Chrome, nothing elsewhere. */
   requestStorageAccess?: (opts?: { all: true }) => Promise<StorageAccessHandle | undefined | void>;
   hasStorageAccess?: () => Promise<boolean>;
@@ -61,14 +66,17 @@ export class FrameServer {
 
   get granted(): boolean { return this.store !== null; }
 
-  async handle(req: FrameRequest): Promise<FrameResponse> {
+  /** `receivedAt` (epoch ms) defaults to now; pass the value taken in the message handler for the tightest hop. */
+  async handle(req: FrameRequest, receivedAt?: number, progress?: (stage: GrantProgress) => void): Promise<FrameResponse> {
     const t = this.now();
+    const hopIn = hopSince(req.sentAt, receivedAt);
+    const hop = hopIn === null ? {} : { hopInMs: hopIn };
     try {
-      const result = await this.dispatch(req);
-      return { v: PROTOCOL_VERSION, id: req.id, ok: true, result, ms: this.now() - t };
+      const result = await this.dispatch(req, progress);
+      return { v: PROTOCOL_VERSION, id: req.id, ok: true, result, ms: this.now() - t, ...hop };
     } catch (e) {
       const code: FrameErrorCode = e instanceof FrameError ? e.code : isQuotaError(e) ? "quota" : "internal";
-      return { v: PROTOCOL_VERSION, id: req.id, ok: false, error: (e as Error)?.message ?? String(e), code, ms: this.now() - t };
+      return { v: PROTOCOL_VERSION, id: req.id, ok: false, error: (e as Error)?.message ?? String(e), code, ms: this.now() - t, ...hop };
     }
   }
 
@@ -77,10 +85,10 @@ export class FrameServer {
     return this.store;
   }
 
-  private async dispatch(req: FrameRequest): Promise<unknown> {
+  private async dispatch(req: FrameRequest, progress?: (stage: GrantProgress) => void): Promise<unknown> {
     switch (req.op) {
       case "hello": return this.hello();
-      case "grant": return this.grant(req.mode);
+      case "grant": return this.grant(req.mode, progress);
       case "get": return this.need().get(req.sha, req.modelId);
       case "put": await this.need().put(req.sha, req.buf, req.modelId); return null;
       case "has": return this.need().has(req.sha);
@@ -103,17 +111,28 @@ export class FrameServer {
    * `await-click` waits for the frame's button and runs it inside that gesture with requestStorageAccess as the
    * first statement of the click continuation (Safari rule, harmless elsewhere).
    */
-  async grant(mode: GrantMode): Promise<FrameResultOf<"grant">> {
+  async grant(mode: GrantMode, progress?: (stage: GrantProgress) => void): Promise<FrameResultOf<"grant">> {
     if (this.store && this.grantResult) return this.grantResult;
     if (!this.p.requestStorageAccess) return this.remember({ state: "unsupported", reason: "document.requestStorageAccess missing" });
-    // The request is the first statement inside the gesture. `{all: true}` yields a handle in Chrome; Firefox
-    // ignores the argument and resolves without one, which is also its grant.
+    // The request is the first statement inside the gesture. Chrome: `{all: true}` yields a handle. Firefox: the
+    // plain call (Phase 0 T2), which resolves without a handle; the globals are unpartitioned from then on.
     const rsa = this.p.requestStorageAccess;
-    const attempt = (): Promise<StorageAccessHandle | undefined | void> => rsa({ all: true });
+    const firefox = this.p.browser === "firefox";
+    const attempt = (): Promise<StorageAccessHandle | undefined | void> => {
+      progress?.("requesting");
+      return firefox ? rsa() : rsa({ all: true });
+    };
     let handle: StorageAccessHandle | undefined | void;
     try {
-      handle = mode === "await-click" ? await this.p.inGesture(attempt) : await attempt();
+      if (mode === "await-click") {
+        progress?.("waiting-click");
+        handle = await this.p.inGesture(() => { progress?.("clicked"); return attempt(); });
+      } else {
+        handle = await attempt();
+      }
+      this.log(`requestStorageAccess(${firefox ? "" : "{all: true}"}) resolved (${mode}): handle=${handle && handle.caches ? "with caches" : String(handle)}`);
     } catch (e) {
+      this.log(`requestStorageAccess rejected (${mode}): ${(e as Error)?.name ?? "Error"}: ${(e as Error)?.message ?? String(e)}`);
       return this.afterRejection(e, mode);
     }
     if (handle && handle.caches) {
@@ -133,10 +152,11 @@ export class FrameServer {
     try { perm = this.p.permissionState ? await this.p.permissionState() : "unknown"; } catch { perm = "unknown"; }
     if (perm === "denied") return this.remember({ state: "denied", reason });
     // Without a gesture the request is expected to fail unless the permission is persisted: ask for the click.
-    if (mode === "silent") return { state: "needs-click", reason };
-    // Rejected inside a gesture with the permission still at "prompt": Chrome has no first-party interaction
-    // with this origin yet (no top-level visit). The opt-in page provides it.
-    return { state: "needs-visit", reason };
+    if (mode === "silent") return this.remember({ state: "needs-click", reason });
+    // Rejected inside a gesture with the permission still at "prompt" (or no permissions API, as in Firefox):
+    // the browser has no first-party interaction with this origin yet. The top-level opt-in visit provides it,
+    // on Chrome and Firefox alike.
+    return this.remember({ state: "needs-visit", reason: `${reason} (permission: ${perm})` });
   }
 
   private async adopt(o: { caches: CacheStorage; indexedDB: IDBFactory; storage?: Pick<StorageManager, "estimate"> }, path: "chrome-handle" | "firefox-globals"): Promise<GrantResult> {
@@ -149,15 +169,18 @@ export class FrameServer {
     } catch (e) {
       return this.remember({ state: "unsupported", path, reason: `probe failed: ${(e as Error)?.message ?? String(e)}` });
     }
-    if (!marker) return { state: "needs-visit", path, reason: `marker ${MARKER_PATH} not visible after grant` };
+    if (!marker) return this.remember({ state: "needs-visit", path, reason: `marker ${MARKER_PATH} not visible after grant (no top-level visit yet, or storage still partitioned)` });
     this.store = this.makeStore(o);
     return this.remember({ state: "granted", path });
   }
 
   private remember(r: GrantResult): GrantResult {
     if (r.state === "granted") this.grantResult = r;
+    this.log(`grant → ${r.state}${r.path ? ` via ${r.path}` : ""}${r.reason ? `: ${r.reason}` : ""}`);
     return r;
   }
+
+  private log(message: string): void { try { this.p.log?.(`[dianome frame] ${message}`); } catch { /* never let logging break a grant */ } }
 
   private async fetchChunk(sha: string, bytes: number, modelId: string): Promise<FrameResultOf<"fetch">> {
     const store = this.need();

@@ -9,6 +9,8 @@ export type Mode = "chrome" | "firefox" | "no-api";
 
 export interface FakePlatformOptions {
   mode?: Mode;
+  /** Browser family handed to the platform (default: "chrome" for mode chrome, "firefox" for mode firefox). */
+  browser?: "chrome" | "firefox" | "safari" | "other";
   origin?: string;
   /** What requestStorageAccess does when called without a gesture (silent). Default: reject NotAllowedError. */
   silent?: "grant" | "reject";
@@ -34,6 +36,8 @@ export interface FakePlatform {
   /** Simulates the user clicking the frame's button. */
   click(): void;
   faults: Map<string, ("network" | number)[]>;
+  /** Lines the frame server logged. */
+  logs: string[];
 }
 
 const notAllowed = () => new DOMException("requestStorageAccess not allowed", "NotAllowedError");
@@ -50,10 +54,12 @@ export async function fakePlatform(o: FakePlatformOptions = {}): Promise<FakePla
   let inGesture = false;
   let pendingGesture: (() => void) | null = null;
   const self: FakePlatform = {
-    handleCaches, globalCaches, handleIdb, globalIdb, globalsTouched: 0, rsaCalls: [], fetches: [], faults: new Map(),
+    handleCaches, globalCaches, handleIdb, globalIdb, globalsTouched: 0, rsaCalls: [], fetches: [], faults: new Map(), logs: [],
     click() { const p = pendingGesture; pendingGesture = null; p?.(); },
     platform: {
       origin,
+      browser: o.browser ?? (mode === "firefox" ? "firefox" : "chrome"),
+      log: (m) => { self.logs.push(m); },
       hasStorageAccess: async () => granted || (o.hasStorageAccess ?? false),
       permissionState: async () => { if (o.permission === "throws") throw new TypeError("no permissions API"); return o.permission ?? "prompt"; },
       globals: () => { self.globalsTouched++; return { caches: globalCaches.asCacheStorage(), indexedDB: globalIdb, storage: { estimate: async () => ({ quota: 2000, usage: globalCaches.used }) } }; },

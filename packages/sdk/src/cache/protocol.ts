@@ -6,6 +6,10 @@
 //
 // `get` and `fetch` transfer the buffer back; `put` transfers it in. Bumping v1 in the path is how a breaking
 // frame change ships; a v mismatch is answered with code "bad_version".
+//
+// Transfer timing: both sides stamp `sentAt` (epoch ms from performance.timeOrigin + performance.now(), comparable
+// across documents on one machine) immediately before postMessage. The receiver's `epochNow() - sentAt` is the
+// postMessage hop alone: no network, no cache work. The frame reports the request hop back as `hopInMs`.
 
 import { SHA_RE } from "../sha";
 import type { ChunkStoreStatus } from "./types";
@@ -22,7 +26,9 @@ export type GrantState = "granted" | "unsupported" | "denied" | "needs-visit" | 
 
 export interface GrantResult { state: GrantState; path?: GrantPath; reason?: string }
 
-export type FrameRequest =
+export type FrameRequest = FrameRequestBody & { /** Epoch ms stamped by the parent right before posting. */ sentAt?: number };
+
+export type FrameRequestBody =
   | { v: 1; id: number; op: "hello" }
   | { v: 1; id: number; op: "grant"; mode: GrantMode }
   | { v: 1; id: number; op: "get"; sha: string; modelId?: string }
@@ -34,7 +40,7 @@ export type FrameRequest =
   | { v: 1; id: number; op: "clear" }
   | { v: 1; id: number; op: "fetch"; sha: string; bytes: number; modelId: string };
 
-export type FrameOp = FrameRequest["op"];
+export type FrameOp = FrameRequestBody["op"];
 
 export interface HelloResult { v: 1; hasStorageAccess: boolean | null; granted: boolean }
 export interface FetchResult { buf: ArrayBuffer; fromCache: boolean; /** The put after a network fetch hit quota with nothing left to evict. */ quota?: true }
@@ -49,11 +55,47 @@ export type FrameResultOf<O extends FrameOp> =
   O extends "evict" | "evictModel" | "clear" ? null :
   O extends "fetch" ? FetchResult : never;
 
+/** Stages of an await-click grant, posted by the frame before the final reply. */
+export type GrantProgress = "waiting-click" | "clicked" | "requesting";
+
+/** An unsolicited progress note for a pending request (same id); never terminates the request. */
+export interface FrameProgress { v: 1; id: number; progress: GrantProgress }
+
+export function parseProgress(data: unknown): FrameProgress | null {
+  if (!isObj(data) || data.v !== PROTOCOL_VERSION || typeof data.id !== "number" || typeof data.progress !== "string") return null;
+  if (data.progress !== "waiting-click" && data.progress !== "clicked" && data.progress !== "requesting") return null;
+  return { v: 1, id: data.id, progress: data.progress };
+}
+
 export type FrameErrorCode = "bad_request" | "bad_version" | "unknown_op" | "no_grant" | "quota" | "network" | `http_${number}` | "internal";
 
-export type FrameResponse =
+export type FrameResponse = FrameResponseBody & {
+  /** Epoch ms stamped by the frame right before posting (see stampSent). */
+  sentAt?: number;
+  /** Parent → frame hop of the request this answers, measured by the frame when the request carried sentAt. */
+  hopInMs?: number;
+};
+
+export type FrameResponseBody =
   | { v: 1; id: number; ok: true; result: unknown; ms: number }
   | { v: 1; id: number; ok: false; error: string; code: FrameErrorCode; ms: number };
+
+/** Wall-clock ms comparable between the parent and the frame documents (sub-ms where the browser allows). */
+export function epochNow(): number {
+  if (typeof performance !== "undefined" && typeof performance.timeOrigin === "number") return performance.timeOrigin + performance.now();
+  return Date.now();
+}
+
+/** Stamps `sentAt`; call it as the last thing before postMessage so the hop excludes any local work. */
+export function stampSent<T extends { sentAt?: number }>(msg: T): T {
+  msg.sentAt = epochNow();
+  return msg;
+}
+
+/** The hop from a stamped message to now; null when the message was not stamped. Clock skew is clamped at 0. */
+export function hopSince(sentAt: number | undefined, receivedAt = epochNow()): number | null {
+  return typeof sentAt === "number" ? Math.max(0, receivedAt - sentAt) : null;
+}
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
 const isSha = (v: unknown): v is string => typeof v === "string" && SHA_RE.test(v);
@@ -61,6 +103,13 @@ const optStr = (v: unknown): v is string | undefined => v === undefined || typeo
 
 /** Validates an incoming parent → frame message. Returns null when it is not a well-formed v1 request. */
 export function parseRequest(data: unknown): FrameRequest | null {
+  const body = parseRequestBody(data);
+  if (!body) return null;
+  const sentAt = (data as { sentAt?: unknown }).sentAt;
+  return typeof sentAt === "number" ? { ...body, sentAt } : body;
+}
+
+function parseRequestBody(data: unknown): FrameRequestBody | null {
   if (!isObj(data) || data.v !== PROTOCOL_VERSION || typeof data.id !== "number" || typeof data.op !== "string") return null;
   const { id } = data as { id: number };
   switch (data.op) {
@@ -80,9 +129,12 @@ export function parseRequest(data: unknown): FrameRequest | null {
 /** Validates an incoming frame → parent message. */
 export function parseResponse(data: unknown): FrameResponse | null {
   if (!isObj(data) || data.v !== PROTOCOL_VERSION || typeof data.id !== "number" || typeof data.ok !== "boolean" || typeof data.ms !== "number") return null;
-  if (data.ok) return { v: 1, id: data.id, ok: true, result: data.result, ms: data.ms };
+  const extra: { sentAt?: number; hopInMs?: number } = {};
+  if (typeof data.sentAt === "number") extra.sentAt = data.sentAt;
+  if (typeof data.hopInMs === "number") extra.hopInMs = data.hopInMs;
+  if (data.ok) return { v: 1, id: data.id, ok: true, result: data.result, ms: data.ms, ...extra };
   if (typeof data.error !== "string" || typeof data.code !== "string") return null;
-  return { v: 1, id: data.id, ok: false, error: data.error, code: data.code as FrameErrorCode, ms: data.ms };
+  return { v: 1, id: data.id, ok: false, error: data.error, code: data.code as FrameErrorCode, ms: data.ms, ...extra };
 }
 
 /** A message from a bad version still gets a reply so the parent can diagnose it: returns the id when present. */

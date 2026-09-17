@@ -11,7 +11,7 @@ import { AbortedError, DianomeError, isAbort } from "./errors";
 import { fetchChunks, type ChunkResult } from "./fetcher";
 import { fetchManifest, isModelManifest, type FetchLike, type Manifest, type VariantName } from "./manifest";
 import { planFiles, planVariant, type LoadPlan } from "./plan";
-import { buildReport, postReport } from "./telemetry";
+import { buildReport, median, postReport } from "./telemetry";
 import type { CacheStatus, CrossSiteResult, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
 
 export type { LoadedEntry, EntryParts } from "./assemble";
@@ -22,7 +22,7 @@ export type { DianomeErrorCode } from "./errors";
 export type { Config, Entry, File, FilesManifest, Group, Manifest, ModelManifest, Part, Segment, Storage, Variant, VariantName } from "./manifest";
 export { validateManifest, isModelManifest, isFilesManifest } from "./manifest";
 export type { LoadReport, LoadSource } from "./telemetry";
-export type { CacheStatus, CrossSiteResult, CrossSiteState, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
+export type { CacheStatus, CrossSiteProgress, CrossSiteResult, CrossSiteState, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
 
 export const DEFAULT_API = "https://api.dianome.dev";
 export const DEFAULT_CDN = "https://cdn.dianome.dev";
@@ -209,10 +209,11 @@ export class Dianome {
     const summary: LoadSummary = {
       model: plan.modelId, variant: plan.label, bytes: bytesDone, chunks: sources.length, ms,
       bytesPerSecond: ms > 0 ? bytesDone / (ms / 1000) : 0,
-      source: "network", cacheHits: 0, cacheMode, sources, verifyMs: stats!.verifyMs, transferMs: stats!.transferMs,
+      source: "network", cacheHits: 0, cacheMode, sources, verifyMs: stats!.verifyMs,
+      transferMs: median(stats!.transferSamples), transferSamples: stats!.transferSamples,
       cacheDisabled, report: null, telemetryStatus: null,
     };
-    const report = buildReport({ model: plan.modelId, variant: plan.label, bytes: bytesDone, sources, ms, verifyMs: stats!.verifyMs, transferMs: stats!.transferMs, cacheMode, device });
+    const report = buildReport({ model: plan.modelId, variant: plan.label, bytes: bytesDone, sources, ms, verifyMs: stats!.verifyMs, transferSamples: stats!.transferSamples, cacheMode, device });
     summary.source = report.source;
     summary.cacheHits = report.cache_hits;
     if (this.telemetry) {

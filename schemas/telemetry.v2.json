@@ -92,7 +92,7 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 86400000,
-      "description": "Total time waiting on the cross-site frame (postMessage + transfer); 0 on other paths"
+      "description": "Median per-chunk postMessage hop from the cross-site frame to the page (the ArrayBuffer transfer alone, excluding the frame's own fetch and cache work); 0 on other paths"
     },
     "quota_bytes": {
       "type": "integer",

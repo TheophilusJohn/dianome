@@ -68,18 +68,52 @@ All numbers are the page's status text on 2026-09-16:
 | load 2 | `done in 0.34 s · 323.9 MB · 42 chunks · 1008.1 MB/s` · source cross-site-cache · cache hits 42/42 · verify 169 ms · transfer 1637 ms · 0 chunk requests anywhere |
 | fresh document, auto | `done in 0.31 s · 323.9 MB · 42 chunks · 1127.0 MB/s` · source cross-site-cache · cache hits 42/42 (silent reconnect, no click) |
 
-Per-op timings from the parent (round trip) and the frame (its own `ms`), 84 `fetch` ops = 42 per load:
+Per-op timings from the parent (round trip) and the frame (its own `ms`), 84 `fetch` ops = 42 per load, first run
+(before the transfer_ms fix; the "transfer" figures in the table above were sums of whole-op round trips, which is
+what the fix below removed):
 
 ```
 frame hello:  n=1  mean 0.7 ms (frame-side 0.2 ms)  max 0.7 ms
 frame grant:  n=1  mean 2.5 ms (frame-side 2.4 ms)  max 2.5 ms
 frame fetch:  n=84 mean 93.1 ms (frame-side 91.4 ms) max 216.2 ms
 frame status: n=3  mean 0.9 ms (frame-side 0.5 ms)  max 1.2 ms
-→ postMessage + ArrayBuffer transfer overhead per 8 MB chunk ≈ 1.7 ms (parent round trip minus frame-side time)
 ```
 
-The frame-side 91 ms per `fetch` op is the same-origin fetch or Cache API read plus the Cache API write inside
-the frame (load 2 alone: 1637 ms / 42 = 39 ms per cached 8 MB chunk read + transfer).
+**transfer_ms fix (2026-09-16, uncommitted at the time of writing):** the report used to wrap the frame's whole
+`fetch` op (including its network fetch and cache write) and sum across the 6 concurrent gets, which is how a 15 s
+load could report `transfer_ms: 82376`. It now measures only the postMessage hop: both sides stamp `sentAt`
+(`performance.timeOrigin + performance.now()`, comparable across documents) immediately before posting, the
+receiver subtracts on arrival, and the report carries the per-chunk median. Same flow re-run after the fix, page
+status text and "Measure" output:
+
+| load | hop median per chunk (42 samples) | frame `fetch` op round trip |
+| --- | --- | --- |
+| 1 (network via frame) | 0.2 ms | mean 74.9 ms (frame-side 72.8 ms), max 203.0 ms, over both loads |
+| 2 (cross-site cache) | 0.2 ms | |
+| fresh document, auto | 0.1 ms | |
+
+Mean frame → parent hop over the 84 fetches: 0.66 ms; mean parent → frame request hop: 1.44 ms. The buffer is
+transferred (not copied), so the hop is independent of the 8 MB payload; what the earlier figures were measuring was
+the frame's fetch and Cache API work.
+
+### Firefox and Chromium cross-site locally (page on 127.0.0.1, frame on localhost: two sites)
+
+`node packages/sdk/test-results/ff-xsite.mjs <firefox|chromium>` (Playwright Firefox 155.0 and Chromium headless
+shell 153, fresh profiles, no permission pre-grant), page `http://127.0.0.1:5175/?api=http://localhost:8788&cdn=http://localhost:8788`,
+on 2026-09-16 after the frame/demo feedback changes. What the demo rendered:
+
+| browser | opt-in visit first | silent attempt | after the in-frame click | persisted |
+| --- | --- | --- | --- | --- |
+| Firefox | no | `needs-visit` via `firefox-globals`: `requestStorageAccess()` resolved without a gesture, marker not visible | (no click needed) | null |
+| Firefox | yes | `granted` via `firefox-globals`, no click, no prompt | — | granted |
+| Chromium | no | `needs-click` (`NotAllowedError: requestStorageAccess not allowed`) | `needs-visit` (`… (permission: prompt)`) | null |
+| Chromium | yes | `needs-click` | `needs-visit` (`… (permission: prompt)`): headless Chromium cannot show the prompt, see the pre-granted run above | null |
+
+So in Firefox the top-level visit is what matters: without it the grant resolves but reaches partitioned storage
+(marker probe → `needs-visit`); with it the silent path succeeds and the frame button is never needed. The frame
+now calls the plain `requestStorageAccess()` on Firefox (`{all: true}` elsewhere), logs
+`[dianome frame] requestStorageAccess…` and `grant → <state>` lines to its console, and posts progress notes
+(`waiting-click`, `clicked`, `requesting`) that the demo renders while a permission prompt may be pending.
 
 WebGPU note: `navigator.gpu` is absent on `about:blank` (not a secure context) and present on `http://localhost`
 in Playwright Chromium headless (`maxBufferSize` 1073741824), headed (4294967292) and Google Chrome 152 headed

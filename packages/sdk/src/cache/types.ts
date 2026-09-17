@@ -31,7 +31,14 @@ export interface ChunkStore {
    * Cross-site only: the frame fetches the chunk itself (same-origin with the CDN), caches it, and transfers the
    * bytes back, so the parent never fetches on that path. `fromCache` tells the caller which source to report.
    */
-  fetch?(sha: string, bytes: number, modelId: string, signal?: AbortSignal): Promise<{ buf: ArrayBuffer; fromCache: boolean; transferMs: number; /** The frame could not cache it (quota, nothing evictable): the session should stop caching. */ quota?: true }>;
+  fetch?(sha: string, bytes: number, modelId: string, signal?: AbortSignal): Promise<{
+    buf: ArrayBuffer;
+    fromCache: boolean;
+    /** The postMessage hop that carried the buffer to the parent, in ms; null when not measurable. Never includes the frame's own fetch or cache work. */
+    transferMs: number | null;
+    /** The frame could not cache it (quota, nothing evictable): the session should stop caching. */
+    quota?: true;
+  }>;
   close?(): void;
 }
 

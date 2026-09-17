@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { connectCrossSite, CrossSiteStore, FrameClient, iframePort, readPersisted, writePersisted, type FramePort, CROSSSITE_KEY } from "../src/cache/crosssite";
 import { FrameServer } from "../src/cache/frameServer";
-import { parseRequest, transferablesOf, PROTOCOL_VERSION } from "../src/cache/protocol";
+import { epochNow, parseRequest, stampSent, transferablesOf, PROTOCOL_VERSION } from "../src/cache/protocol";
+import { median } from "../src/telemetry";
 import { AbortedError, ChunkError } from "../src/errors";
 import { fetchChunks, type ChunkResult } from "../src/fetcher";
 import type { PlanChunk } from "../src/plan";
@@ -9,17 +10,21 @@ import { sha256 } from "../src/sha";
 import { fakePlatform, type FakePlatformOptions } from "./helpers/fakePlatform";
 
 /** An in-memory port wired straight to a FrameServer (what the real iframe does, minus the browser). */
-function loopback(server: FrameServer, o: { delayMs?: number; drop?: (op: string) => boolean } = {}): FramePort {
+function loopback(server: FrameServer, o: { delayMs?: number; drop?: (op: string) => boolean; hopDelayMs?: number } = {}): FramePort {
   const handlers = new Set<(data: unknown) => void>();
   return {
     post(msg) {
+      const receivedAt = epochNow();
       const req = parseRequest(msg);
       if (!req || o.drop?.(req.op)) return;
-      void server.handle(req).then(async (res) => {
-        if (o.delayMs) await new Promise((r) => setTimeout(r, o.delayMs));
-        // Structured-clone the response the way postMessage would (transfer list aside).
+      const progress = (stage: string) => { for (const h of handlers) h({ v: 1, id: req.id, progress: stage }); };
+      void server.handle(req, receivedAt, progress as never).then(async (res) => {
+        if (o.delayMs) await new Promise((r) => setTimeout(r, o.delayMs)); // "frame work" after the op (not part of the hop)
+        // Structured-clone the response the way postMessage would (transfer list aside), stamped right before delivery.
         void transferablesOf(res);
-        for (const h of handlers) h(JSON.parse(JSON.stringify(res, (_k, v) => (v instanceof ArrayBuffer ? { __buf: [...new Uint8Array(v)] } : v)), (_k, v) => (v && typeof v === "object" && "__buf" in v ? new Uint8Array(v.__buf).buffer : v)));
+        const wire = JSON.stringify(stampSent(res), (_k, v) => (v instanceof ArrayBuffer ? { __buf: [...new Uint8Array(v)] } : v));
+        if (o.hopDelayMs) await new Promise((r) => setTimeout(r, o.hopDelayMs)); // simulated postMessage latency (is part of the hop)
+        for (const h of handlers) h(JSON.parse(wire, (_k, v) => (v && typeof v === "object" && "__buf" in v ? new Uint8Array(v.__buf).buffer : v)));
       });
     },
     listen(h) { handlers.add(h); return () => handlers.delete(h); },
@@ -118,13 +123,14 @@ describe("CrossSiteStore", () => {
     await expect(s.put(await sha256(big), big.buffer, "m")).rejects.toMatchObject({ name: "QuotaExceededError" });
   });
 
-  it("fetch reports source and transfer time, and maps http/network codes to ChunkError", async () => {
+  it("fetch reports source and the postMessage hop, and maps http/network codes to ChunkError", async () => {
     const body = new Uint8Array([7, 7, 7]);
     const sha = await sha256(body);
     const { fp, store: s } = await store({ chunks: new Map([[sha, body]]) });
     const r1 = await s.fetch(sha, 3, "m");
     expect(r1.fromCache).toBe(false);
-    expect(r1.transferMs).toBeGreaterThanOrEqual(0);
+    expect(r1.transferMs).not.toBeNull();
+    expect(r1.transferMs!).toBeGreaterThanOrEqual(0);
     expect(new Uint8Array(r1.buf)).toEqual(body);
     expect((await s.fetch(sha, 3, "m")).fromCache).toBe(true);
     const other = "d".repeat(64);
@@ -146,7 +152,8 @@ describe("CrossSiteStore", () => {
     expect(parentFetch).not.toHaveBeenCalled();
     expect(results.map((r) => r.source)).toEqual(["network", "network", "network", "network"]);
     expect(results.find((r) => r.sha === order[2]!.sha)!.attempts).toBe(2);
-    expect(stats.transferMs).toBeGreaterThanOrEqual(0);
+    expect(stats.transferSamples).toHaveLength(4);
+    expect(stats.transferSamples.every((t) => t >= 0)).toBe(true);
 
     // Corrupt one cached body inside the frame's storage; the second load evicts and refetches only that chunk.
     const victim = order[1]!.sha;
@@ -157,6 +164,50 @@ describe("CrossSiteStore", () => {
     expect(new Map(again.map((r) => [r.sha, r.source]))).toEqual(new Map(order.map((c) => [c.sha, c.sha === victim ? "network" : "cross-site-cache"])));
     expect(st2.corruptEvicted).toBe(1);
     expect(fp.fetches.filter((u) => u.endsWith(victim))).toHaveLength(2);
+  });
+
+  it("transferMs is the postMessage hop alone: frame work is excluded and concurrent fetches do not add up", async () => {
+    const chunks = new Map<string, Uint8Array>();
+    const order: PlanChunk[] = [];
+    for (let i = 0; i < 12; i++) { const b = new Uint8Array(1000).fill(i + 1); const sha = await sha256(b); chunks.set(sha, b); order.push({ sha, bytes: 1000, group: "g", groupIndex: 0 }); }
+    const fp = await fakePlatform({ silent: "grant", chunks });
+    const server = new FrameServer({ platform: fp.platform });
+    // 40 ms of "frame work" per op before the reply is stamped, 5 ms of simulated postMessage latency after.
+    const client = new FrameClient(loopback(server, { delayMs: 40, hopDelayMs: 5 }));
+    await client.call<"grant">({ op: "grant", mode: "silent" });
+    const s = new CrossSiteStore(client);
+    const t0 = Date.now();
+    const stats = await fetchChunks(order, { cdn: "https://cdn.test", modelId: "m", store: s, concurrency: 6, fetch: vi.fn(), onChunk: () => {} });
+    const wall = Date.now() - t0;
+    expect(stats.transferSamples).toHaveLength(12);
+    const med = median(stats.transferSamples);
+    // Each hop is ~5 ms: never the 40 ms of frame work, never a sum over the 6 concurrent fetches (>= 45 ms would show either).
+    expect(med).toBeGreaterThanOrEqual(4);
+    expect(med).toBeLessThan(30);
+    expect(Math.max(...stats.transferSamples)).toBeLessThan(40);
+    expect(stats.transferSamples.reduce((a, b) => a + b, 0)).toBeLessThan(wall); // the old sum-of-round-trips exceeded wall time
+    const tm = client.timings().fetch!;
+    expect(tm.hopOutMs / tm.count).toBeLessThan(30);
+    expect(tm.totalMs / tm.count).toBeGreaterThanOrEqual(40); // round trip still sees the frame work
+    expect(tm.hopInMs).toBeGreaterThanOrEqual(0);
+  });
+
+  it("a frame that does not stamp its replies yields null transfer and no samples", async () => {
+    const b = new Uint8Array([1, 2]);
+    const sha = await sha256(b);
+    const fp = await fakePlatform({ silent: "grant", chunks: new Map([[sha, b]]) });
+    const server = new FrameServer({ platform: fp.platform });
+    const handlers = new Set<(d: unknown) => void>();
+    const unstamped: FramePort = {
+      post(msg) { const req = parseRequest(msg); if (req) void server.handle(req).then((res) => { for (const h of handlers) h(JSON.parse(JSON.stringify(res, (_k, v) => (v instanceof ArrayBuffer ? { __buf: [...new Uint8Array(v)] } : v)), (_k, v) => (v && typeof v === "object" && "__buf" in v ? new Uint8Array(v.__buf).buffer : v))); }); },
+      listen(h) { handlers.add(h); return () => handlers.delete(h); }, close() { handlers.clear(); },
+    };
+    const client = new FrameClient(unstamped);
+    await client.call<"grant">({ op: "grant", mode: "silent" });
+    const s = new CrossSiteStore(client);
+    expect((await s.fetch(sha, 2, "m")).transferMs).toBeNull();
+    const stats = await fetchChunks([{ sha, bytes: 2, group: "g", groupIndex: 0 }], { cdn: "https://cdn.test", modelId: "m", store: s, fetch: vi.fn(), onChunk: () => {} });
+    expect(stats.transferSamples).toEqual([]);
   });
 
   it("fetchChunks: a quota-flagged frame fetch switches the session to cache none", async () => {
@@ -227,12 +278,16 @@ describe("connectCrossSite", () => {
     const adopted: CrossSiteStore[] = [];
     const ex = await connectCrossSite({ ...h.base, explicit: true, onGranted: (s) => adopted.push(s) });
     expect(ex.result.state).toBe("needs-click");
-    const pending = ex.result.mount!({} as HTMLElement);
+    const stages: string[] = [];
+    const pending = ex.result.mount!({} as HTMLElement, { onProgress: (st) => stages.push(st) });
     await new Promise((r) => setTimeout(r, 5));
     expect(h.opened).toEqual([{ url: h.base.frameUrl, visible: false }, { url: h.base.frameUrl, visible: true }]);
+    expect(stages).toEqual(["waiting-click"]);
     h.fp().click();
     const r = await pending;
+    expect(stages).toEqual(["waiting-click", "clicked", "requesting"]);
     expect(r.state).toBe("granted");
+    expect(r.path).toBe("chrome-handle");
     expect(readPersisted(h.storage)).toBe("granted");
     expect(adopted).toHaveLength(1);
     // The permission is now persisted at the browser level, so the hidden frame granted silently and is the store.
@@ -243,6 +298,28 @@ describe("connectCrossSite", () => {
     expect(later.result.state).toBe("granted");
   });
 
+  it("Firefox: the whole flow uses the plain call and reports path firefox-globals; a rejection in the gesture is needs-visit with the reason", async () => {
+    const ok = harness({ mode: "firefox", browser: "firefox" });
+    const c1 = await connectCrossSite({ ...ok.base, browser: "firefox", explicit: true });
+    expect(c1.result.state).toBe("needs-click");
+    const pending = c1.result.mount!({} as HTMLElement);
+    await new Promise((r) => setTimeout(r, 5));
+    ok.fp().click();
+    const r1 = await pending;
+    expect(r1).toMatchObject({ state: "granted", path: "firefox-globals" });
+    expect(ok.fp().rsaCalls.every((c) => c.all === undefined)).toBe(true);
+
+    const rej = harness({ mode: "firefox", browser: "firefox", gesture: "reject", permission: "throws" });
+    const c2 = await connectCrossSite({ ...rej.base, browser: "firefox", explicit: true });
+    const p2 = c2.result.mount!({} as HTMLElement);
+    await new Promise((r) => setTimeout(r, 5));
+    rej.fp().click();
+    const r2 = await p2;
+    expect(r2).toMatchObject({ state: "needs-visit", visitUrl: expect.stringContaining("/frame/v1/optin.html?return="), reason: "NotAllowedError: requestStorageAccess not allowed (permission: unknown)" });
+    expect(r2.path).toBeUndefined();
+    expect(readPersisted(rej.storage)).toBeNull();
+  });
+
   it("needs-visit carries the opt-in URL with the return address; denied is persisted", async () => {
     const h = harness({ gesture: "reject", permission: "prompt" });
     const ex = await connectCrossSite({ ...h.base, explicit: true });
@@ -250,7 +327,7 @@ describe("connectCrossSite", () => {
     await new Promise((r) => setTimeout(r, 5));
     h.fp().click();
     const r = await pending;
-    expect(r).toMatchObject({ state: "needs-visit", visitUrl: "https://cdn.test/frame/v1/optin.html?return=https%3A%2F%2Fsite-a.pages.dev%2F" });
+    expect(r).toMatchObject({ state: "needs-visit", visitUrl: "https://cdn.test/frame/v1/optin.html?return=https%3A%2F%2Fsite-a.pages.dev%2F", reason: expect.stringMatching(/^NotAllowedError/) });
     expect(readPersisted(h.storage)).toBeNull();
 
     // A browser-level denial is detected on the silent attempt (permission state "denied"): no click needed.

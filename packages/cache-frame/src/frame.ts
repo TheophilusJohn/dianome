@@ -5,8 +5,9 @@
 // Rules enforced here (Phase 0): never post to "*"; accept messages only from window.parent and only from one
 // origin; touch `caches`/`indexedDB` only after the grant (FrameServer constructs the store inside grant()).
 
+import { detectBrowser } from "../../sdk/src/device";
 import { FrameServer, type FramePlatform, type StorageAccessHandle } from "../../sdk/src/cache/frameServer";
-import { parseRequest, sameOrigin, transferablesOf, versionMismatchId, PROTOCOL_VERSION, type FrameResponse } from "../../sdk/src/cache/protocol";
+import { epochNow, parseRequest, sameOrigin, stampSent, transferablesOf, versionMismatchId, PROTOCOL_VERSION, type FrameProgress, type FrameResponse, type GrantResult } from "../../sdk/src/cache/protocol";
 
 const button = document.getElementById("enable") as HTMLButtonElement;
 const note = document.getElementById("note") as HTMLParagraphElement;
@@ -28,19 +29,37 @@ function referrerOrigin(): string | null {
 }
 let parentOrigin: string | null = referrerOrigin();
 
-// One click → one gesture-bound continuation. The SDK asks for `await-click` grants; the click handler runs the
-// request synchronously so requestStorageAccess is the first statement inside the gesture.
+// One click → one gesture-bound continuation. The SDK asks for `await-click` grants; the button stays disabled
+// until one is waiting, and the click handler runs the request synchronously so requestStorageAccess is the first
+// statement inside the gesture. The label is the user's only feedback inside a 48 px frame, so every outcome
+// lands there (a browser permission prompt can keep "Requesting…" up until the user answers it).
+const IDLE_LABEL = "Enable shared model cache";
 let gestureWaiter: (() => void) | null = null;
 button.addEventListener("click", () => {
   const w = gestureWaiter;
   gestureWaiter = null;
-  if (!w) { note.hidden = false; note.textContent = "Nothing is waiting for this click; reload the page that embeds this frame."; return; }
+  if (!w) { button.disabled = true; button.textContent = IDLE_LABEL; return; }
   button.disabled = true;
+  button.textContent = "Requesting permission…";
   w(); // runs the pending grant synchronously: requestStorageAccess is its first statement
 });
 
+function showOutcome(g: GrantResult): void {
+  const labels: Record<GrantResult["state"], string> = {
+    granted: "Shared model cache enabled",
+    "needs-visit": "Visit the cache page first (see the site)",
+    "needs-click": IDLE_LABEL,
+    denied: "Permission denied by the browser",
+    unsupported: "Not supported in this browser",
+  };
+  button.textContent = labels[g.state];
+  button.disabled = true; // needs-click: inGesture() re-enables it when the SDK is actually waiting for the click
+}
+
 const platform: FramePlatform = {
   origin: location.origin,
+  browser: detectBrowser(navigator.userAgent),
+  log: (m) => console.log(m),
   ...(typeof document.requestStorageAccess === "function"
     ? { requestStorageAccess: (opts?: { all: true }) => (document.requestStorageAccess as (o?: unknown) => Promise<StorageAccessHandle | undefined>)(opts) }
     : {}),
@@ -57,10 +76,12 @@ const server = new FrameServer({ platform });
 
 function reply(res: FrameResponse): void {
   if (!parentOrigin) return;
-  window.parent.postMessage(res, parentOrigin, transferablesOf(res));
+  const transfer = transferablesOf(res);
+  window.parent.postMessage(stampSent(res), parentOrigin, transfer); // stamped last: the hop starts at the post
 }
 
 window.addEventListener("message", (ev: MessageEvent) => {
+  const receivedAt = epochNow(); // the request hop ends here, before any validation work
   if (!embedded || ev.source !== window.parent) return;
   if (parentOrigin === null) { if (!ev.origin || ev.origin === "null") return; parentOrigin = ev.origin; }
   if (!sameOrigin(ev.origin, parentOrigin)) return;
@@ -72,8 +93,9 @@ window.addEventListener("message", (ev: MessageEvent) => {
     if (typeof id === "number") reply({ v: PROTOCOL_VERSION, id, ok: false, error: "malformed request", code: "bad_request", ms: 0 });
     return;
   }
-  void server.handle(req).then((res) => {
-    if (req.op === "grant" && res.ok && (res.result as { state?: string }).state === "granted") { button.disabled = true; button.textContent = "Shared model cache enabled"; }
+  const progress = req.op === "grant" ? (stage: FrameProgress["progress"]) => { if (parentOrigin) window.parent.postMessage({ v: PROTOCOL_VERSION, id: req.id, progress: stage } satisfies FrameProgress, parentOrigin); } : undefined;
+  void server.handle(req, receivedAt, progress).then((res) => {
+    if (req.op === "grant" && res.ok) showOutcome(res.result as GrantResult);
     reply(res);
   });
 });

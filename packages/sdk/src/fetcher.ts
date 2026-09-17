@@ -17,8 +17,8 @@ export interface ChunkResult {
   source: ChunkSource;
   /** Time spent in crypto.subtle.digest for this chunk (all sources). */
   verifyMs: number;
-  /** Cross-site only: time spent waiting on the frame for this chunk. 0 elsewhere. */
-  transferMs: number;
+  /** Cross-site only: the postMessage hop that delivered this chunk's buffer from the frame, in ms. Null elsewhere. */
+  transferMs: number | null;
   /** Network attempts made (0 when served from a cache). */
   attempts: number;
 }
@@ -27,7 +27,8 @@ export interface FetchStats {
   /** True when a QuotaExceededError switched the session to `cache: "none"` mid-load. */
   cacheDisabled: boolean;
   verifyMs: number;
-  transferMs: number;
+  /** One postMessage hop per chunk that came through the cross-site frame (completion order). Empty on other paths. */
+  transferSamples: number[];
   /** Cache put failures other than quota (the chunk was still delivered). */
   putErrors: number;
   /** Cached chunks that failed verification and were refetched. */
@@ -106,7 +107,7 @@ export async function fetchChunks(order: PlanChunk[], opts: FetchOptions): Promi
   const backoff = opts.backoffMs ?? DEFAULT_BACKOFF_MS;
   const f = opts.fetch ?? ((u, i) => fetch(u, i));
   const sleep = opts.sleep ?? defaultSleep;
-  const stats: FetchStats = { cacheDisabled: false, verifyMs: 0, transferMs: 0, putErrors: 0, corruptEvicted: 0 };
+  const stats: FetchStats = { cacheDisabled: false, verifyMs: 0, transferSamples: [], putErrors: 0, corruptEvicted: 0 };
 
   // Internal controller so one chunk's final failure cancels the other in-flight fetches.
   const ac = new AbortController();
@@ -153,11 +154,11 @@ export async function fetchChunks(order: PlanChunk[], opts: FetchOptions): Promi
     if (s?.fetch) {
       // Cross-site: the frame fetches and caches; we verify what it hands back and let it refetch once on corruption.
       const frameFetch = s.fetch.bind(s);
-      let transferMs = 0, verifyMs = 0, source: ChunkSource = "network";
+      let transferMs: number | null = null, verifyMs = 0, source: ChunkSource = "network";
       let evictedOnce = false;
       const { value, attempts } = await withRetry(item, async () => {
         const r = await frameFetch(item.sha, item.bytes, opts.modelId, signal);
-        transferMs += r.transferMs;
+        transferMs = r.transferMs; // the hop of the attempt that delivered the bytes
         if (r.quota) disableCache(quotaError("cross-site frame: quota exceeded and nothing left to evict"));
         try {
           verifyMs += await verify(item, r.buf);
@@ -168,7 +169,8 @@ export async function fetchChunks(order: PlanChunk[], opts: FetchOptions): Promi
         source = r.fromCache ? sourceFor(s.mode) : "network";
         return r.buf;
       });
-      stats.transferMs += transferMs; stats.verifyMs += verifyMs;
+      if (transferMs !== null) stats.transferSamples.push(transferMs);
+      stats.verifyMs += verifyMs;
       return { ...base, buf: value, source, verifyMs, transferMs, attempts: source === "network" ? attempts : 0 };
     }
     if (s) {
@@ -178,7 +180,7 @@ export async function fetchChunks(order: PlanChunk[], opts: FetchOptions): Promi
         try {
           const verifyMs = await verify(item, cached);
           stats.verifyMs += verifyMs;
-          return { ...base, buf: cached, source: sourceFor(s.mode), verifyMs, transferMs: 0, attempts: 0 };
+          return { ...base, buf: cached, source: sourceFor(s.mode), verifyMs, transferMs: null, attempts: 0 };
         } catch (e) {
           if (isAbort(e)) throw e;
           stats.corruptEvicted++;
@@ -196,7 +198,7 @@ export async function fetchChunks(order: PlanChunk[], opts: FetchOptions): Promi
         else stats.putErrors++;
       }
     }
-    return { ...base, buf, source: "network", verifyMs, transferMs: 0, attempts };
+    return { ...base, buf, source: "network", verifyMs, transferMs: null, attempts };
   };
 
   let next = 0;

@@ -6,7 +6,7 @@
 import { detectBrowser, type Browser } from "../device";
 import { AbortedError, ChunkError, DianomeError } from "../errors";
 import type { CrossSiteResult } from "../types";
-import { frameUrlFor, optinUrlFor, parseResponse, sameOrigin, transferablesOf, PROTOCOL_VERSION, type FrameErrorCode, type FrameOp, type FrameRequest, type FrameResultOf, type GrantResult } from "./protocol";
+import { epochNow, frameUrlFor, hopSince, optinUrlFor, parseProgress, parseResponse, sameOrigin, stampSent, transferablesOf, PROTOCOL_VERSION, type FrameErrorCode, type FrameOp, type FrameRequest, type FrameResultOf, type GrantProgress, type GrantResult } from "./protocol";
 import type { ChunkStore, ChunkStoreStatus } from "./types";
 
 export const CROSSSITE_KEY = "dianome:crosssite";
@@ -65,7 +65,30 @@ export class FrameCallError extends DianomeError {
   constructor(readonly frameCode: FrameErrorCode, message: string) { super("frame_error", message); this.name = "FrameCallError"; }
 }
 
-export interface OpTiming { count: number; totalMs: number; maxMs: number; /** Time the frame itself reported spending (sum). */ frameMs: number }
+export interface OpTiming {
+  count: number;
+  /** Parent-measured round trip (sum, max). */
+  totalMs: number;
+  maxMs: number;
+  /** Time the frame itself reported spending inside the op (sum). */
+  frameMs: number;
+  /** postMessage hops alone (sums): frame → parent for replies, parent → frame for requests. Null-hop replies are not counted. */
+  hopOutMs: number;
+  hopInMs: number;
+}
+
+export interface CallOptions { timeoutMs?: number | null; signal?: AbortSignal; /** Progress notes the frame posts for a pending op (await-click grants). */ onProgress?: ((stage: GrantProgress) => void) | undefined }
+
+/** What a call resolves to when the caller wants the timing breakdown as well as the result. */
+export interface CallMeta<T> {
+  result: T;
+  roundTripMs: number;
+  /** Frame → parent postMessage hop for this reply (the transferred buffer rides on it); null if the frame did not stamp it. */
+  hopOutMs: number | null;
+  /** Parent → frame hop of the request, as measured by the frame; null if not reported. */
+  hopInMs: number | null;
+  frameMs: number;
+}
 
 export const DEFAULT_CALL_TIMEOUT_MS = 20_000;
 export const FETCH_CALL_TIMEOUT_MS = 180_000;
@@ -76,7 +99,7 @@ const now = (): number => (typeof performance !== "undefined" ? performance.now(
 /** Request/response correlation over a FramePort with per-op timeouts and timing stats. */
 export class FrameClient {
   private nextId = 1;
-  private readonly pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: unknown) => void; timer: ReturnType<typeof setTimeout> | null; op: FrameOp; t0: number }>();
+  private readonly pending = new Map<number, { resolve: (v: CallMeta<unknown>) => void; reject: (e: unknown) => void; timer: ReturnType<typeof setTimeout> | null; op: FrameOp; t0: number; onProgress?: ((stage: GrantProgress) => void) | undefined }>();
   private readonly stats = new Map<string, OpTiming>();
   private readonly unlisten: () => void;
   private closed = false;
@@ -86,6 +109,9 @@ export class FrameClient {
   }
 
   private onMessage(data: unknown): void {
+    const receivedAt = epochNow(); // first thing: the hop ends when the message reaches us, not when we finish bookkeeping
+    const prog = parseProgress(data);
+    if (prog) { this.pending.get(prog.id)?.onProgress?.(prog.progress); return; }
     const res = parseResponse(data);
     if (!res) return;
     const p = this.pending.get(res.id);
@@ -93,20 +119,28 @@ export class FrameClient {
     this.pending.delete(res.id);
     if (p.timer) clearTimeout(p.timer);
     const ms = now() - p.t0;
-    const s = this.stats.get(p.op) ?? { count: 0, totalMs: 0, maxMs: 0, frameMs: 0 };
+    const hopOutMs = hopSince(res.sentAt, receivedAt);
+    const hopInMs = typeof res.hopInMs === "number" ? res.hopInMs : null;
+    const s = this.stats.get(p.op) ?? { count: 0, totalMs: 0, maxMs: 0, frameMs: 0, hopOutMs: 0, hopInMs: 0 };
     s.count++; s.totalMs += ms; s.maxMs = Math.max(s.maxMs, ms); s.frameMs += res.ms;
+    if (hopOutMs !== null) s.hopOutMs += hopOutMs;
+    if (hopInMs !== null) s.hopInMs += hopInMs;
     this.stats.set(p.op, s);
-    if (res.ok) p.resolve(res.result);
+    if (res.ok) p.resolve({ result: res.result, roundTripMs: ms, hopOutMs, hopInMs, frameMs: res.ms });
     else p.reject(new FrameCallError(res.code, `frame ${p.op}: ${res.error}`));
   }
 
-  call<O extends FrameOp>(req: Omit<Extract<FrameRequest, { op: O }>, "v" | "id">, opts: { timeoutMs?: number | null; signal?: AbortSignal } = {}): Promise<FrameResultOf<O>> {
+  async call<O extends FrameOp>(req: Omit<Extract<FrameRequest, { op: O }>, "v" | "id">, opts: CallOptions = {}): Promise<FrameResultOf<O>> {
+    return (await this.callWithMeta<O>(req, opts)).result;
+  }
+
+  callWithMeta<O extends FrameOp>(req: Omit<Extract<FrameRequest, { op: O }>, "v" | "id">, opts: CallOptions = {}): Promise<CallMeta<FrameResultOf<O>>> {
     if (this.closed) return Promise.reject(new DianomeError("frame_error", "frame client closed"));
     const id = this.nextId++;
     const msg = { v: PROTOCOL_VERSION, id, ...req } as FrameRequest;
     const timeoutMs = opts.timeoutMs === undefined ? this.timeoutMs : opts.timeoutMs;
-    return new Promise<FrameResultOf<O>>((resolve, reject) => {
-      const entry = { resolve: resolve as (v: unknown) => void, reject, timer: null as ReturnType<typeof setTimeout> | null, op: req.op, t0: now() };
+    return new Promise<CallMeta<FrameResultOf<O>>>((resolve, reject) => {
+      const entry = { resolve: resolve as (v: CallMeta<unknown>) => void, reject, timer: null as ReturnType<typeof setTimeout> | null, op: req.op, t0: now(), onProgress: opts.onProgress };
       if (timeoutMs !== null) {
         entry.timer = setTimeout(() => {
           this.pending.delete(id);
@@ -119,7 +153,7 @@ export class FrameClient {
         opts.signal.addEventListener("abort", onAbort, { once: true });
       }
       this.pending.set(id, entry);
-      try { this.port.post(msg, transferablesOf(msg)); }
+      try { this.port.post(stampSent(msg), transferablesOf(msg)); }
       catch (e) { this.pending.delete(id); if (entry.timer) clearTimeout(entry.timer); reject(e); }
     });
   }
@@ -154,11 +188,12 @@ export class CrossSiteStore implements ChunkStore {
   async evict(shas: string[]): Promise<void> { await this.client.call<"evict">({ op: "evict", shas }); }
   async evictModel(modelId: string): Promise<void> { await this.client.call<"evictModel">({ op: "evictModel", modelId }); }
   async clear(): Promise<void> { await this.client.call<"clear">({ op: "clear" }); }
-  async fetch(sha: string, bytes: number, modelId: string, signal?: AbortSignal): Promise<{ buf: ArrayBuffer; fromCache: boolean; transferMs: number; quota?: true }> {
-    const t0 = now();
+  /** `transferMs` is the frame → parent postMessage hop that carried the buffer (null when the frame did not stamp it). */
+  async fetch(sha: string, bytes: number, modelId: string, signal?: AbortSignal): Promise<{ buf: ArrayBuffer; fromCache: boolean; transferMs: number | null; quota?: true }> {
     try {
-      const r = await this.client.call<"fetch">({ op: "fetch", sha, bytes, modelId }, { timeoutMs: FETCH_CALL_TIMEOUT_MS, ...(signal ? { signal } : {}) });
-      return { buf: r.buf, fromCache: r.fromCache, transferMs: now() - t0, ...(r.quota ? { quota: true as const } : {}) };
+      const m = await this.client.callWithMeta<"fetch">({ op: "fetch", sha, bytes, modelId }, { timeoutMs: FETCH_CALL_TIMEOUT_MS, ...(signal ? { signal } : {}) });
+      const r = m.result;
+      return { buf: r.buf, fromCache: r.fromCache, transferMs: m.hopOutMs, ...(r.quota ? { quota: true as const } : {}) };
     } catch (e) {
       if (e instanceof FrameCallError) {
         const m = /^http_(\d+)$/.exec(e.frameCode);
@@ -264,15 +299,13 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   catch (e) { return { store: null, result: { state: "unsupported", reason: `frame unavailable: ${(e as Error)?.message ?? String(e)}` } }; }
 
   const settle = (g: GrantResult, c: FrameClient): CrossSiteConnection => {
+    const extra = { ...(g.reason ? { reason: g.reason } : {}), ...(g.path ? { path: g.path } : {}) };
     switch (g.state) {
-      case "granted": {
-        writePersisted("granted", storage);
-        return { store: new CrossSiteStore(c), result: { state: "granted", ...(g.reason ? { reason: g.reason } : {}) } };
-      }
-      case "denied": writePersisted("denied", storage); return { store: null, result: { state: "denied", ...(g.reason ? { reason: g.reason } : {}) } };
-      case "unsupported": writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", ...(g.reason ? { reason: g.reason } : {}) } };
-      case "needs-visit": return { store: null, result: { state: "needs-visit", visitUrl, ...(g.reason ? { reason: g.reason } : {}) } };
-      case "needs-click": return { store: null, result: { state: "needs-click", ...(g.reason ? { reason: g.reason } : {}) } };
+      case "granted": writePersisted("granted", storage); return { store: new CrossSiteStore(c), result: { state: "granted", ...extra } };
+      case "denied": writePersisted("denied", storage); return { store: null, result: { state: "denied", ...extra } };
+      case "unsupported": writePersisted("unsupported", storage); return { store: null, result: { state: "unsupported", ...extra } };
+      case "needs-visit": return { store: null, result: { state: "needs-visit", visitUrl, ...extra } };
+      case "needs-click": return { store: null, result: { state: "needs-click", ...extra } };
     }
   };
 
@@ -286,10 +319,12 @@ export async function connectCrossSite(opts: CrossSiteConnectOptions): Promise<C
   }
 
   // The browser wants the click inside the frame: the developer mounts the frame's button somewhere visible.
-  const mount = async (container: HTMLElement): Promise<CrossSiteResult> => {
-    const visible = await open(url, container);
+  const mount = async (container: HTMLElement, mountOpts: { onProgress?: (stage: GrantProgress) => void } = {}): Promise<CrossSiteResult> => {
+    let visible: FrameClient;
+    try { visible = await open(url, container); }
+    catch (e) { return { state: "unsupported", reason: `button frame unavailable: ${(e as Error)?.message ?? String(e)}` }; }
     let vg: GrantResult;
-    try { vg = await visible.call<"grant">({ op: "grant", mode: "await-click" }, { timeoutMs: null }); }
+    try { vg = await visible.call<"grant">({ op: "grant", mode: "await-click" }, { timeoutMs: null, onProgress: mountOpts.onProgress }); }
     catch (e) { visible.close(); return { state: "unsupported", reason: `grant failed: ${(e as Error)?.message ?? String(e)}` }; }
     if (vg.state !== "granted") { visible.close(); return settle(vg, visible).result; }
     // Granted in the visible frame. The permission is now persisted, so the hidden frame should be able to grant

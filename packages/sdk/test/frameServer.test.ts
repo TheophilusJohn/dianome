@@ -49,14 +49,21 @@ describe("FrameServer grant", () => {
     }
   });
 
-  it("Firefox: the request resolves without a handle; the store is built on the globals only after the grant", async () => {
+  it("Firefox: plain requestStorageAccess() as the first statement of the gesture, no handle; the store is built on the globals only after the grant", async () => {
     const fp = await fakePlatform({ mode: "firefox" });
     const s = new FrameServer({ platform: fp.platform });
     expect(fp.globalsTouched).toBe(0);
-    const p = s.handle(req({ op: "grant", mode: "await-click" }));
+    const stages: string[] = [];
+    const p = s.handle(req({ op: "grant", mode: "await-click" }), undefined, (st) => stages.push(st));
+    await new Promise((r) => setTimeout(r, 2));
+    expect(stages).toEqual(["waiting-click"]);
     fp.click();
     expect(await p).toMatchObject({ ok: true, result: { state: "granted", path: "firefox-globals" } });
+    expect(fp.rsaCalls).toEqual([{ inGesture: true }]); // no {all: true} on Firefox
+    expect(stages).toEqual(["waiting-click", "clicked", "requesting"]);
     expect(fp.globalsTouched).toBe(1);
+    expect(fp.logs.some((l) => /requestStorageAccess\(\) resolved \(await-click\)/.test(l))).toBe(true);
+    expect(fp.logs.at(-1)).toMatch(/grant → granted via firefox-globals/);
     const sha = await sha256(new Uint8Array([9]));
     await s.handle(req({ op: "put", sha, buf: new Uint8Array([9]).buffer }));
     expect(fp.globalCaches.caches.get(CACHE_NAME)!.entries.has(`https://cdn.test/chunks/${sha}`)).toBe(true);
@@ -68,6 +75,39 @@ describe("FrameServer grant", () => {
     const s = new FrameServer({ platform: fp.platform });
     expect(await s.handle(req({ op: "hello" }))).toMatchObject({ result: { hasStorageAccess: true } });
     expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ ok: true, result: { state: "granted", path: "firefox-globals" } });
+  });
+
+  it("Firefox rejection shape: NotAllowedError inside the gesture with no permissions API → needs-visit (no path), reason carries the rejection", async () => {
+    // Firefox rejects requestStorageAccess() when the user has not interacted with the origin top-level (or dismissed
+    // its prompt) and its permissions.query has no "storage-access" name: the frame sees a TypeError from query().
+    const fp = await fakePlatform({ mode: "firefox", gesture: "reject", permission: "throws" });
+    const s = new FrameServer({ platform: fp.platform });
+    const p = s.handle(req({ op: "grant", mode: "await-click" }));
+    fp.click();
+    const res = await p;
+    expect(res).toEqual({ v: 1, id: 1, ok: true, ms: expect.any(Number), result: { state: "needs-visit", reason: "NotAllowedError: requestStorageAccess not allowed (permission: unknown)" } });
+    expect((res as { result: { path?: string } }).result.path).toBeUndefined();
+    expect(fp.rsaCalls).toEqual([{ inGesture: true }]);
+    expect(s.granted).toBe(false);
+    expect(fp.logs).toEqual(expect.arrayContaining([expect.stringMatching(/requestStorageAccess rejected \(await-click\): NotAllowedError/), expect.stringMatching(/grant → needs-visit: NotAllowedError/)]));
+    // The silent attempt rejecting the same way asks for the click first.
+    const fp2 = await fakePlatform({ mode: "firefox", gesture: "reject", permission: "throws" });
+    expect(await new FrameServer({ platform: fp2.platform }).handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "needs-click", reason: "NotAllowedError: requestStorageAccess not allowed" } });
+    expect(fp2.rsaCalls).toEqual([{ inGesture: false }]);
+  });
+
+  it("Firefox: a grant that resolves but cannot see the marker (no top-level visit yet) → needs-visit via firefox-globals", async () => {
+    const fp = await fakePlatform({ mode: "firefox", silent: "grant", markerInGlobals: false });
+    const s = new FrameServer({ platform: fp.platform });
+    expect(await s.handle(req({ op: "grant", mode: "silent" }))).toMatchObject({ result: { state: "needs-visit", path: "firefox-globals", reason: expect.stringContaining("marker /frame/v1/marker not visible") } });
+    expect(s.granted).toBe(false);
+  });
+
+  it("silent grants report only the requesting stage", async () => {
+    const fp = await fakePlatform({ mode: "chrome", silent: "grant" });
+    const stages: string[] = [];
+    await new FrameServer({ platform: fp.platform }).handle(req({ op: "grant", mode: "silent" }), undefined, (st) => stages.push(st));
+    expect(stages).toEqual(["requesting"]);
   });
 
   it("no requestStorageAccess → unsupported", async () => {

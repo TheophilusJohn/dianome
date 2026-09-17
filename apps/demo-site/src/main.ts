@@ -1,4 +1,4 @@
-import type { CrossSiteResult, LoadSummary, Progress } from "dianome";
+import type { CrossSiteProgress, CrossSiteResult, LoadSummary, Progress } from "dianome";
 import { API, CDN, MODEL, el, fmtBytes, fmtRate, makeDianome } from "./common";
 
 el("site").textContent = location.host;
@@ -15,27 +15,46 @@ el("telemetry").addEventListener("change", () => { d = makeDianome({ telemetry: 
 
 // ---- cross-site opt-in: called synchronously from the click handler ----
 el("enable").addEventListener("click", () => {
-  xsite.textContent = "requesting…";
+  xsite.textContent = "requesting (silent attempt through the hidden frame)…";
   mount.replaceChildren();
-  d.enableCrossSiteCache().then(showXsite, (e) => { xsite.textContent = `error: ${(e as Error).message}`; });
+  console.log("[dianome demo] enableCrossSiteCache() called");
+  d.enableCrossSiteCache().then(showXsite, (e) => showError("enableCrossSiteCache", e));
 });
+function showError(where: string, e: unknown): void {
+  const err = e as { name?: string; message?: string; code?: string };
+  console.error(`[dianome demo] ${where} failed`, e);
+  xsite.textContent = `error in ${where}: ${err?.name ?? "Error"}${err?.code ? ` (${err.code})` : ""}: ${err?.message ?? String(e)}`;
+  persisted();
+}
+const STATE_TEXT: Record<CrossSiteResult["state"], string> = {
+  granted: "Shared cache active: loads now go through the cdn frame and are shared with other sites.",
+  denied: "The browser denied storage access for the cdn frame (site permission). Loads use the per-site cache.",
+  unsupported: "This browser cannot share the cache across sites (Safari/WebKit, or no Storage Access API). Loads use the per-site cache.",
+  "needs-visit": "The browser has no first-party interaction with the cdn origin yet. Open the link once, click Enable there, and come back:",
+  "needs-click": "The browser wants the click inside the cdn frame itself. Click the button below:",
+};
 function showXsite(r: CrossSiteResult): void {
   persisted();
+  console.log(`[dianome demo] cross-site result: state=${r.state}${r.path ? ` path=${r.path}` : ""}${r.reason ? ` reason=${r.reason}` : ""}`, r);
   const lines = [`state: ${r.state}`];
+  if (r.path) lines.push(`grant path: ${r.path}`);
   if (r.reason) lines.push(`reason: ${r.reason}`);
+  lines.push(STATE_TEXT[r.state]);
+  xsite.textContent = lines.join("\n");
   if (r.state === "needs-visit" && r.visitUrl) {
-    lines.push("Chrome needs one top-level visit to the CDN origin first:");
     const a = document.createElement("a"); a.href = r.visitUrl; a.textContent = r.visitUrl;
-    xsite.textContent = lines.join("\n") + "\n"; xsite.appendChild(a);
+    xsite.appendChild(document.createTextNode("\n")); xsite.appendChild(a);
     return;
   }
   if (r.state === "needs-click" && r.mount) {
-    lines.push("Click the button below (it is the CDN frame itself; the browser needs the click inside it):");
-    xsite.textContent = lines.join("\n");
-    r.mount(mount).then((final) => { mount.replaceChildren(); showXsite(final); });
-    return;
+    const progressText: Record<CrossSiteProgress, string> = {
+      "waiting-click": "frame ready, waiting for your click inside it…",
+      clicked: "clicked; the frame is calling requestStorageAccess()…",
+      requesting: "requestStorageAccess() pending: if the browser shows a permission prompt (address bar), answer it.",
+    };
+    r.mount(mount, { onProgress: (stage) => { console.log(`[dianome demo] mount progress: ${stage}`); xsite.textContent = `${lines.join("\n")}\n→ ${progressText[stage]}`; } })
+      .then((final) => { mount.replaceChildren(); showXsite(final); }, (e) => { mount.replaceChildren(); showError("mount", e); });
   }
-  xsite.textContent = lines.join("\n");
 }
 
 // ---- load ----
@@ -74,7 +93,7 @@ async function load(): Promise<void> {
     status.textContent = [
       `done in ${(ms / 1000).toFixed(2)} s · ${fmtBytes(summary.bytes)} · ${summary.chunks} chunks · ${fmtRate(summary.bytesPerSecond)}`,
       `source: ${summary.source} · cache hits ${summary.cacheHits}/${summary.chunks} · breakdown ${JSON.stringify(counts)}`,
-      `cache mode: ${summary.cacheMode}${summary.cacheDisabled ? " (quota fallback during this load)" : ""} · verify ${summary.verifyMs.toFixed(0)} ms · transfer ${summary.transferMs.toFixed(0)} ms`,
+      `cache mode: ${summary.cacheMode}${summary.cacheDisabled ? " (quota fallback during this load)" : ""} · verify ${summary.verifyMs.toFixed(0)} ms · postMessage hop median ${summary.transferMs.toFixed(1)} ms/chunk (${summary.transferSamples.length} samples)`,
       `cache status: ${st.mode}, ${st.chunks} chunks, ${fmtBytes(st.usageBytes)} used${st.quotaBytes ? ` of ${fmtBytes(st.quotaBytes)}` : ""}`,
       `telemetry: ${summary.report ? `sent (HTTP ${summary.telemetryStatus})` : "off"}${summary.report ? `\n${JSON.stringify(summary.report)}` : ""}`,
     ].join("\n");
@@ -115,10 +134,10 @@ el("measure").addEventListener("click", async () => {
   // Transfer cost: the cross-site store's per-op timings, if the shared cache is active.
   const st = await d.cache.status();
   if (st.mode === "cross-site") {
-    const store = await (d as unknown as { store(): Promise<{ timings?: () => Record<string, { count: number; totalMs: number; maxMs: number; frameMs: number }> }> }).store();
+    const store = await (d as unknown as { store(): Promise<{ timings?: () => Record<string, { count: number; totalMs: number; maxMs: number; frameMs: number; hopOutMs: number; hopInMs: number }> }> }).store();
     const tm = store?.timings?.();
     if (tm) for (const [op, v] of Object.entries(tm)) lines.push(`frame ${op}: n=${v.count} mean ${(v.totalMs / v.count).toFixed(1)} ms (frame-side ${(v.frameMs / v.count).toFixed(1)} ms) max ${v.maxMs.toFixed(1)} ms`);
-    if (tm?.fetch) lines.push(`→ postMessage+transfer overhead per fetch ≈ ${((tm.fetch.totalMs - tm.fetch.frameMs) / tm.fetch.count).toFixed(1)} ms`);
+    if (tm?.fetch) lines.push(`→ measured frame→parent hop per fetch (mean) ${(tm.fetch.hopOutMs / tm.fetch.count).toFixed(2)} ms; request hop ${(tm.fetch.hopInMs / tm.fetch.count).toFixed(2)} ms`);
   } else {
     lines.push(`cross-site store not active (mode ${st.mode}); enable the shared cache and load once to measure transfer cost`);
   }

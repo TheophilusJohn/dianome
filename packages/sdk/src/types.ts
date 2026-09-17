@@ -67,7 +67,10 @@ export interface LoadSummary {
   /** Per-chunk sources in completion order. */
   sources: ChunkSource[];
   verifyMs: number;
+  /** Median postMessage hop per chunk delivered by the cross-site frame (ms); 0 when no chunk came through the frame. */
   transferMs: number;
+  /** Every per-chunk hop behind `transferMs`, in completion order. */
+  transferSamples: number[];
   /** True when a QuotaExceededError switched this session to `cache: "none"` during the load. */
   cacheDisabled: boolean;
   /** The telemetry report that was sent (null when telemetry is off). */
@@ -87,16 +90,22 @@ export interface LoadedModel {
 
 export type CrossSiteState = "granted" | "unsupported" | "denied" | "needs-visit" | "needs-click";
 
+/** Stages `mount()` reports while the user's click and the browser's decision are pending. */
+export type CrossSiteProgress = "waiting-click" | "clicked" | "requesting";
+
 export interface CrossSiteResult {
   state: CrossSiteState;
   /** `needs-visit`: the top-level opt-in page on the CDN origin the developer should link to. */
   visitUrl?: string;
   /**
    * `needs-click`: the browser wants a click inside the CDN frame itself. `mount(el)` shows the frame's single
-   * "Enable shared model cache" button inside `el` and resolves once the user has clicked it.
+   * "Enable shared model cache" button inside `el` and resolves once the user has clicked it and the browser has
+   * decided; `onProgress` reports the stages in between (a permission prompt can keep it pending).
    */
-  mount?: (container: HTMLElement) => Promise<CrossSiteResult>;
-  /** Why the grant failed, when it did (for logs). */
+  mount?: (container: HTMLElement, opts?: { onProgress?: (stage: CrossSiteProgress) => void }) => Promise<CrossSiteResult>;
+  /** Which grant path succeeded or was attempted: Chrome's storage-access handle or Firefox's globals. */
+  path?: "chrome-handle" | "firefox-globals";
+  /** Why the grant ended the way it did (rejection name and message, marker probe, persisted outcome). */
   reason?: string;
 }
 

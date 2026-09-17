@@ -42,6 +42,14 @@ export function countCacheHits(sources: Iterable<ChunkSource>): number {
   return n;
 }
 
+/** Median of a sample list; 0 for an empty list. Even counts average the two middle values. */
+export function median(samples: readonly number[]): number {
+  if (samples.length === 0) return 0;
+  const s = [...samples].sort((a, b) => a - b);
+  const mid = s.length >> 1;
+  return s.length % 2 ? s[mid]! : (s[mid - 1]! + s[mid]!) / 2;
+}
+
 export interface ReportInput {
   model: string;
   variant: string;
@@ -49,7 +57,8 @@ export interface ReportInput {
   sources: ChunkSource[];
   ms: number;
   verifyMs: number;
-  transferMs: number;
+  /** Per-chunk postMessage hops from the cross-site frame; transfer_ms is their median (0 when empty). */
+  transferSamples: readonly number[];
   cacheMode: CacheMode;
   device: DeviceInfo;
 }
@@ -62,7 +71,7 @@ export function buildReport(i: ReportInput): LoadReport {
     source: classifySource(i.sources), cache_hits: countCacheHits(i.sources), browser: i.device.browser, webgpu: i.device.webgpu,
     bytes_per_second: i.ms > 0 ? int(i.bytes / (i.ms / 1000)) : 0,
     verify_ms: int(i.verifyMs),
-    transfer_ms: int(i.transferMs),
+    transfer_ms: int(median(i.transferSamples)),
     cache_mode: i.cacheMode,
   };
   if (i.device.quotaBytes !== null) r.quota_bytes = int(i.device.quotaBytes);
