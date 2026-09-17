@@ -1,5 +1,11 @@
 # Phase 4 notes — server half, cost baseline, privacy probes
 
+## Findings
+
+- **The split path is bit-exact against the full forward at every N tested.** `max_abs_diff` is 0.0 for N ∈ {0, 1, 8, 16, 23, 24} with identical argmax (table under "Correctness gate: max_abs_diff per N"; the fixtures' logits also match `model.forward` at 0.0).
+- **Server cost is roughly linear in the number of server layers, with a floor set by `lm_head`.** On the 0.5B model the ratio `cost(N)/cost(0)` falls from 1.000 at N = 0 to 0.224 at N = 24, where the server runs only the final norm, `lm_head` and sampling; that 22% is the floor no split point gets under (table under "Cost harness"; Mac numbers, the shape is what carries over).
+- **Input tokens stay linearly recoverable from the hidden state at every boundary, so split inference does not hide the prompt from an adversarial server.** Normalised by the 0.8202 vocabulary-coverage ceiling, linear-probe top-1 is 0.995 at boundary 0, 0.807 at boundary 12 and 0.700 at boundary 24 (`linear_top1 / 0.8202`, table under "Privacy band"). Nearest-neighbour against the embedding matrix drops below 0.005 from boundary 1 onward while the trained probes barely move, so nearest-neighbour is not a valid privacy measure.
+
 Every number below is pasted from the output of the command shown above it or
 copied from the result file it names, run on 2026-09-17 on this MacBook
 (mps (Apple M4), 16 GB). Nothing here is typed by hand.
