@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dianome.dev/schemas/telemetry.v2.json",
+  "title": "Dianome load report v2",
+  "description": "One model-load report posted by a client to POST /v1/telemetry/load. Schema 2 adds optional measurements to the v1 fields; the Worker accepts schema 1 and 2. The Worker adds country, colo and a coarse timestamp from the request; it never stores the IP address or user agent string. Bodies over 4096 bytes are rejected.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "model",
+    "variant",
+    "bytes",
+    "chunks",
+    "ms",
+    "source",
+    "cache_hits",
+    "browser",
+    "webgpu"
+  ],
+  "properties": {
+    "schema": {
+      "const": 2
+    },
+    "model": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "maxLength": 128,
+      "description": "Manifest id"
+    },
+    "variant": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._/-]*$",
+      "maxLength": 128,
+      "description": "Variant name (fp16 | q8 | q4) or file path for a files manifest"
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1099511627776,
+      "description": "Bytes received"
+    },
+    "chunks": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Chunks fetched"
+    },
+    "ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400000,
+      "description": "Wall time of the load"
+    },
+    "source": {
+      "enum": [
+        "network",
+        "per-site-cache",
+        "cross-site-cache",
+        "mixed"
+      ]
+    },
+    "cache_hits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Chunks served from a cache; at most `chunks`"
+    },
+    "browser": {
+      "enum": [
+        "chrome",
+        "firefox",
+        "safari",
+        "other"
+      ]
+    },
+    "webgpu": {
+      "type": "boolean"
+    },
+    "bytes_per_second": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1099511627776,
+      "description": "bytes / (ms / 1000), rounded"
+    },
+    "verify_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400000,
+      "description": "Total time in crypto.subtle.digest over every chunk"
+    },
+    "transfer_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400000,
+      "description": "Total time waiting on the cross-site frame (postMessage + transfer); 0 on other paths"
+    },
+    "quota_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1099511627776,
+      "description": "navigator.storage.estimate().quota"
+    },
+    "max_buffer_size": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1099511627776,
+      "description": "WebGPU adapter limit maxBufferSize"
+    },
+    "cache_mode": {
+      "enum": [
+        "per-site",
+        "cross-site",
+        "none"
+      ],
+      "description": "Effective cache mode at the end of the load (none after a quota fallback)"
+    }
+  }
+}

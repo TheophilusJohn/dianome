@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Dianome demo</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px auto; max-width: 72ch; padding: 0 16px; color: #222; line-height: 1.45; }
+  h1 { font-size: 20px; } h2 { font-size: 16px; margin-top: 28px; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #8884; background: #1f6feb; color: #fff; cursor: pointer; margin-right: 8px; }
+  button:disabled { opacity: .5; cursor: default; }
+  button.secondary { background: #eee; color: #222; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 12px 0; }
+  .bars { display: grid; grid-template-columns: 8em 1fr 6em; gap: 4px 10px; align-items: center; font-size: 13px; }
+  .bar { height: 12px; background: #eee; border-radius: 3px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: #1f6feb; width: 0; transition: width .1s linear; }
+  .bar > i.cache { background: #2da44e; } .bar > i.xsite { background: #8250df; } .bar > i.mixed { background: linear-gradient(90deg, #1f6feb, #2da44e); }
+  #status, #xsite, #stats { white-space: pre-wrap; background: #f6f8fa; padding: 10px; border-radius: 8px; min-height: 1.4em; }
+  #mount { margin-top: 10px; }
+  nav a { margin-right: 14px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<h1>Dianome demo · <span id="site"></span></h1>
+<nav><a href="./transformersjs.html">Transformers.js adapter</a><a href="./webllm.html">WebLLM adapter</a></nav>
+<p>This page loads <code id="model-id">qwen2.5-0.5b-instruct</code> (q4) through the <code>dianome</code> SDK. API <code id="api"></code>, CDN <code id="cdn"></code>. Override with <code>?api=&amp;cdn=</code>.</p>
+
+<h2>Shared (cross-site) cache</h2>
+<div class="row">
+  <button id="enable">Enable shared cache</button>
+  <span id="persisted"></span>
+</div>
+<div id="xsite">not requested</div>
+<div id="mount"></div>
+
+<h2>Load</h2>
+<div class="row">
+  <button id="load">Load Qwen2.5-0.5B (q4)</button>
+  <button id="abort" class="secondary" disabled>Abort</button>
+  <button id="evict" class="secondary">Evict this model</button>
+  <button id="clear" class="secondary">Clear cache</button>
+  <label><input type="checkbox" id="telemetry" checked> telemetry</label>
+</div>
+<div id="status">idle</div>
+<p class="legend"><i style="background:#1f6feb"></i>network <i style="background:#2da44e"></i>per-site cache <i style="background:#8250df"></i>cross-site cache</p>
+<div class="bars" id="bars"></div>
+
+<h2>Measurements</h2>
+<div class="row">
+  <button id="measure" class="secondary">Measure SHA-256 and transfer cost</button>
+</div>
+<div id="stats">—</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -2,7 +2,8 @@ import { createExecutionContext, env, waitOnExecutionContext } from "cloudflare:
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import worker from "../src/index";
 import { STATS_CACHE_KEY } from "../src/stats";
-import { MODEL_ID, seedManifest, validReport } from "./fixtures";
+import { dataPoint } from "../src/telemetry";
+import { MODEL_ID, seedManifest, validReport, validReportV2 } from "./fixtures";
 
 const BASE = "https://api.dianome.dev";
 
@@ -128,9 +129,37 @@ describe("telemetry", () => {
     const { webgpu: _w, ...missing } = validReport();
     expect((await post(missing)).status).toBe(400);
     expect((await post({ ...validReport(), ms: "8420" })).status).toBe(400);
-    expect((await post({ ...validReport(), schema: 2 })).status).toBe(400);
+    expect((await post({ ...validReport(), schema: 3 })).status).toBe(400);
     expect((await post({ ...validReport(), cache_hits: 43 })).status).toBe(400);
     expect((await post("not json")).status).toBe(400);
+  });
+  it("accepts a schema-2 report with every optional field, and one with none", async () => {
+    expect((await post(validReportV2())).status).toBe(202);
+    expect((await post({ ...validReport(), schema: 2 })).status).toBe(202);
+    expect((await post({ ...validReport(), schema: 2, cache_mode: "none" })).status).toBe(202);
+  });
+  it("rejects schema-2 fields on a schema-1 report, bad v2 values, and schema 3", async () => {
+    const r1 = await post({ ...validReport(), cache_mode: "per-site" });
+    expect(r1.status).toBe(400);
+    expect(await r1.json()).toMatchObject({ detail: "unknown field: cache_mode" });
+    expect((await post({ ...validReportV2(), cache_mode: "disk" })).status).toBe(400);
+    expect((await post({ ...validReportV2(), verify_ms: -1 })).status).toBe(400);
+    expect((await post({ ...validReportV2(), bytes_per_second: 1.5 })).status).toBe(400);
+    expect((await post({ ...validReportV2(), quota_bytes: "lots" })).status).toBe(400);
+    expect((await post({ ...validReportV2(), ip: "1.2.3.4" })).status).toBe(400);
+    expect((await post({ ...validReport(), schema: 3 })).status).toBe(400);
+  });
+  it("maps schema 1 and 2 onto the Analytics Engine columns (absent doubles are -1, cache_mode is blob8)", () => {
+    const p1 = dataPoint(validReport() as never, "US", "ATL", "2026-09-16T23:00:00.000Z");
+    expect(p1.blobs).toEqual(["qwen2.5-0.5b-instruct", "q4", "network", "chrome", "US", "ATL", "2026-09-16T23:00:00.000Z", ""]);
+    expect(p1.doubles).toEqual([323893760, 42, 8420, 0, 1, -1, -1, -1, -1, -1]);
+    expect(p1.indexes).toEqual(["qwen2.5-0.5b-instruct"]);
+    const p2 = dataPoint(validReportV2() as never, "US", "ATL", "h");
+    expect(p2.blobs?.[7]).toBe("per-site");
+    expect(p2.doubles).toEqual([323893760, 42, 8420, 17, 1, 38467000, 210, 0, 10760000000, 4294967292]);
+    const p3 = dataPoint({ ...validReportV2(), transfer_ms: undefined, cache_mode: undefined } as never, "US", "ATL", "h");
+    expect(p3.doubles?.[7]).toBe(-1);
+    expect(p3.blobs?.[7]).toBe("");
   });
   it("rejects non-JSON content types and GET", async () => {
     expect((await call("/v1/telemetry/load", { method: "POST", headers: { "Content-Type": "text/plain" }, body: "{}" })).status).toBe(415);

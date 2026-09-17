@@ -11,3 +11,8 @@ __pycache__/
 apps/*/dist/
 .dev.vars
 .env.r2
+packages/*/dist/
+packages/sdk/test-results/
+packages/sdk/playwright-report/
+mlc-export/
+packages/sdk/*.tgz

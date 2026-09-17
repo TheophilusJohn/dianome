@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Dianome · Transformers.js adapter</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px auto; max-width: 72ch; padding: 0 16px; color: #222; line-height: 1.45; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #8884; background: #1f6feb; color: #fff; cursor: pointer; margin-right: 8px; }
+  button:disabled { opacity: .5; }
+  #log { white-space: pre-wrap; background: #f6f8fa; padding: 10px; border-radius: 8px; font-family: ui-monospace, monospace; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>Transformers.js via <code>dianome/transformersjs</code></h1>
+<p><a href="./">← demo</a> · artifact <code id="artifact"></code> · model <code>onnx-community/Qwen2.5-0.5B-Instruct</code> (dtype q4, wasm backend). Watch the network log: after the first run, no model file is fetched from Hugging Face or the CDN chunks.</p>
+<p><button id="run">Load pipeline and generate</button><button id="clear">Clear caches</button></p>
+<div id="log">idle</div>
+<script type="module" src="/src/transformersjs.ts"></script>
+</body>
+</html>

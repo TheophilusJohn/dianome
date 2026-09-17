@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Dianome · WebLLM adapter</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px auto; max-width: 72ch; padding: 0 16px; color: #222; line-height: 1.45; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #8884; background: #1f6feb; color: #fff; cursor: pointer; margin-right: 8px; }
+  button:disabled { opacity: .5; }
+  #log { white-space: pre-wrap; background: #f6f8fa; padding: 10px; border-radius: 8px; font-family: ui-monospace, monospace; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>WebLLM via <code>dianome/webllm</code></h1>
+<p><a href="./">← demo</a> · artifact <code id="artifact"></code> · WebLLM model id <code>Qwen2.5-0.5B-Instruct-q4f16_1-MLC</code>. The adapter pre-warms WebLLM's <code>webllm/model</code> and <code>webllm/config</code> caches; WebLLM then loads with no shard fetches from the model URL (the wasm model library still comes from WebLLM's CDN). Needs WebGPU.</p>
+<p><button id="prewarm">1. Pre-warm from Dianome</button><button id="run">2. Load engine and chat</button><button id="clear">Clear caches</button></p>
+<div id="log">idle</div>
+<script type="module" src="/src/webllm.ts"></script>
+</body>
+</html>

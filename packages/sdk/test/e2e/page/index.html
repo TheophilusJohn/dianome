@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>dianome e2e</title></head>
+<body>
+<pre id="out"></pre>
+<script type="module">
+  import { Dianome } from "/sdk/index.js";
+  const origin = location.origin;
+  // The SDK's HTTP requests use the page origin as both API and CDN; the Cache API key is the chunk URL on it.
+  window.dianome = { Dianome, origin };
+  window.load = async (opts = {}) => {
+    const d = new Dianome({ api: origin, cdn: origin, cache: opts.cache ?? "per-site", telemetry: true, concurrency: opts.concurrency ?? 6 });
+    const t0 = performance.now();
+    const progress = [];
+    const model = await d.load("e2e-model", { variant: opts.variant ?? "q4", onProgress: (p) => progress.push({ group: p.group, source: p.source }) });
+    const ms = performance.now() - t0;
+    const groups = [...model.groups.values()].map((g) => ({ name: g.name, entries: g.entries.size, copied: [...g.entries.values()].filter((e) => e.copied).length }));
+    const aligned = [...model.groups.values()].every((g) => [...g.entries.values()].every((e) => e.bytes.byteOffset % 256 === 0));
+    // Content check: the tied lm_head equals embed, byte for byte.
+    const embed = model.entry("model.embed_tokens.weight").bytes, lm = model.entry("lm_head.weight").bytes;
+    let tiedEqual = embed.byteLength === lm.byteLength;
+    for (let i = 0; tiedEqual && i < embed.byteLength; i += 4099) tiedEqual = embed[i] === lm[i];
+    const status = await d.cache.status();
+    document.getElementById("out").textContent = JSON.stringify({ ms, summary: model.summary, status }, null, 1);
+    const { report, ...summary } = model.summary;
+    return { ms, summary, report, groups, aligned, tiedEqual, progress, status };
+  };
+  window.corrupt = async (sha) => {
+    const cache = await caches.open("dianome-v1");
+    const url = `${origin}/chunks/${sha}`;
+    const res = await cache.match(url);
+    if (!res) return false;
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    bytes[100] ^= 0xff;
+    await cache.put(url, new Response(bytes, { headers: { "Content-Type": "application/octet-stream", "Content-Length": String(bytes.length) } }));
+    return true;
+  };
+  window.cachedShas = async () => (await (await caches.open("dianome-v1")).keys()).map((r) => r.url.split("/chunks/")[1]).filter(Boolean);
+  window.clearAll = async () => { const d = new Dianome({ api: origin, cdn: origin, cache: "per-site" }); await d.cache.clear(); };
+</script>
+</body>
+</html>

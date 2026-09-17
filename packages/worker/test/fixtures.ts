@@ -30,3 +30,8 @@ export const validReport = () => ({
   schema: 1, model: "qwen2.5-0.5b-instruct", variant: "q4", bytes: 323893760, chunks: 42, ms: 8420,
   source: "network", cache_hits: 0, browser: "chrome", webgpu: true,
 });
+
+export const validReportV2 = () => ({
+  ...validReport(), schema: 2, source: "mixed", cache_hits: 17,
+  bytes_per_second: 38467000, verify_ms: 210, transfer_ms: 0, quota_bytes: 10760000000, max_buffer_size: 4294967292, cache_mode: "per-site",
+});

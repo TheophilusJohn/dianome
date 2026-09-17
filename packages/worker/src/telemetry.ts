@@ -3,15 +3,26 @@
 // and the timestamp we attach is rounded to the hour.
 
 import { error } from "./http";
-import { BROWSERS, LOAD_SOURCES, type Env, type LoadReport } from "./types";
+import { BROWSERS, CACHE_MODES, LOAD_SOURCES, type Env, type LoadReport, type LoadReportV1, type LoadReportV2 } from "./types";
 
 export const MAX_BODY_BYTES = 4096;
 export const RATE_LIMIT_PER_MINUTE = 600;
 
-const FIELDS: Record<keyof LoadReport, true> = {
+const FIELDS: Record<keyof LoadReportV1, true> = {
   schema: true, model: true, variant: true, bytes: true, chunks: true, ms: true,
   source: true, cache_hits: true, browser: true, webgpu: true,
 };
+/** Optional schema-2 fields: name → [min, max] for integers, or the enum for cache_mode. */
+const V2_INTS: Record<Exclude<keyof LoadReportV2, keyof LoadReportV1 | "cache_mode">, [number, number]> = {
+  bytes_per_second: [0, 1099511627776], verify_ms: [0, 86_400_000], transfer_ms: [0, 86_400_000],
+  quota_bytes: [0, 1099511627776], max_buffer_size: [0, 1099511627776],
+};
+const V2_FIELDS: Record<Exclude<keyof LoadReportV2, keyof LoadReportV1>, true> = {
+  bytes_per_second: true, verify_ms: true, transfer_ms: true, quota_bytes: true, max_buffer_size: true, cache_mode: true,
+};
+
+/** Analytics Engine column map: blobs 1-8, doubles 1-10. Absent schema-2 doubles are written as -1, never 0. */
+export const ABSENT = -1;
 const MODEL_RE = /^[a-z0-9][a-z0-9._-]*$/;
 const VARIANT_RE = /^[a-z0-9][a-z0-9._/-]*$/;
 
@@ -22,13 +33,18 @@ function isInt(v: unknown, min: number, max: number): v is number {
   return typeof v === "number" && Number.isInteger(v) && v >= min && v <= max;
 }
 
-/** Mirrors schemas/telemetry.v1.json: unknown fields, missing fields, wrong types, bad enums and out-of-range numbers all fail. */
+/** Mirrors schemas/telemetry.v1.json and v2.json: unknown fields, missing fields, wrong types, bad enums and out-of-range numbers all fail. */
 export function validateLoadReport(input: unknown): Valid | Invalid {
   if (typeof input !== "object" || input === null || Array.isArray(input)) return { ok: false, reason: "body must be a JSON object" };
   const o = input as Record<string, unknown>;
-  for (const k of Object.keys(o)) if (!(k in FIELDS)) return { ok: false, reason: `unknown field: ${k}` };
+  if (o.schema !== 1 && o.schema !== 2) return { ok: false, reason: "schema must be 1 or 2" };
+  const v2 = o.schema === 2;
+  for (const k of Object.keys(o)) if (!(k in FIELDS) && !(v2 && k in V2_FIELDS)) return { ok: false, reason: `unknown field: ${k}` };
   for (const k of Object.keys(FIELDS)) if (!(k in o)) return { ok: false, reason: `missing field: ${k}` };
-  if (o.schema !== 1) return { ok: false, reason: "schema must be 1" };
+  if (v2) {
+    for (const [k, [min, max]] of Object.entries(V2_INTS)) if (k in o && !isInt(o[k], min, max)) return { ok: false, reason: `bad ${k}` };
+    if ("cache_mode" in o && !(CACHE_MODES as readonly unknown[]).includes(o.cache_mode)) return { ok: false, reason: "bad cache_mode" };
+  }
   if (typeof o.model !== "string" || o.model.length > 128 || !MODEL_RE.test(o.model)) return { ok: false, reason: "bad model" };
   if (typeof o.variant !== "string" || o.variant.length > 128 || !VARIANT_RE.test(o.variant)) return { ok: false, reason: "bad variant" };
   if (!isInt(o.bytes, 0, 1099511627776)) return { ok: false, reason: "bad bytes" };
@@ -87,12 +103,22 @@ export async function ingestLoad(request: Request, env: Env): Promise<Response> 
   const colo = typeof cf?.colo === "string" ? cf.colo : "UNK";
   if (await overLimit(env, country, colo)) return error(429, "rate_limited");
 
-  const r = v.report;
   const hour = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
-  env.TELEMETRY.writeDataPoint({
-    blobs: [r.model, r.variant, r.source, r.browser, country, colo, hour],
-    doubles: [r.bytes, r.chunks, r.ms, r.cache_hits, r.webgpu ? 1 : 0],
-    indexes: [r.model],
-  });
+  env.TELEMETRY.writeDataPoint(dataPoint(v.report, country, colo, hour));
   return new Response(null, { status: 202 });
+}
+
+/**
+ * blobs: 1 model, 2 variant, 3 source, 4 browser, 5 country, 6 colo, 7 hour, 8 cache_mode ("" for schema 1).
+ * doubles: 1 bytes, 2 chunks, 3 ms, 4 cache_hits, 5 webgpu, 6 bytes_per_second, 7 verify_ms, 8 transfer_ms,
+ * 9 quota_bytes, 10 max_buffer_size (6-10 are ABSENT for schema 1 or when the client omitted them).
+ */
+export function dataPoint(r: LoadReport, country: string, colo: string, hour: string): AnalyticsEngineDataPoint {
+  const v2: Partial<LoadReportV2> = r.schema === 2 ? r : {};
+  const d = (n: number | undefined): number => (typeof n === "number" ? n : ABSENT);
+  return {
+    blobs: [r.model, r.variant, r.source, r.browser, country, colo, hour, v2.cache_mode ?? ""],
+    doubles: [r.bytes, r.chunks, r.ms, r.cache_hits, r.webgpu ? 1 : 0, d(v2.bytes_per_second), d(v2.verify_ms), d(v2.transfer_ms), d(v2.quota_bytes), d(v2.max_buffer_size)],
+    indexes: [r.model],
+  };
 }

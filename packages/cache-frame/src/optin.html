@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Dianome shared model cache</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px auto; max-width: 56ch; padding: 0 16px; line-height: 1.5; color: #222; }
+  button { font: inherit; font-size: 16px; padding: 10px 18px; border-radius: 8px; border: 1px solid #8884; background: #1f6feb; color: #fff; cursor: pointer; }
+  #status { margin-top: 12px; color: #555; }
+</style>
+</head>
+<body>
+<h1>Shared model cache</h1>
+<p>Sites that use Dianome download AI model files to your browser; the shared cache keeps one copy on this device so a second site can reuse it instead of downloading it again. Nothing about you is stored, and you can remove the files at any time by clearing this site's data.</p>
+<button id="enable" type="button">Enable shared model cache</button>
+<p id="status"></p>
+<script type="module">
+  // Writes a 1 KB marker into the Cache API cache the frame reads through its storage-access grant. Seeing the
+  // marker from inside a frame on another site proves the grant reaches unpartitioned storage (Chrome and
+  // Firefox); Safari never sees it. The top-level visit itself is what Chrome needs before granting.
+  const MARKER = new URL("/frame/v1/marker", location.origin).href;
+  const CACHE = "dianome-v1";
+  const status = document.getElementById("status");
+  const params = new URLSearchParams(location.search);
+  const ret = (() => { try { const u = new URL(params.get("return") ?? ""); return u.protocol === "https:" || u.protocol === "http:" ? u.href : null; } catch { return null; } })();
+  document.getElementById("enable").addEventListener("click", async () => {
+    try {
+      const cache = await caches.open(CACHE);
+      await cache.put(MARKER, new Response(new Uint8Array(1024), { headers: { "Content-Type": "application/octet-stream", "Content-Length": "1024" } }));
+      status.textContent = ret ? "Enabled. Returning…" : "Enabled. You can close this page.";
+      if (ret) location.href = ret;
+    } catch (e) {
+      status.textContent = `Could not enable: ${e && e.message ? e.message : String(e)}`;
+    }
+  });
+  caches.open(CACHE).then((c) => c.match(MARKER)).then((m) => { if (m) status.textContent = "Already enabled on this device."; }).catch(() => {});
+</script>
+</body>
+</html>

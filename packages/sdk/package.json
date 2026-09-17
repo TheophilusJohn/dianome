@@ -1,0 +1,35 @@
+{
+  "name": "dianome",
+  "version": "0.1.0",
+  "description": "Progressive, verified, cached model weight loading from cdn.dianome.dev",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./transformersjs": { "types": "./dist/adapters/transformersjs.d.ts", "default": "./dist/transformersjs.js" },
+    "./webllm": { "types": "./dist/adapters/webllm.d.ts", "default": "./dist/webllm.js" }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "gen:types": "node scripts/gen-manifest-types.mjs",
+    "gen:types:check": "node scripts/gen-manifest-types.mjs --check",
+    "build": "node scripts/gen-manifest-types.mjs --check && node scripts/build.mjs && tsc -p tsconfig.build.json",
+    "size": "node scripts/size-check.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "ci": "pnpm typecheck && pnpm test && pnpm build && pnpm size",
+    "prepack": "pnpm build && pnpm size"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "ajv": "^8.17.1",
+    "esbuild": "^0.25.0",
+    "fake-indexeddb": "^6.0.0",
+    "happy-dom": "^18.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.0"
+  }
+}

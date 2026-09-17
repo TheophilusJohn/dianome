@@ -3,6 +3,6 @@
   "private": true,
   "scripts": {
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter worker test"
+    "test": "pnpm --filter worker test && pnpm --filter dianome test"
   }
 }
