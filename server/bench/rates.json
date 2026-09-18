@@ -1,6 +1,6 @@
 {
-  "gpu": "NVIDIA L4 24GB (RunPod 24GB tier)",
-  "usd_per_hour": 0.69,
-  "source": "https://www.runpod.io/pricing",
+  "gpu": "NVIDIA L4 24GB",
+  "usd_per_hour": 0.49,
+  "source": "RunPod pod deploy screen (console.runpod.io, Secure Cloud, on-demand)",
   "retrieved": "2026-09-17"
 }
