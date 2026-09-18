@@ -252,6 +252,462 @@
         "wallMs": 16287,
         "at": "2026-09-18T06:50:44.599Z",
         "webgpu": false
+      },
+      {
+        "policy": "cost",
+        "label": "planner's N under prefer: cost",
+        "run": 1,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 1610612736,
+            "quotaBytes": 3221225472,
+            "msPerBlockT1": 5.725000023841858,
+            "msPerBlockT32": 18.012499928474426,
+            "lmHeadMs": 6.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 29446217.613495782,
+            "rttMs": 160,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 28,
+            "busyFraction60s": 0,
+            "msPerBlockDecode": 1.9353032777351993,
+            "msPerBlockPrefill": 2.1916178853384087,
+            "lmHeadMs": 4.387715831398964,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-7b-instruct",
+        "variant": "q4",
+        "mode": "split",
+        "N": 10,
+        "L": 28,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 2.947888931152529,
+        "measuredMsPerToken": 306.69999980926514,
+        "estimatedMsPerToken": 253.37317564125573,
+        "prefillMs": 2063.6000003814697,
+        "prefillEstMs": 579.8508849808214,
+        "breakdown": {
+          "client": 60.30000019073486,
+          "export": 0.7000007629394531,
+          "network": 205.9953420162201,
+          "server": 40.10465741157532,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 246.0999994277954,
+        "rttMs": 156.60000038146973,
+        "serverBusyMs": 1285.9813440591097,
+        "serverShare": 0.7228571428571429,
+        "costPer1M": 5.763247981874479,
+        "load": {
+          "bytes": 1765387264,
+          "ms": 86105.19999980927,
+          "bytesPerSecond": 20502678.86264605,
+          "chunks": 216,
+          "cacheHits": 0
+        },
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced split N=10 (policy cost chose split N=10)",
+          "policy prefers cost: max feasible N = 10 (server share 0.72)"
+        ],
+        "privacy": null,
+        "wallMs": 101398.30000019073,
+        "at": "2026-09-18T07:00:22.520Z"
+      },
+      {
+        "policy": "cost",
+        "label": "planner's N under prefer: cost",
+        "run": 2,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2108311399,
+            "quotaBytes": 4216622798,
+            "msPerBlockT1": 5.725000023841858,
+            "msPerBlockT32": 18.012499928474426,
+            "lmHeadMs": 6.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 20502678.86264605,
+            "rttMs": 228.19999980926514,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 28,
+            "busyFraction60s": 0.02143302240098516,
+            "msPerBlockDecode": 1.9353032777351993,
+            "msPerBlockPrefill": 2.1916178853384087,
+            "lmHeadMs": 4.387715831398964,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-7b-instruct",
+        "variant": "q4",
+        "mode": "split",
+        "N": 14,
+        "L": 28,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 2.9412043755934145,
+        "measuredMsPerToken": 333.5,
+        "estimatedMsPerToken": 275.63196205347776,
+        "prefillMs": 1938.8999996185303,
+        "prefillEstMs": 707.585109987529,
+        "breakdown": {
+          "client": 82.5,
+          "export": 0.7999992370605469,
+          "network": 218.47327223420143,
+          "server": 32.52672776579857,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 251,
+        "rttMs": 163.69999980926514,
+        "serverBusyMs": 1046.3958233594894,
+        "serverShare": 0.612,
+        "costPer1M": 4.879398093745112,
+        "load": {
+          "bytes": 2253421568,
+          "ms": 93045.30000019073,
+          "bytesPerSecond": 24218542.666801877,
+          "chunks": 276,
+          "cacheHits": 0
+        },
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced split N=14 (policy cost chose split N=14)",
+          "policy prefers cost: max feasible N = 14 (server share 0.61)"
+        ],
+        "privacy": null,
+        "wallMs": 107827.30000019073,
+        "at": "2026-09-18T07:02:13.504Z"
+      },
+      {
+        "policy": "cost",
+        "label": "planner's N under prefer: cost",
+        "run": 3,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2108311399,
+            "quotaBytes": 4216622798,
+            "msPerBlockT1": 5.725000023841858,
+            "msPerBlockT32": 18.012499928474426,
+            "lmHeadMs": 6.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 24218542.666801877,
+            "rttMs": 160.30000019073486,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 28,
+            "busyFraction60s": 0.017439930389324825,
+            "msPerBlockDecode": 1.9353032777351993,
+            "msPerBlockPrefill": 2.1916178853384087,
+            "lmHeadMs": 4.387715831398964,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-7b-instruct",
+        "variant": "q4",
+        "mode": "split",
+        "N": 14,
+        "L": 28,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 2.9658827807127395,
+        "measuredMsPerToken": 334.30000019073486,
+        "estimatedMsPerToken": 271.9319622442126,
+        "prefillMs": 1142,
+        "prefillEstMs": 703.8851101782639,
+        "breakdown": {
+          "client": 82.40000057220459,
+          "export": 0.6000003814697266,
+          "network": 218.1577571630478,
+          "server": 32.54224359989166,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 250.70000076293945,
+        "rttMs": 160,
+        "serverBusyMs": 1046.1527425795794,
+        "serverShare": 0.612,
+        "costPer1M": 4.879398093745112,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced split N=14 (policy cost chose split N=14)",
+          "policy prefers cost: max feasible N = 14 (server share 0.61)"
+        ],
+        "privacy": null,
+        "wallMs": 13794.39999961853,
+        "at": "2026-09-18T07:02:29.865Z"
+      },
+      {
+        "policy": "server",
+        "label": "N = 0",
+        "run": 1,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2108311399,
+            "quotaBytes": 4216622798,
+            "msPerBlockT1": 5.725000023841858,
+            "msPerBlockT32": 18.012499928474426,
+            "lmHeadMs": 6.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 24218542.666801877,
+            "rttMs": 161.60000038146973,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 28,
+            "busyFraction60s": 0.034875809432317814,
+            "msPerBlockDecode": 1.9353032777351993,
+            "msPerBlockPrefill": 2.1916178853384087,
+            "lmHeadMs": 4.387715831398964,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-7b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 28,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 3.925640765785032,
+        "measuredMsPerToken": 221.29999923706055,
+        "estimatedMsPerToken": 236.97620722651482,
+        "prefillMs": 232.4000005722046,
+        "prefillEstMs": 299.7653200798668,
+        "breakdown": {
+          "client": 0,
+          "export": 0,
+          "network": 162.65980790555477,
+          "server": 58.640191331505775,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 221.29999923706055,
+        "rttMs": 178.39999961853027,
+        "serverBusyMs": 1888.0677837878466,
+        "serverShare": 1,
+        "costPer1M": 7.972872702197896,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced server N=0 (policy server chose server N=0)",
+          "policy prefers the server: N = 0"
+        ],
+        "privacy": null,
+        "wallMs": 10650.60000038147,
+        "at": "2026-09-18T07:02:42.653Z"
+      },
+      {
+        "policy": "server",
+        "label": "N = 0",
+        "run": 2,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2108311399,
+            "quotaBytes": 4216622798,
+            "msPerBlockT1": 5.725000023841858,
+            "msPerBlockT32": 18.012499928474426,
+            "lmHeadMs": 6.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 24218542.666801877,
+            "rttMs": 178.19999980926514,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 28,
+            "busyFraction60s": 0.06634360582878192,
+            "msPerBlockDecode": 1.9353032777351993,
+            "msPerBlockPrefill": 2.1916178853384087,
+            "lmHeadMs": 4.387715831398964,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-7b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 28,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 3.800836184227125,
+        "measuredMsPerToken": 220,
+        "estimatedMsPerToken": 219.97620818018913,
+        "prefillMs": 233,
+        "prefillEstMs": 282.7653210335411,
+        "breakdown": {
+          "client": 0,
+          "export": 0,
+          "network": 161.29964654147625,
+          "server": 58.600353077054024,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 219.89999961853027,
+        "rttMs": 161.4000005722046,
+        "serverBusyMs": 1888.0134653300047,
+        "serverShare": 1,
+        "costPer1M": 7.972872702197896,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced server N=0 (policy server chose server N=0)",
+          "policy prefers the server: N = 0"
+        ],
+        "privacy": null,
+        "wallMs": 10495.300000190735,
+        "at": "2026-09-18T07:02:55.430Z"
+      },
+      {
+        "policy": "server",
+        "label": "N = 0",
+        "run": 3,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2108311399,
+            "quotaBytes": 4216622798,
+            "msPerBlockT1": 5.725000023841858,
+            "msPerBlockT32": 18.012499928474426,
+            "lmHeadMs": 6.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 24218542.666801877,
+            "rttMs": 166.80000019073486,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 28,
+            "busyFraction60s": 0.09781049691761533,
+            "msPerBlockDecode": 1.9353032777351993,
+            "msPerBlockPrefill": 2.1916178853384087,
+            "lmHeadMs": 4.387715831398964,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-7b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 28,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 4.245412215831279,
+        "measuredMsPerToken": 216.10000038146973,
+        "estimatedMsPerToken": 236.17620703577995,
+        "prefillMs": 319.3999996185303,
+        "prefillEstMs": 298.96531988913193,
+        "breakdown": {
+          "client": 0,
+          "export": 0,
+          "network": 157.45548026263714,
+          "server": 58.64452011883259,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 216.10000038146973,
+        "rttMs": 177.5999994277954,
+        "serverBusyMs": 1887.7749871462584,
+        "serverShare": 1,
+        "costPer1M": 7.972872702197896,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced server N=0 (policy server chose server N=0)",
+          "policy prefers the server: N = 0"
+        ],
+        "privacy": null,
+        "wallMs": 9977.699999809265,
+        "at": "2026-09-18T07:03:07.677Z"
       }
     ],
     "plan_check": {
@@ -273,19 +729,530 @@
         "device": "cuda"
       },
       "device": "cuda",
-      "checked": "2026-09-18T06:48:07.156Z"
+      "checked": "2026-09-18T06:58:33.206Z"
     },
     "page": "https://dianome-demo-split.pages.dev/?model=qwen2.5-7b-instruct",
     "client": {
       "browser": "chrome",
       "version": "153.0.8010.48",
       "headless": true,
+      "launchArgs": [
+        "--enable-unsafe-webgpu"
+      ],
+      "webgpu": true,
+      "adapter": {
+        "vendor": "apple",
+        "architecture": "metal-3",
+        "maxBufferSize": 4294967292,
+        "maxStorageBufferBindingSize": 4294967292
+      },
       "platform": "darwin",
-      "arch": "arm64",
-      "webgpu": false
+      "arch": "arm64"
     },
     "pageErrors": [],
-    "updated": "2026-09-18T06:50:44.702Z",
-    "note": "2026-09-18: these six runs predate the WebGPU assertion; Chrome had no usable WebGPU (planner webgpu false, ms/block null), so every run is server N=0, and the bandwidth probe of that SDK build still included time to first byte."
+    "updated": "2026-09-18T07:03:08.033Z",
+    "note": "2026-09-18: these six runs predate the WebGPU assertion; Chrome had no usable WebGPU (planner webgpu false, ms/block null), so every run is server N=0, and the bandwidth probe of that SDK build still included time to first byte.",
+    "pageLog": []
+  },
+  "qwen2.5-3b-instruct": {
+    "runs": [
+      {
+        "policy": "cost",
+        "label": "planner's N under prefer: cost",
+        "run": 1,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 1610612736,
+            "quotaBytes": 3221225472,
+            "msPerBlockT1": 1.8625000715255737,
+            "msPerBlockT32": 6.600000023841858,
+            "lmHeadMs": 4.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 6594560.55008468,
+            "rttMs": 159.69999980926514,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 36,
+            "busyFraction60s": 0,
+            "msPerBlockDecode": 0.7257297531598144,
+            "msPerBlockPrefill": 0.8190403071542581,
+            "lmHeadMs": 2.548353746533394,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-3b-instruct",
+        "variant": "q4",
+        "mode": "split",
+        "N": 34,
+        "L": 36,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 3.683328778595994,
+        "measuredMsPerToken": 258.19999980926514,
+        "estimatedMsPerToken": 288.02481549398766,
+        "prefillMs": 1502.8999996185303,
+        "prefillEstMs": 654.1334462720746,
+        "breakdown": {
+          "client": 66.19999980926514,
+          "export": 0.6999998092651367,
+          "network": 185.4968123435974,
+          "server": 5.203187465667725,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 190.69999980926514,
+        "rttMs": 220.39999961853027,
+        "serverBusyMs": 178.73618379235268,
+        "serverShare": 0.26711111111111113,
+        "costPer1M": 1.0425173179143006,
+        "load": {
+          "bytes": 1683532544,
+          "ms": 70151.5,
+          "bytesPerSecond": 23998525.24892554,
+          "chunks": 208,
+          "cacheHits": 0
+        },
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced split N=34 (policy cost chose split N=34)",
+          "policy prefers cost: max feasible N = 34 (server share 0.27)"
+        ],
+        "privacy": null,
+        "wallMs": 83612.69999980927,
+        "at": "2026-09-18T07:07:06.786Z"
+      },
+      {
+        "policy": "cost",
+        "label": "planner's N under prefer: cost",
+        "run": 2,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2117844360,
+            "quotaBytes": 4235688720,
+            "msPerBlockT1": 1.8625000715255737,
+            "msPerBlockT32": 6.600000023841858,
+            "lmHeadMs": 4.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 23998525.24892554,
+            "rttMs": 156.60000038146973,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 36,
+            "busyFraction60s": 0.0029789363965392114,
+            "msPerBlockDecode": 0.7257297531598144,
+            "msPerBlockPrefill": 0.8190403071542581,
+            "lmHeadMs": 2.548353746533394,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-3b-instruct",
+        "variant": "q4",
+        "mode": "local",
+        "N": 36,
+        "L": 36,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 14.209102994321022,
+        "measuredMsPerToken": 70.09999942779541,
+        "estimatedMsPerToken": 72.25000314712524,
+        "prefillMs": 1268.1999998092651,
+        "prefillEstMs": 457.8250022083521,
+        "breakdown": {
+          "client": 65.80000019073486,
+          "export": 0,
+          "network": 0,
+          "server": 0,
+          "lm_head": 4.199999809265137,
+          "sampling": 0.10000038146972656
+        },
+        "roundTripMs": 0,
+        "rttMs": 166.5,
+        "serverBusyMs": 0,
+        "serverShare": 0,
+        "costPer1M": 0,
+        "load": {
+          "bytes": 1764246272,
+          "ms": 79993.30000019073,
+          "bytesPerSecond": 22054925.49995804,
+          "chunks": 219,
+          "cacheHits": 0
+        },
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced local N=36 (policy cost chose local N=36)",
+          "policy prefers cost: local (server share 0)"
+        ],
+        "privacy": null,
+        "wallMs": 85488,
+        "at": "2026-09-18T07:08:34.637Z"
+      },
+      {
+        "policy": "cost",
+        "label": "planner's N under prefer: cost",
+        "run": 3,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2117844360,
+            "quotaBytes": 4235688720,
+            "msPerBlockT1": 1.8625000715255737,
+            "msPerBlockT32": 6.600000023841858,
+            "lmHeadMs": 4.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 22054925.49995804,
+            "rttMs": 156.70000076293945,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 36,
+            "busyFraction60s": 0,
+            "msPerBlockDecode": 0.7257297531598144,
+            "msPerBlockPrefill": 0.8190403071542581,
+            "lmHeadMs": 2.548353746533394,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-3b-instruct",
+        "variant": "q4",
+        "mode": "local",
+        "N": 36,
+        "L": 36,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 14.276503634443639,
+        "measuredMsPerToken": 69.89999961853027,
+        "estimatedMsPerToken": 72.25000314712524,
+        "prefillMs": 665.3999996185303,
+        "prefillEstMs": 457.8250022083521,
+        "breakdown": {
+          "client": 65.60000038146973,
+          "export": 0,
+          "network": 0,
+          "server": 0,
+          "lm_head": 4.100000381469727,
+          "sampling": 0.09999942779541016
+        },
+        "roundTripMs": 0,
+        "rttMs": 152.5999994277954,
+        "serverBusyMs": 0,
+        "serverShare": 0,
+        "costPer1M": 0,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced local N=36 (policy cost chose local N=36)",
+          "policy prefers cost: local (server share 0)"
+        ],
+        "privacy": null,
+        "wallMs": 4780.60000038147,
+        "at": "2026-09-18T07:08:41.840Z"
+      },
+      {
+        "policy": "server",
+        "label": "N = 0",
+        "run": 1,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2117844360,
+            "quotaBytes": 4235688720,
+            "msPerBlockT1": 1.8625000715255737,
+            "msPerBlockT32": 6.600000023841858,
+            "lmHeadMs": 4.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 22054925.49995804,
+            "rttMs": 175.89999961853027,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 36,
+            "busyFraction60s": 0,
+            "msPerBlockDecode": 0.7257297531598144,
+            "msPerBlockPrefill": 0.8190403071542581,
+            "lmHeadMs": 2.548353746533394,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-3b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 36,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 4.85939116560393,
+        "measuredMsPerToken": 186.80000019073486,
+        "estimatedMsPerToken": 199.6746248602867,
+        "prefillMs": 257.20000076293945,
+        "prefillEstMs": 229.75499482499436,
+        "breakdown": {
+          "client": 0,
+          "export": 0,
+          "network": 153.53081834316254,
+          "server": 33.26918184757233,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 186.80000019073486,
+        "rttMs": 171,
+        "serverBusyMs": 1112.579083070159,
+        "serverShare": 1,
+        "costPer1M": 3.9029350504279137,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced server N=0 (policy server chose server N=0)",
+          "policy prefers the server: N = 0"
+        ],
+        "privacy": null,
+        "wallMs": 8926.89999961853,
+        "at": "2026-09-18T07:08:53.168Z"
+      },
+      {
+        "policy": "server",
+        "label": "N = 0",
+        "run": 2,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2117844360,
+            "quotaBytes": 4235688720,
+            "msPerBlockT1": 1.8625000715255737,
+            "msPerBlockT32": 6.600000023841858,
+            "lmHeadMs": 4.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 22054925.49995804,
+            "rttMs": 156.0999994277954,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 36,
+            "busyFraction60s": 0.018542984717835984,
+            "msPerBlockDecode": 0.7257297531598144,
+            "msPerBlockPrefill": 0.8190403071542581,
+            "lmHeadMs": 2.548353746533394,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-3b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 36,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 4.4366207260535235,
+        "measuredMsPerToken": 193.4000005722046,
+        "estimatedMsPerToken": 186.77462524175644,
+        "prefillMs": 201,
+        "prefillEstMs": 216.85499520646408,
+        "breakdown": {
+          "client": 0,
+          "export": 0,
+          "network": 159.59999652206898,
+          "server": 33.80000405013561,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 193.4000005722046,
+        "rttMs": 158.10000038146973,
+        "serverBusyMs": 1102.661658078432,
+        "serverShare": 1,
+        "costPer1M": 3.9029350504279137,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced server N=0 (policy server chose server N=0)",
+          "policy prefers the server: N = 0"
+        ],
+        "privacy": null,
+        "wallMs": 9159.300000190735,
+        "at": "2026-09-18T07:09:04.416Z"
+      },
+      {
+        "policy": "server",
+        "label": "N = 0",
+        "run": 3,
+        "webgpu": true,
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "maxBufferSize": 4294967292,
+          "maxStorageBufferBindingSize": 4294967292
+        },
+        "plannerInputs": {
+          "device": {
+            "webgpu": true,
+            "maxBufferSize": 4294967292,
+            "gpuBudgetBytes": 2117844360,
+            "quotaBytes": 4235688720,
+            "msPerBlockT1": 1.8625000715255737,
+            "msPerBlockT32": 6.600000023841858,
+            "lmHeadMs": 4.90000057220459,
+            "exportMs": 0.3000001907348633,
+            "cachedBlocks": 0,
+            "embedCached": false
+          },
+          "network": {
+            "bytesPerSecond": 22054925.49995804,
+            "rttMs": 156.39999961853027,
+            "serverReachable": true
+          },
+          "server": {
+            "L": 36,
+            "busyFraction60s": 0.036920679019143185,
+            "msPerBlockDecode": 0.7257297531598144,
+            "msPerBlockPrefill": 0.8190403071542581,
+            "lmHeadMs": 2.548353746533394,
+            "device": "cuda"
+          }
+        },
+        "model": "qwen2.5-3b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 36,
+        "tokens": 32,
+        "promptTokens": 61,
+        "tokPerS": 5.0459014255607695,
+        "measuredMsPerToken": 185,
+        "estimatedMsPerToken": 182.27462524175644,
+        "prefillMs": 192.9000005722046,
+        "prefillEstMs": 212.35499520646408,
+        "breakdown": {
+          "client": 0,
+          "export": 0,
+          "network": 153.56284886598587,
+          "server": 31.43715113401413,
+          "lm_head": 0,
+          "sampling": 0
+        },
+        "roundTripMs": 185,
+        "rttMs": 153.60000038146973,
+        "serverBusyMs": 1050.7732033729553,
+        "serverShare": 1,
+        "costPer1M": 3.9029350504279137,
+        "load": null,
+        "cacheMode": "none",
+        "telemetryStatus": 202,
+        "reasons": [
+          "forced server N=0 (policy server chose server N=0)",
+          "policy prefers the server: N = 0"
+        ],
+        "privacy": null,
+        "wallMs": 8446.5,
+        "at": "2026-09-18T07:09:14.869Z"
+      }
+    ],
+    "plan_check": {
+      "url": "https://gpu.dianome.dev/plan",
+      "model": "qwen2.5-3b-instruct",
+      "L": 36,
+      "d_model": 2048,
+      "active_sessions": 0,
+      "busy_fraction_60s": 0,
+      "ms_per_block_decode": 0.7257297531598144,
+      "ms_per_block_prefill": 0.8190403071542581,
+      "lm_head_ms": 2.548353746533394,
+      "microbench": {
+        "ms_per_block_decode": 0.7257297531598144,
+        "ms_per_block_prefill": 0.8190403071542581,
+        "lm_head_ms": 2.548353746533394,
+        "prefill_T": 32,
+        "runs": 5,
+        "device": "cuda"
+      },
+      "device": "cuda",
+      "checked": "2026-09-18T07:05:34.654Z"
+    },
+    "page": "https://dianome-demo-split.pages.dev/?model=qwen2.5-3b-instruct",
+    "client": {
+      "browser": "chrome",
+      "version": "153.0.8010.48",
+      "headless": true,
+      "launchArgs": [
+        "--enable-unsafe-webgpu"
+      ],
+      "webgpu": true,
+      "adapter": {
+        "vendor": "apple",
+        "architecture": "metal-3",
+        "maxBufferSize": 4294967292,
+        "maxStorageBufferBindingSize": 4294967292
+      },
+      "platform": "darwin",
+      "arch": "arm64"
+    },
+    "pageLog": [],
+    "updated": "2026-09-18T07:09:15.189Z"
   }
 }

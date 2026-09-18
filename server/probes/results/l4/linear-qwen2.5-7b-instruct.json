@@ -1,0 +1,8 @@
+{
+  "model": "qwen2.5-7b-instruct",
+  "not_run": true,
+  "reason": "not run: elapsed 8004s + 1.5 x the 3B probe (4727s) = 15094s would exceed the 4 h budget (14400s)",
+  "elapsed_seconds": 8004,
+  "budget_seconds": 14400,
+  "date": "2026-09-18"
+}

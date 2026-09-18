@@ -146,14 +146,19 @@ const median = (a) => { const s = [...a].sort((x, y) => x - y); return s.length 
 const f = (n, d = 1) => (Number.isFinite(n) ? n.toFixed(d) : "–");
 const lastInputs = [...runs.cost, ...runs.server].at(-1)?.plannerInputs;
 console.log(`\n${MODEL} (L=${plan.L}) via ${PLAN_URL}, ${RUNS} runs per policy, medians over runs; webgpu ${webgpu}${webgpu ? "" : " (server-only runs)"}; bandwidth probe ${lastInputs?.network?.bytesPerSecond ? (lastInputs.network.bytesPerSecond / 1e6).toFixed(1) + " MB/s" : "?"}, RTT ${f(lastInputs?.network?.rttMs)} ms`);
-console.log("| policy | mode | N | tok/s | step ms | est ms | client | export | network | server busy | lm_head | RTT ms | busy total ms | load | cache |");
-console.log("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
+console.log("| policy | mode | N | runs | tok/s | step ms | est ms | client | export | network | server busy | lm_head | RTT ms | busy total ms | load | cache |");
+console.log("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
+// one row per (policy, mode, N): a policy can pick different Ns across runs, and those must not be merged
 for (const [policy] of POLICIES) {
   const ok = runs[policy].filter((r) => !r.error);
-  if (!ok.length) { console.log(`| ${policy} | error | | | | | | | | | | | | | |`); continue; }
-  const m = (k) => median(ok.map((r) => r[k]));
-  const mb = (k) => median(ok.map((r) => r.breakdown[k]));
-  const loads = ok.filter((r) => r.load);
-  console.log(`| ${policy} | ${ok[0].mode} | ${ok[0].N} | ${f(m("tokPerS"))} | ${f(m("measuredMsPerToken"))} | ${f(m("estimatedMsPerToken"))} | ${f(mb("client"))} | ${f(mb("export"))} | ${f(mb("network"))} | ${f(mb("server"))} | ${f(mb("lm_head"))} | ${f(m("rttMs"))} | ${f(m("serverBusyMs"), 0)} | ${loads.length ? `${f(median(loads.map((r) => r.load.bytes)) / 2 ** 20, 0)} MiB in ${f(median(loads.map((r) => r.load.ms)) / 1000)} s` : "reused"} | ${ok[0].cacheMode} |`);
+  if (!ok.length) { console.log(`| ${policy} | error | | | | | | | | | | | | | | |`); continue; }
+  const groups = new Map();
+  for (const r of ok) { const k = `${r.mode}/${r.N}`; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); }
+  for (const [, g] of groups) {
+    const m = (k) => median(g.map((r) => r[k]));
+    const mb = (k) => median(g.map((r) => r.breakdown[k]));
+    const loads = g.filter((r) => r.load);
+    console.log(`| ${policy} | ${g[0].mode} | ${g[0].N} | ${g.length} | ${f(m("tokPerS"))} | ${f(m("measuredMsPerToken"))} | ${f(m("estimatedMsPerToken"))} | ${f(mb("client"))} | ${f(mb("export"))} | ${f(mb("network"))} | ${f(mb("server"))} | ${f(mb("lm_head"))} | ${f(m("rttMs"))} | ${f(m("serverBusyMs"), 0)} | ${loads.length ? `${f(median(loads.map((r) => r.load.bytes)) / 2 ** 20, 0)} MiB in ${f(median(loads.map((r) => r.load.ms)) / 1000)} s` : "reused"} | ${g[0].cacheMode} |`);
+  }
 }
 console.log(`wrote ${OUT} (${entry.runs.length} runs for ${MODEL}${pageLog.length ? `; ${pageLog.length} page console lines recorded` : ""})`);

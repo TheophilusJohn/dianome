@@ -1,0 +1,43 @@
+{
+  "id": "qwen2.5-7b-instruct",
+  "source": {
+    "repo": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+  },
+  "manifest_sha256": "5b711d3a351d0dccd2da00a0fee6feb98167d1ddee63dcf974de97a64254e530",
+  "chunk_size": 8388608,
+  "unique_chunks": 1341,
+  "unique_bytes": 11042619248,
+  "family": "qwen2",
+  "layers": 28,
+  "tied": false,
+  "variants": {
+    "q8": {
+      "bytes": 7619339264,
+      "chunks_listed": 917,
+      "chunks_unique": 917,
+      "groups": 31
+    },
+    "q4": {
+      "bytes": 4506850304,
+      "chunks_listed": 553,
+      "chunks_unique": 553,
+      "groups": 31
+    }
+  },
+  "dedup": {
+    "listed_chunks": 1470,
+    "listed_bytes": 12126189568,
+    "unique_chunks": 1337,
+    "unique_bytes": 11035579392,
+    "shared_chunks": 133,
+    "shared_bytes": 1090610176,
+    "bytes_saved": 1090610176
+  },
+  "tokenizer": {
+    "files": 4,
+    "bytes": 7039856
+  },
+  "git_commit": "143be43984b65ad2d98ee7064111924000702d51",
+  "date": "2026-09-18"
+}

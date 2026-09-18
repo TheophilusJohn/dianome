@@ -1,8 +1,8 @@
 # Dianome: a model CDN and split inference for the browser
 
-Every number in this document links to the notes file and heading, or the results file, it was copied from. Tables
-marked *pending* are filled from the Phase 7 GPU day; `scripts/writeup-check.mjs` allows them only while those results
-files do not exist.
+Every number in this document links to the notes file and heading, or the results file, it was copied from; the L4
+numbers come from the Phase 7 notes, generated from the pod's results files. `scripts/writeup-check.mjs` enforces the
+links on every build.
 
 ## 1. Summary
 
@@ -39,7 +39,9 @@ norm, head and sampling; local mode runs everything in the browser and sends not
 128 greedy decode steps per prompt, three runs, median. `gpu_seconds_per_token(N)` is server busy seconds over tokens
 generated and `cost_per_1M_tokens(N) = gpu_seconds_per_token(N) × 1e6 × rate / 3600` with the hourly rate read from
 `bench/rates.json`, never hardcoded; the ratio `cost(N)/cost(0)` does not depend on the rate
-([Phase 4 notes § Cost harness](../docs/phase-4-notes.md#cost-harness-this-mac-not-gpu-numbers)).
+([Phase 4 notes § Cost harness](../docs/phase-4-notes.md#cost-harness-this-mac-not-gpu-numbers)). The stated rate is
+$0.49 per hour for an NVIDIA L4 on RunPod, read from the deploy screen on 2026-09-17
+([Phase 7 notes](../docs/phase-7-notes.md#cost-curve-05b)).
 
 **Privacy band.** For each boundary i, the fraction of held-out input tokens a probe trained on activations at that
 boundary recovers (top-1), on WikiText-103 test documents never seen in training; three probes are reported, nearest
@@ -53,6 +55,9 @@ in 130 chunks, q8 472.1 MiB in 66, q4 308.9 MiB in 42, in 6.1 s of wall time fro
 byte-identical ([Phase 1 notes § pack-model](../docs/phase-1-notes.md#pack-model-bytes-per-variant-chunks-per-variant-ingest-wall-time)).
 Dedup across variants is exactly the shared q8 embedding table and the final norm: 238 listed chunks become 219 unique
 and 130.1 MiB are saved ([Phase 1 notes § inspect](../docs/phase-1-notes.md#inspect-sizes-per-group-dedup-savings)).
+On the pod, 3B and 7B were packed as q8 plus q4 only: 3B is 2.88 GiB and 1.64 GiB in 399 and 219 chunks, 7B is
+7.10 GiB and 4.20 GiB in 917 and 553 chunks, and the uploads to R2 took 82 s and 190 s from the pod's network
+([Phase 7 notes § Ingest](../docs/phase-7-notes.md#ingest-3b-and-7b-as-q8--q4)).
 Every fp16 entry is bit-equal to the source, 533 of 533, and every quantised entry is encoder/decoder-consistent, 340 of
 340; the median relative RMS error per role is about 0.0096 for q8 and about 0.11 for q4
 ([Phase 1 notes § verify](../docs/phase-1-notes.md#verify---against-hf-q8-and-q4-error-per-role)).
@@ -156,35 +161,57 @@ numbers with no hourly rate; the shape is what carries over.
 sampling, which is the 0.224 the curve cannot get under on the Mac; the planner carries that floor as
 `serverCostFloor` and every split's server share is `floor + (1 − floor) × (L − N) / L`
 ([Phase 5b notes § Planner inputs](../docs/phase-5b-notes.md#planner-inputs-on-this-mac-chrome-run-measured-them-q4-maxctx-1024)).
+On the L4 the floor is lower and falls with model size, 0.133 for 0.5B, 0.099 for 3B and 0.083 for 7B, because the
+head is a smaller fraction of a bigger model ([Phase 7 notes § Cost summary](../docs/phase-7-notes.md#cost-summary-the-three-curves-the-floor-and-n-under-prefer-cost)).
 
-**The three cost curves on the L4.** *Pending the GPU day.* Filled from the cuda results of `dianome-server bench` for
-0.5B, 3B and 7B with the stated L4 rate, and the notes generated from them.
+**The three cost curves on the L4.** Same harness, `cuda`, fp16 weights, the Phase 4 grid scaled to each model's L,
+128 new tokens, three runs, median, at the stated $0.49 per hour
+([Phase 7 notes § Cost curve: 7B](../docs/phase-7-notes.md#cost-curve-7b)).
 
-<!-- pending: server/bench/results/l4/cuda-qwen2.5-0.5b-instruct-*.json -->
-<!-- pending: server/bench/results/l4/cuda-qwen2.5-3b-instruct-*.json -->
-<!-- pending: server/bench/results/l4/cuda-qwen2.5-7b-instruct-*.json -->
+| model | L | ms/token at N = 0 | $/1M tokens at N = 0 | cost(L)/cost(0) | N* under prefer: cost | cost(N*)/cost(0) |
+|---|---|---|---|---|---|---|
+| 0.5B | 24 | 10.84 | 1.48 | 0.133 | local | 0 |
+| 3B | 36 | 29.24 | 3.98 | 0.099 | local | 0 |
+| 7B | 28 | 59.07 | 8.04 | 0.083 | split N = 14 | 0.540 |
 
-| model | L | rate ($/h) | cost per 1M tokens at N = 0 | N* under prefer: cost | cost(N*)/cost(0) |
-|---|---|---|---|---|---|
-| *pending* | | | | | |
+Source: [Phase 7 notes § Cost summary](../docs/phase-7-notes.md#cost-summary-the-three-curves-the-floor-and-n-under-prefer-cost); the
+full curves are under [§ Cost curve: 0.5B](../docs/phase-7-notes.md#cost-curve-05b), [§ Cost curve: 3B](../docs/phase-7-notes.md#cost-curve-3b) and
+[§ Cost curve: 7B](../docs/phase-7-notes.md#cost-curve-7b). N* is the planner's choice on the Houston laptop for 3B and 7B, and on the
+Mac for 0.5B; its cost is read off the curve at that N.
 
-**Remote split.** *Pending A2.* The first measurement with client and server on different machines, which retires the
-shared-GPU confound of the Phase 5b tunnel run, is written by `scripts/measure-remote.mjs` to
-`packages/sdk/results/remote-l4.json`: per model, the planner's N and N = 0, three runs each, with the per-step
-breakdown and the network share of each token.
+**Remote split.** The first measurement with client and server on different machines: this MacBook in Houston, the
+L4 pod in RunPod's EU-RO-1 region behind a Cloudflare tunnel, which retires the shared-GPU confound of the Phase 5b
+tunnel run. Rows group runs by mode and N; medians within a group.
 
-<!-- pending: packages/sdk/results/remote-l4.json -->
+| model | mode / N | runs | tok/s | step ms | client | export | network | server busy | RTT ms | server share | network share of a token |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 7B | split N = 10 | 1 | 2.95 | 306.7 | 60.3 | 0.7 | 206.0 | 40.1 | 156.6 | 0.723 | 67 % |
+| 7B | split N = 14 | 2 | 2.97 | 334.3 | 82.5 | 0.8 | 218.5 | 32.5 | 163.7 | 0.612 | 65 % |
+| 7B | server N = 0 | 3 | 3.93 | 220.0 | 0 | 0 | 161.3 | 58.6 | 177.6 | 1.000 | 73 % |
+| 3B | split N = 34 | 1 | 3.68 | 258.2 | 66.2 | 0.7 | 185.5 | 5.2 | 220.4 | 0.267 | 72 % |
+| 3B | local | 2 | 14.28 | 70.1 | 65.8 | 0 | 0 | 0 | 166.5 | 0 | 0 % |
+| 3B | server N = 0 | 3 | 4.86 | 186.8 | 0 | 0 | 153.6 | 33.3 | 158.1 | 1.000 | 82 % |
 
-| model | mode / N | tok/s | client | export | network | server busy | RTT | network share |
-|---|---|---|---|---|---|---|---|---|
-| *pending* | | | | | | | | |
+Sources: [Phase 7 notes § Remote split: 7B](../docs/phase-7-notes.md#remote-split-7b) and [§ Remote split: 3B](../docs/phase-7-notes.md#remote-split-3b);
+the network share is the network column over the step. Six earlier 7B runs made before the WebGPU fix below are kept
+separately, all server N = 0 at 3.87 tokens per second
+([§ the six earlier runs](../docs/phase-7-notes.md#remote-split-the-6-earlier-7b-runs-without-webgpu)).
+
+**What the split buys on 7B.** Splitting at N = 14 cuts the server's GPU time per token from 58.6 ms to 32.5 ms,
+which at the stated rate is $7.98 down to $4.43 per million tokens, for 2.97 instead of 3.93 tokens per second; the
+14 blocks that save the L4 26 ms cost the Mac 82 ms ([Phase 7 notes § Remote split: 7B](../docs/phase-7-notes.md#remote-split-7b)).
+On 3B the planner went the other way: local at 14.28 tokens per second beats server-only at 4.86 with zero server
+cost, so the split point is the whole model ([Phase 7 notes § Remote split: 3B](../docs/phase-7-notes.md#remote-split-3b)). The
+planner chose both without instruction; the only input was prefer: cost.
 
 **What bounds what.** Every generated token in split or server mode is one round trip, so latency is bounded by the
-network, not by the arithmetic: on the tunnelled Phase 5b run the network took 58.1 ms of a 96.8 ms decode step at an
-RTT of 57.6 ms, and on the loopback runs the same step took about 20 ms at every N
-([Phase 5b notes § Deployed, via tunnel](../docs/phase-5b-notes.md#deployed-via-tunnel),
-[§ Estimated vs measured](../docs/phase-5b-notes.md#estimated-vs-measured-mstoken-q4-n--0-4-8-12-16-20-24-local)).
-The win of a split is cost, the server's share of the work, not speed.
+network, not by the arithmetic. The round trip from Houston to Romania is a stated condition of these runs, about
+160 ms of ping, and it dominates every remote token: the network column is 65 to 82 percent of a step in every
+remote row above, and the L4's own busy time is never more than 59 ms
+([Phase 7 notes § Remote split: 7B](../docs/phase-7-notes.md#remote-split-7b)). On the loopback runs of Phase 5b the same step took
+about 20 ms at every N ([Phase 5b notes § Estimated vs measured](../docs/phase-5b-notes.md#estimated-vs-measured-mstoken-q4-n--0-4-8-12-16-20-24-local)).
+The win of a split is cost, the server's share of the work, not speed; when the client is fast enough to run the
+whole model, as on 3B here, the win is both.
 
 ## 6. Privacy
 
@@ -216,15 +243,20 @@ normalised top-1 at boundary 12 from 0.807 to 0.895 and at boundary 24 from 0.70
 adversary stronger, not weaker, so the band is a lower bound on what a server could recover
 ([Phase 4 notes § Findings](../docs/phase-4-notes.md#findings)).
 
-**3B and 7B.** *Pending the GPU day.* The same linear probe with a 200k-token training set and the same held-out set,
-for 3B, and for 7B if the budget rule admitted it; inversion decoders are not run there because on 0.5B they were
-within a few points of the linear probe.
+**3B.** The same linear probe with a 200k-token training set and the same held-out set, on the L4. Coverage is
+0.9335 for that training set against 0.9728 for the 500k one, and the normalised band reads 0.998 at boundary 0,
+0.805 at L/2 and 0.729 at L, against 1.000, 0.895 and 0.810 on 0.5B: the deeper, wider model leaks a little less at
+each fraction of its depth, and still more than seven tokens in ten at its last boundary
+([Phase 7 notes § Privacy band](../docs/phase-7-notes.md#privacy-band-3b-beside-05b)).
 
-<!-- pending: server/probes/results/l4/linear-qwen2.5-3b-instruct.json -->
+| model | training tokens | coverage | boundary 0 raw / norm | L/2 raw / norm | L raw / norm |
+|---|---|---|---|---|---|
+| 0.5B (L = 24) | 500k | 0.9728 | 0.973 / 1.000 | 0.871 / 0.895 | 0.788 / 0.810 |
+| 3B (L = 36) | 200k | 0.9335 | 0.932 / 0.998 | 0.751 / 0.805 | 0.680 / 0.729 |
 
-| model | boundary 0 | L/2 | L | normalised at L |
-|---|---|---|---|---|
-| *pending* | | | | |
+Source: [Phase 7 notes § Privacy band](../docs/phase-7-notes.md#privacy-band-3b-beside-05b), which lists every boundary. The 7B probe
+was not run: the budget rule in the pod script found the elapsed time plus one and a half times the 3B probe's
+4,727 s would pass the four-hour budget ([Phase 7 notes § 7B probes](../docs/phase-7-notes.md#7b-probes-not-run)).
 
 **Conclusion.** A server that receives the hidden state at any boundary can recover most of the input tokens with a
 linear map trained on public text; the deepest boundary of the 0.5B model still yields 0.81 of them normalised
@@ -264,6 +296,16 @@ Through the tunnel the ratio was 1.27 for decode and 658.5 ms measured against 1
 client and server sharing one GPU; that confound is why section 5 waits for the remote table
 ([Phase 5b notes § Deployed, via tunnel](../docs/phase-5b-notes.md#deployed-via-tunnel)).
 
+**On the remote runs.** With the pod as the server, prefer: cost on the Houston laptop chose a split at N = 10 and
+then N = 14 for 7B, as the storage-quota-derived GPU budget grew from 1536 to 2011 MiB between runs, and local for 3B
+after one run at N = 34; the decode estimates were within 0.82 to 0.97 of the measurement, the prefill estimates low
+by two to three times because the first prefill includes shader compilation
+([Phase 7 notes § Remote split: 7B](../docs/phase-7-notes.md#remote-split-7b), [§ Remote split: 3B](../docs/phase-7-notes.md#remote-split-3b)).
+The run surfaced two bugs, both fixed: the WebGPU microbench built a 2.2 GB float array for the 7B head, failed to
+allocate, and left the planner believing the browser had no GPU, which is why six early runs are all server N = 0;
+and the bandwidth probe timed a 1 MiB read from the start of the fetch, so on a 160 ms link it reported about
+2 MB/s against 20 MB/s measured by every load ([Phase 7 notes § Two bugs](../docs/phase-7-notes.md#two-bugs-the-run-surfaced)).
+
 **The summariser as the worked example.** The `/summarize` page sends a fixed system prompt and the document as the
 user turn with 256 new tokens under prefer: cost. In the Chrome end-to-end run on the Mac with the 0.5B model, a
 522-token document was planned as local at N = 24 because the policy prefers cost and local is feasible, produced
@@ -284,13 +326,14 @@ of each other; only the server share and what left the device differ, which is t
 - **Inversion decoders on 3B and 7B**: not run on the L4; on 0.5B they were within a few points of the linear probe at
   every boundary, and the L4 budget went to the linear probe with a larger training set
   ([Phase 4 notes § Privacy band](../docs/phase-4-notes.md#privacy-band)).
-- **The L4 tables** in sections 5 and 6 and the remote split table: pending the GPU day, marked above.
+- **7B privacy probes**: not run on the L4; the pod script's budget rule found that the elapsed time plus one and a
+  half times the 3B probe's duration would pass the four-hour budget ([Phase 7 notes § 7B probes](../docs/phase-7-notes.md#7b-probes-not-run)).
+- **A North American L4**: none was available on RunPod at deploy time, so the pod ran in EU-RO-1 and every remote
+  token carries a Houston to Romania round trip of about 160 ms ([Phase 7 notes § Remote split: 7B](../docs/phase-7-notes.md#remote-split-7b)).
 - **Chrome with third-party cookies blocked** on the production sites: the manual checklist row is empty; the spike
   measured it in Incognito only ([Phase 3 notes § manual checklist](../docs/phase-3-notes.md#cross-site-cache-manual-checklist-deployed-demo-sites)).
 - **Safari cross-site cache**: the grant covers cookies only and the SDK does not request it there
   ([Spike 00 § SDK caveats](../docs/spikes/00-storage-partitioning.md#sdk-caveats-carried-forward)).
-- **A published L4 rate**: `bench/rates.json` has no hourly rate yet, so every cost in this document is a share, not a
-  dollar figure ([Phase 4 notes § Cost harness](../docs/phase-4-notes.md#cost-harness-this-mac-not-gpu-numbers)).
 
 ## 9. Reproducing
 
@@ -306,11 +349,13 @@ split run ([README](../README.md)). Every table above maps to a command and a re
 | runtime gates and bench (section 4) | `npx playwright test gates.spec.ts`, `bench.spec.ts`, `scripts/bench-browsers.mjs` in `packages/runtime` | [gates.json](../packages/runtime/results/gates.json), [bench.json](../packages/runtime/results/bench.json), [browsers.json](../packages/runtime/results/browsers.json) |
 | planner, estimate vs measured, tunnel run (section 7) | `npx playwright test -c playwright.split.config.ts`, `scripts/split-browsers.mjs` in `packages/sdk` | [split-e2e.json](../packages/sdk/results/split-e2e.json), [split-measure.json](../packages/sdk/results/split-measure.json), [split-browsers.json](../packages/sdk/results/split-browsers.json), [split-deployed.json](../packages/sdk/results/split-deployed.json) |
 | summariser run (section 7) | `npx playwright test` in `apps/site` | [summarize-e2e.json](../apps/site/results/summarize-e2e.json) |
-| L4 cost curves, 3B/7B band (sections 5, 6) | `scripts/pod/setup.sh`, then `scripts/pod/run-all.sh` on the pod | `server/bench/results/l4/`, `server/probes/results/l4/` (pending) |
-| remote split (section 5) | `scripts/measure-remote.mjs` against the deployed demo with the pod up | `packages/sdk/results/remote-l4.json` (pending) |
+| L4 cost curves, 3B band, GPU hours (sections 5, 6) | `scripts/pod/setup.sh`, then `scripts/pod/run-all.sh` on the pod; `scripts/phase7-notes.mjs` | [Phase 7 notes](../docs/phase-7-notes.md), [cuda-qwen2.5-7b json](../server/bench/results/l4/cuda-qwen2.5-7b-instruct-2026-09-18.json), [linear-qwen2.5-3b json](../server/probes/results/l4/linear-qwen2.5-3b-instruct.json), [timing.json](../server/bench/results/l4/timing.json) |
+| remote split (sections 5, 7) | `scripts/measure-remote.mjs --model <id>` against the deployed demo with the pod serving that model | [remote-l4.json](../packages/sdk/results/remote-l4.json) |
 
 The pod scripts are resumable and dry-run testable ([scripts/pod/README.md](../scripts/pod/README.md)); the notes each
-phase's tables were pasted from are regenerated by the scripts named at the top of each notes file. This document is
+phase's tables were pasted from are regenerated by the scripts named at the top of each notes file. The GPU day took
+8,024 s of pod time under the script and $1.51 of RunPod billing in total
+([Phase 7 notes § GPU time](../docs/phase-7-notes.md#gpu-time-and-the-cost-of-the-day)). This document is
 checked by `scripts/writeup-check.mjs`: every number outside a code span must sit in a paragraph, list item or table
 row that links to a repo file, with any heading anchor resolving, or to an external reference; the site build fails
 otherwise. A PDF is produced by `docs/writeup-pdf.sh` with pandoc.

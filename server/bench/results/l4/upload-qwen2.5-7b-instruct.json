@@ -1,0 +1,17 @@
+{
+  "id": "qwen2.5-7b-instruct",
+  "manifest_sha256": "5b711d3a351d0dccd2da00a0fee6feb98167d1ddee63dcf974de97a64254e530",
+  "bucket": "dianome",
+  "variants": [
+    "q8",
+    "q4"
+  ],
+  "uploaded": 1341,
+  "skipped": 2,
+  "bytes_uploaded": 11036739076,
+  "referenced_chunks": 1341,
+  "referenced_bytes": 11042619248,
+  "wall_seconds": 189.8,
+  "git_commit": "143be43984b65ad2d98ee7064111924000702d51",
+  "date": "2026-09-18"
+}
