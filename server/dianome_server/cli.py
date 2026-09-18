@@ -47,12 +47,21 @@ def serve(model: str, host: str, port: int, device: str | None) -> None:
 @click.option("--model", default="qwen2.5-0.5b-instruct", show_default=True)
 @click.option("--out", default="fixtures/qwen2.5-0.5b-instruct/", show_default=True)
 @click.option("--device", default=None)
-def fixtures(model: str, out: str, device: str | None) -> None:
-    """Write the Phase 5a reference activations + fixtures.json with hashes."""
-    from .fixtures import write_fixtures
+@click.option("--intra", is_flag=True, help="also dump every stage of block 0 (intra/*.npy) for gate 3")
+@click.option("--variant", "variants", multiple=True, type=click.Choice(["q8", "q4"]),
+              help="also dump dequantised references for this variant (repeatable) for gate 7")
+@click.option("--store", default="store", show_default=True, help="chunk store the --variant entries are read from")
+@click.option("--intra-blocks", default="0", show_default=True, help="comma list of blocks to dump with --intra (block 0 -> intra/, others -> intra_<i>/)")
+def fixtures(model: str, out: str, device: str | None, intra: bool, variants: tuple[str, ...], store: str, intra_blocks: str) -> None:
+    """Write the Phase 5a reference activations + fixtures.json with hashes.
+
+    Always: embed/block/final_norm/logits/rope .npy, tokenizer_cases.json (200 strings), greedy.json +
+    decode_steps.npy (16 greedy decode steps at every boundary). --intra and --variant add more.
+    """
+    from .fixtures import write_fixtures_extended
 
     lm = _load(model, device)
-    m = write_fixtures(lm, out)
+    m = write_fixtures_extended(lm, out, intra=intra, variants=variants, store=store, intra_blocks=[int(b) for b in intra_blocks.split(",")])
     for name, info in m["files"].items():
         click.echo(f"  {info['sha256']}  {name}  {info.get('shape', '')}")
     click.echo(f"fixtures {model} -> {out}  T={m['T']} L={m['L']} d_model={m['d_model']}  "

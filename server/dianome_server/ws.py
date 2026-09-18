@@ -11,6 +11,7 @@ import contextlib
 import http
 import logging
 import os
+import urllib.parse
 from typing import Optional
 
 import orjson
@@ -53,12 +54,16 @@ class SplitServer:
 
     def _authorized(self, request: Request) -> bool:
         auth = request.headers.get("Authorization", "")
-        return auth == f"Bearer {self.token}"
+        if auth == f"Bearer {self.token}":
+            return True
+        # Browsers cannot set headers on a WebSocket upgrade: accept the same token as `?token=` (Phase 5a).
+        query = urllib.parse.urlsplit(request.path).query
+        return self.token in urllib.parse.parse_qs(query).get("token", [])
 
     def process_request(self, conn: ServerConnection, request: Request) -> Optional[Response]:
         if not self._authorized(request):
             return conn.respond(http.HTTPStatus.UNAUTHORIZED, "missing or bad bearer token\n")
-        if request.path == "/plan":
+        if urllib.parse.urlsplit(request.path).path == "/plan":
             body = orjson.dumps(self.manager.plan())
             resp = conn.respond(http.HTTPStatus.OK, "")
             # websockets' Headers is a multi-dict: delete before setting or the

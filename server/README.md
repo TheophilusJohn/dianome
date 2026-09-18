@@ -136,6 +136,18 @@ dtypes, SHA-256 per file, versions and the boundary definition. The `.npy`
 files are gitignored; the manifest with hashes is committed. Two runs on the
 same machine yield identical hashes (`tests/test_fixtures.py`).
 
+Phase 5a additions (same command): `tokenizer_cases.json` (200 strings with HF
+token ids and decodes, gate 1), `greedy.json` + `decode_steps.npy` (16 greedy
+tokens with their fp16 top-2 logit gaps, and the hidden state at every boundary
+for each decode step, gate 5), `--intra` (`intra/*.npy`, every stage of block 0
+captured with forward hooks; `--intra-blocks 0,20,21,22,23` adds `intra_<i>/`),
+and `--variant q8|q4` (`<variant>/block_NN.npy`, `<variant>/greedy.json`: PyTorch
+with the client's blocks and embedding replaced by the dequantised store bytes,
+read through `dianome_ingest.quant`, so the ingest package must be installed in
+this venv: `uv pip install --python .venv/bin/python -e ../ingest`). The
+WebSocket server also accepts the token as `?token=` on the URL, because browsers
+cannot set headers on an upgrade.
+
 ## Tests
 
 `tests/test_correctness.py` holds the three gates from the brief (logits within

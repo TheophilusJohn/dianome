@@ -1,0 +1,31 @@
+{
+  "name": "dianome-runtime",
+  "version": "0.1.0",
+  "description": "WGSL partial-model runtime: embedding + transformer blocks 0..N-1 of a Qwen2 model on WebGPU, exporting the input to block N",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "sideEffects": false,
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "node scripts/build.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "ci": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "dianome": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@webgpu/types": "^0.1.60",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.0"
+  }
+}

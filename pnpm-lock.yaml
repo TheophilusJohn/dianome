@@ -54,6 +54,25 @@ importers:
         specifier: ^6.0.0
         version: 6.4.3(@types/node@20.19.43)
 
+  apps/runtime-bench:
+    dependencies:
+      dianome:
+        specifier: workspace:*
+        version: link:../../packages/sdk
+      dianome-runtime:
+        specifier: workspace:*
+        version: link:../../packages/runtime
+    devDependencies:
+      '@webgpu/types':
+        specifier: ^0.1.60
+        version: 0.1.72
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.0
+        version: 6.4.3(@types/node@20.19.43)
+
   packages/cache-frame:
     devDependencies:
       esbuild:
@@ -62,6 +81,28 @@ importers:
       typescript:
         specifier: ^5.6.0
         version: 5.9.3
+
+  packages/runtime:
+    dependencies:
+      dianome:
+        specifier: workspace:*
+        version: link:../sdk
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.58.0
+        version: 1.63.0
+      '@webgpu/types':
+        specifier: ^0.1.60
+        version: 0.1.72
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.12
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.0
+        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43))
 
   packages/sdk:
     devDependencies:
@@ -1241,6 +1282,9 @@ packages:
 
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
+
+  '@webgpu/types@0.1.72':
+    resolution: {integrity: sha512-0cF7RFM2edNoiIS1ODJp0/Gzv4/xSXhwoR0YCza+OWpJWtn4wmo9DvK91aLlH9+uUnwIriP7ZiC3WitmyhuzBw==}
 
   ajv@8.20.0:
     resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
@@ -2457,6 +2501,8 @@ snapshots:
       '@vitest/pretty-format': 4.1.11
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.1
+
+  '@webgpu/types@0.1.72': {}
 
   ajv@8.20.0:
     dependencies:

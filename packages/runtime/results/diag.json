@@ -1,0 +1,3049 @@
+{
+  "isolated": [
+    {
+      "block": 0,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.0002559936948497805,
+        "maxRel": 0.00015782828282828284,
+        "n": 28672,
+        "argmax": 3178,
+        "refAtMax": 1.1884765625,
+        "gotAtMax": 1.189453125
+      }
+    },
+    {
+      "block": 1,
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.0002008604875526165,
+        "maxRel": 0.00026232948583420777,
+        "n": 28672,
+        "argmax": 3178,
+        "refAtMax": 2.447265625,
+        "gotAtMax": 2.4453125
+      }
+    },
+    {
+      "block": 2,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000012550770370181582,
+        "maxRel": 0.00000559634670487106,
+        "n": 28672,
+        "argmax": 4074,
+        "refAtMax": 4.07421875,
+        "gotAtMax": 4.078125
+      }
+    },
+    {
+      "block": 3,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000004229824672453495,
+        "maxRel": 6.324886658031088e-7,
+        "n": 28672,
+        "argmax": 14256,
+        "refAtMax": 1.1337890625,
+        "gotAtMax": 1.134765625
+      }
+    },
+    {
+      "block": 4,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000004501357769429566,
+        "maxRel": 6.316704398447607e-7,
+        "n": 28672,
+        "argmax": 1703,
+        "refAtMax": 1.0966796875,
+        "gotAtMax": 1.095703125
+      }
+    },
+    {
+      "block": 5,
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000010235815528887266,
+        "maxRel": 0.0000012432367918523233,
+        "n": 28672,
+        "argmax": 10346,
+        "refAtMax": 3.13671875,
+        "gotAtMax": 3.134765625
+      }
+    },
+    {
+      "block": 6,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000004824802772802844,
+        "maxRel": 6.212229643765904e-7,
+        "n": 28672,
+        "argmax": 2950,
+        "refAtMax": -1.259765625,
+        "gotAtMax": -1.2587890625
+      }
+    },
+    {
+      "block": 7,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00000848352863957004,
+        "maxRel": 0.0000024833121424030515,
+        "n": 28672,
+        "argmax": 22890,
+        "refAtMax": 4.63671875,
+        "gotAtMax": 4.640625
+      }
+    },
+    {
+      "block": 8,
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000005303379788273573,
+        "maxRel": 0.0000012408672172808133,
+        "n": 28672,
+        "argmax": 1386,
+        "refAtMax": 2.333984375,
+        "gotAtMax": 2.3359375
+      }
+    },
+    {
+      "block": 9,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000008966085625852766,
+        "maxRel": 0.00000248015873015873,
+        "n": 28672,
+        "argmax": 13930,
+        "refAtMax": 5.05859375,
+        "gotAtMax": 5.0625
+      }
+    },
+    {
+      "block": 10,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000003312057334663301,
+        "maxRel": 6.192533291058973e-7,
+        "n": 28672,
+        "argmax": 3412,
+        "refAtMax": -1.544921875,
+        "gotAtMax": -1.5458984375
+      }
+    },
+    {
+      "block": 11,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.0000033243784502954763,
+        "maxRel": 6.188608998732572e-7,
+        "n": 28672,
+        "argmax": 2144,
+        "refAtMax": 1.046875,
+        "gotAtMax": 1.0478515625
+      }
+    },
+    {
+      "block": 12,
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.00000786412923297742,
+        "maxRel": 0.0000012369379354021533,
+        "n": 28672,
+        "argmax": 21274,
+        "refAtMax": -1.130859375,
+        "gotAtMax": -1.1328125
+      }
+    },
+    {
+      "block": 13,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000009271290210616228,
+        "maxRel": 0.0000024723101265822785,
+        "n": 28672,
+        "argmax": 25578,
+        "refAtMax": 5.2109375,
+        "gotAtMax": 5.21484375
+      }
+    },
+    {
+      "block": 14,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000008376239370426447,
+        "maxRel": 6.176865907653384e-7,
+        "n": 28672,
+        "argmax": 3220,
+        "refAtMax": -1.06640625,
+        "gotAtMax": -1.0654296875
+      }
+    },
+    {
+      "block": 15,
+      "cmp": {
+        "maxAbs": 0.0078125,
+        "relRms": 0.000011441635387179112,
+        "maxRel": 0.000004935249526216045,
+        "n": 28672,
+        "argmax": 18410,
+        "refAtMax": 9.078125,
+        "gotAtMax": 9.0703125
+      }
+    },
+    {
+      "block": 16,
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.0000050017387183236716,
+        "maxRel": 6.169061907770056e-7,
+        "n": 28672,
+        "argmax": 2754,
+        "refAtMax": -0.7890625,
+        "gotAtMax": -0.7880859375
+      }
+    },
+    {
+      "block": 17,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000011823364079477468,
+        "maxRel": 0.0000024676247631080226,
+        "n": 28672,
+        "argmax": 22232,
+        "refAtMax": -4.31640625,
+        "gotAtMax": -4.3203125
+      }
+    },
+    {
+      "block": 18,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000019430920149876034,
+        "maxRel": 0.0000024691845764854616,
+        "n": 28672,
+        "argmax": 3490,
+        "refAtMax": -4.4609375,
+        "gotAtMax": -4.45703125
+      }
+    },
+    {
+      "block": 19,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00001656454335847658,
+        "maxRel": 0.0000024723101265822785,
+        "n": 28672,
+        "argmax": 4515,
+        "refAtMax": -4.24609375,
+        "gotAtMax": -4.25
+      }
+    },
+    {
+      "block": 20,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00002588545269341119,
+        "maxRel": 0.0000024785850253807105,
+        "n": 28672,
+        "argmax": 11164,
+        "refAtMax": -4.09765625,
+        "gotAtMax": -4.09375
+      }
+    },
+    {
+      "block": 21,
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00007298045864289825,
+        "maxRel": 0.00006610259122157589,
+        "n": 28672,
+        "argmax": 17163,
+        "refAtMax": 3.96875,
+        "gotAtMax": 3.97265625
+      }
+    },
+    {
+      "block": 22,
+      "cmp": {
+        "maxAbs": 0.0078125,
+        "relRms": 0.00005896863764735767,
+        "maxRel": 0.00012581781580271766,
+        "n": 28672,
+        "argmax": 14775,
+        "refAtMax": 8.046875,
+        "gotAtMax": 8.0390625
+      }
+    },
+    {
+      "block": 23,
+      "cmp": {
+        "maxAbs": 0.03125,
+        "relRms": 0.00022348874587457075,
+        "maxRel": 0.000777000777000777,
+        "n": 28672,
+        "argmax": 4074,
+        "refAtMax": 2.96875,
+        "gotAtMax": 2.9375
+      }
+    }
+  ],
+  "stages_20": [
+    {
+      "stage": "input_norm",
+      "fixture": "post_input_norm",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000008467639713980848,
+        "maxRel": 0.000049800796812749006,
+        "n": 28672,
+        "argmax": 9692,
+        "refAtMax": 2.283203125,
+        "gotAtMax": 2.28125
+      }
+    },
+    {
+      "stage": "q_proj",
+      "fixture": "q_proj",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.0000196823598646597,
+        "maxRel": 0.00026910656620021526,
+        "n": 28672,
+        "argmax": 10782,
+        "refAtMax": 5.04296875,
+        "gotAtMax": 5.046875
+      }
+    },
+    {
+      "stage": "k_proj",
+      "fixture": "k_proj",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000017274455633063316,
+        "maxRel": 0.00016733601070950468,
+        "n": 4096,
+        "argmax": 1397,
+        "refAtMax": -2.232421875,
+        "gotAtMax": -2.23046875
+      }
+    },
+    {
+      "stage": "v_proj",
+      "fixture": "v_proj",
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000023376272373696196,
+        "maxRel": 0.00013572204125950055,
+        "n": 4096,
+        "argmax": 1590,
+        "refAtMax": -1.3818359375,
+        "gotAtMax": -1.380859375
+      }
+    },
+    {
+      "stage": "rope",
+      "fixture": "q_rope",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000019859974660958025,
+        "maxRel": 0.00026910656620021526,
+        "n": 28672,
+        "argmax": 10782,
+        "refAtMax": 5.04296875,
+        "gotAtMax": 5.046875
+      }
+    },
+    {
+      "stage": "attn",
+      "fixture": "attn_out",
+      "cmp": {
+        "maxAbs": 0.001220703125,
+        "relRms": 0.00006365649821733818,
+        "maxRel": 0.00019066503965832826,
+        "n": 28672,
+        "argmax": 10783,
+        "refAtMax": 0.358642578125,
+        "gotAtMax": 0.35986328125
+      }
+    },
+    {
+      "stage": "o_proj",
+      "fixture": "o_proj",
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.00015141053747653373,
+        "maxRel": 0.00026925148088314486,
+        "n": 28672,
+        "argmax": 10346,
+        "refAtMax": 1.26171875,
+        "gotAtMax": 1.2626953125
+      }
+    },
+    {
+      "stage": "residual1",
+      "fixture": "post_o_proj_residual",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000008080870724567157,
+        "maxRel": 0.0000012353731815306768,
+        "n": 28672,
+        "argmax": 9650,
+        "refAtMax": 2.41796875,
+        "gotAtMax": 2.416015625
+      }
+    },
+    {
+      "stage": "post_norm",
+      "fixture": "post_post_attn_norm",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00006786204414591503,
+        "maxRel": 0.00006745817593092283,
+        "n": 28672,
+        "argmax": 9650,
+        "refAtMax": 3.419921875,
+        "gotAtMax": 3.416015625
+      }
+    },
+    {
+      "stage": "down",
+      "fixture": "mlp_out",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00026904813997218345,
+        "maxRel": 0.00028571428571428574,
+        "n": 28672,
+        "argmax": 9450,
+        "refAtMax": 5.9296875,
+        "gotAtMax": 5.92578125
+      }
+    },
+    {
+      "stage": "residual2",
+      "fixture": "block_out",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00002588545269341119,
+        "maxRel": 0.0000024785850253807105,
+        "n": 28672,
+        "argmax": 11164,
+        "refAtMax": -4.09765625,
+        "gotAtMax": -4.09375
+      }
+    }
+  ],
+  "stages_21": [
+    {
+      "stage": "input_norm",
+      "fixture": "post_input_norm",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 28672,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "q_proj",
+      "fixture": "q_proj",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 28672,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "k_proj",
+      "fixture": "k_proj",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 4096,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "v_proj",
+      "fixture": "v_proj",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 4096,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "rope",
+      "fixture": "q_rope",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 28672,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "attn",
+      "fixture": "attn_out",
+      "cmp": {
+        "maxAbs": 0.00048828125,
+        "relRms": 0.000005394374504788242,
+        "maxRel": 0.00006121449559255632,
+        "n": 28672,
+        "argmax": 6270,
+        "refAtMax": 0.6865234375,
+        "gotAtMax": 0.68603515625
+      }
+    },
+    {
+      "stage": "o_proj",
+      "fixture": "o_proj",
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.00003884217342524972,
+        "maxRel": 0.00012218963831867058,
+        "n": 28672,
+        "argmax": 28489,
+        "refAtMax": 1.44140625,
+        "gotAtMax": 1.4423828125
+      }
+    },
+    {
+      "stage": "residual1",
+      "fixture": "post_o_proj_residual",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.0000043188726445568095,
+        "maxRel": 0.0000024785850253807105,
+        "n": 28672,
+        "argmax": 17163,
+        "refAtMax": 4.5625,
+        "gotAtMax": 4.56640625
+      }
+    },
+    {
+      "stage": "post_norm",
+      "fixture": "post_post_attn_norm",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00002488406317496725,
+        "maxRel": 0.000015229044834307991,
+        "n": 28672,
+        "argmax": 17163,
+        "refAtMax": 4.55078125,
+        "gotAtMax": 4.5546875
+      }
+    },
+    {
+      "stage": "down",
+      "fixture": "mlp_out",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000011953282465817731,
+        "maxRel": 0.000002558120497707924,
+        "n": 28672,
+        "argmax": 28266,
+        "refAtMax": 6.75390625,
+        "gotAtMax": 6.7578125
+      }
+    },
+    {
+      "stage": "residual2",
+      "fixture": "block_out",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.00007298045864289825,
+        "maxRel": 0.00006610259122157589,
+        "n": 28672,
+        "argmax": 17163,
+        "refAtMax": 3.96875,
+        "gotAtMax": 3.97265625
+      }
+    }
+  ],
+  "stages_22": [
+    {
+      "stage": "input_norm",
+      "fixture": "post_input_norm",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 28672,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "q_proj",
+      "fixture": "q_proj",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 28672,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "k_proj",
+      "fixture": "k_proj",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 4096,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "v_proj",
+      "fixture": "v_proj",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 4096,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "rope",
+      "fixture": "q_rope",
+      "cmp": {
+        "maxAbs": 0,
+        "relRms": 0,
+        "maxRel": 0,
+        "n": 28672,
+        "argmax": -1,
+        "refAtMax": 0,
+        "gotAtMax": 0
+      }
+    },
+    {
+      "stage": "attn",
+      "fixture": "attn_out",
+      "cmp": {
+        "maxAbs": 0.00048828125,
+        "relRms": 0.000006338018284162052,
+        "maxRel": 0.00011748120300751879,
+        "n": 28672,
+        "argmax": 11461,
+        "refAtMax": -0.8974609375,
+        "gotAtMax": -0.89794921875
+      }
+    },
+    {
+      "stage": "o_proj",
+      "fixture": "o_proj",
+      "cmp": {
+        "maxAbs": 0.000244140625,
+        "relRms": 0.00003466990293945431,
+        "maxRel": 0.00008111615833874107,
+        "n": 28672,
+        "argmax": 10904,
+        "refAtMax": -0.271240234375,
+        "gotAtMax": -0.271484375
+      }
+    },
+    {
+      "stage": "residual1",
+      "fixture": "post_o_proj_residual",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000009720345802018393,
+        "maxRel": 0.00003363832077502691,
+        "n": 28672,
+        "argmax": 15131,
+        "refAtMax": -2.296875,
+        "gotAtMax": -2.298828125
+      }
+    },
+    {
+      "stage": "post_norm",
+      "fixture": "post_post_attn_norm",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.00001504605502611292,
+        "maxRel": 0.00008896797153024912,
+        "n": 28672,
+        "argmax": 15131,
+        "refAtMax": -1.974609375,
+        "gotAtMax": -1.9765625
+      }
+    },
+    {
+      "stage": "down",
+      "fixture": "mlp_out",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.00010344220441845966,
+        "maxRel": 0.000078125,
+        "n": 28672,
+        "argmax": 270,
+        "refAtMax": -2.287109375,
+        "gotAtMax": -2.2890625
+      }
+    },
+    {
+      "stage": "residual2",
+      "fixture": "block_out",
+      "cmp": {
+        "maxAbs": 0.0078125,
+        "relRms": 0.00005896863764735767,
+        "maxRel": 0.00012581781580271766,
+        "n": 28672,
+        "argmax": 14775,
+        "refAtMax": 8.046875,
+        "gotAtMax": 8.0390625
+      }
+    }
+  ],
+  "stages_23": [
+    {
+      "stage": "input_norm",
+      "fixture": "post_input_norm",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000005686857102919261,
+        "maxRel": 0.00007030371203599551,
+        "n": 28672,
+        "argmax": 7189,
+        "refAtMax": -3.689453125,
+        "gotAtMax": -3.69140625
+      }
+    },
+    {
+      "stage": "q_proj",
+      "fixture": "q_proj",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000006960567625004307,
+        "maxRel": 0.00011870845204178538,
+        "n": 28672,
+        "argmax": 7956,
+        "refAtMax": 2.1484375,
+        "gotAtMax": 2.146484375
+      }
+    },
+    {
+      "stage": "k_proj",
+      "fixture": "k_proj",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.00001628334023157253,
+        "maxRel": 0.0001939487975174554,
+        "n": 4096,
+        "argmax": 1141,
+        "refAtMax": 2.248046875,
+        "gotAtMax": 2.24609375
+      }
+    },
+    {
+      "stage": "v_proj",
+      "fixture": "v_proj",
+      "cmp": {
+        "maxAbs": 0.0009765625,
+        "relRms": 0.000016374348384360205,
+        "maxRel": 0.00012588116817724068,
+        "n": 4096,
+        "argmax": 1063,
+        "refAtMax": -1.6669921875,
+        "gotAtMax": -1.66796875
+      }
+    },
+    {
+      "stage": "rope",
+      "fixture": "q_rope",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000007602942500923886,
+        "maxRel": 0.00012007684918347742,
+        "n": 28672,
+        "argmax": 7956,
+        "refAtMax": 2.1484375,
+        "gotAtMax": 2.146484375
+      }
+    },
+    {
+      "stage": "attn",
+      "fixture": "attn_out",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.000027985352878671065,
+        "maxRel": 0.00025188916876574307,
+        "n": 28672,
+        "argmax": 3792,
+        "refAtMax": 2.07421875,
+        "gotAtMax": 2.072265625
+      }
+    },
+    {
+      "stage": "o_proj",
+      "fixture": "o_proj",
+      "cmp": {
+        "maxAbs": 0.0078125,
+        "relRms": 0.00011815266820720051,
+        "maxRel": 0.0005524861878453039,
+        "n": 28672,
+        "argmax": 17514,
+        "refAtMax": 9.359375,
+        "gotAtMax": 9.3671875
+      }
+    },
+    {
+      "stage": "residual1",
+      "fixture": "post_o_proj_residual",
+      "cmp": {
+        "maxAbs": 0.001953125,
+        "relRms": 0.00003339341779503248,
+        "maxRel": 0.000030222437137330755,
+        "n": 28672,
+        "argmax": 3660,
+        "refAtMax": -2.087890625,
+        "gotAtMax": -2.08984375
+      }
+    },
+    {
+      "stage": "post_norm",
+      "fixture": "post_post_attn_norm",
+      "cmp": {
+        "maxAbs": 0.00390625,
+        "relRms": 0.000055027156978659475,
+        "maxRel": 0.00018867924528301886,
+        "n": 28672,
+        "argmax": 4230,
+        "refAtMax": -3.166015625,
+        "gotAtMax": -3.162109375
+      }
+    },
+    {
+      "stage": "down",
+      "fixture": "mlp_out",
+      "cmp": {
+        "maxAbs": 0.03125,
+        "relRms": 0.00017228474735558503,
+        "maxRel": 0.0004748338081671415,
+        "n": 28672,
+        "argmax": 4074,
+        "refAtMax": -38.625,
+        "gotAtMax": -38.65625
+      }
+    },
+    {
+      "stage": "residual2",
+      "fixture": "block_out",
+      "cmp": {
+        "maxAbs": 0.03125,
+        "relRms": 0.00022348874587457075,
+        "maxRel": 0.000777000777000777,
+        "n": 28672,
+        "argmax": 4074,
+        "refAtMax": 2.96875,
+        "gotAtMax": 2.9375
+      }
+    }
+  ],
+  "variants": {
+    "{\"attnFlags\":3}": [
+      {
+        "block": 0,
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.00043314694552574557,
+          "maxRel": 0.00015782828282828284,
+          "n": 28672,
+          "argmax": 2634,
+          "refAtMax": -0.650390625,
+          "gotAtMax": -0.6494140625
+        }
+      },
+      {
+        "block": 1,
+        "cmp": {
+          "maxAbs": 0.001953125,
+          "relRms": 0.000586726329847651,
+          "maxRel": 0.00026232948583420777,
+          "n": 28672,
+          "argmax": 2282,
+          "refAtMax": 3.0625,
+          "gotAtMax": 3.060546875
+        }
+      },
+      {
+        "block": 2,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00006996818363708852,
+          "maxRel": 0.00001119269340974212,
+          "n": 28672,
+          "argmax": 170,
+          "refAtMax": 13.2109375,
+          "gotAtMax": 13.203125
+        }
+      },
+      {
+        "block": 3,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.0000452492903970778,
+          "maxRel": 0.000010119818652849741,
+          "n": 28672,
+          "argmax": 170,
+          "refAtMax": 19.96875,
+          "gotAtMax": 19.953125
+        }
+      },
+      {
+        "block": 4,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00005470131794623065,
+          "maxRel": 0.000010106727037516172,
+          "n": 28672,
+          "argmax": 170,
+          "refAtMax": 20,
+          "gotAtMax": 19.984375
+        }
+      },
+      {
+        "block": 5,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00006213309100404804,
+          "maxRel": 0.000009945894334818586,
+          "n": 28672,
+          "argmax": 170,
+          "refAtMax": 19.953125,
+          "gotAtMax": 19.9375
+        }
+      },
+      {
+        "block": 6,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00006993754477209255,
+          "maxRel": 0.000009939567430025446,
+          "n": 28672,
+          "argmax": 170,
+          "refAtMax": 19.71875,
+          "gotAtMax": 19.703125
+        }
+      },
+      {
+        "block": 7,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00007762602721487756,
+          "maxRel": 0.000009933248569612206,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.359375,
+          "gotAtMax": -9.34375
+        }
+      },
+      {
+        "block": 8,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00008563598682265398,
+          "maxRel": 0.000009926937738246506,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.4765625,
+          "gotAtMax": -9.4609375
+        }
+      },
+      {
+        "block": 9,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00009039745582052596,
+          "maxRel": 0.00000992063492063492,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.53125,
+          "gotAtMax": -9.515625
+        }
+      },
+      {
+        "block": 10,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00009658030069504052,
+          "maxRel": 0.000009908053265694356,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.421875,
+          "gotAtMax": -9.40625
+        }
+      },
+      {
+        "block": 11,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.0001039465230511675,
+          "maxRel": 0.000009901774397972116,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.4375,
+          "gotAtMax": -9.421875
+        }
+      },
+      {
+        "block": 12,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00010899675381436686,
+          "maxRel": 0.000009895503483217226,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.453125,
+          "gotAtMax": -9.4375
+        }
+      },
+      {
+        "block": 13,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00011468764525190572,
+          "maxRel": 0.000009889240506329114,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.3984375,
+          "gotAtMax": -9.3828125
+        }
+      },
+      {
+        "block": 14,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00012448386748110113,
+          "maxRel": 0.000009882985452245414,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.40625,
+          "gotAtMax": -9.390625
+        }
+      },
+      {
+        "block": 15,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.00013740207929275228,
+          "maxRel": 0.000014805748578648136,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 8.7578125,
+          "gotAtMax": 8.734375
+        }
+      },
+      {
+        "block": 16,
+        "cmp": {
+          "maxAbs": 0.03125,
+          "relRms": 0.00016615207867518464,
+          "maxRel": 0.00001974099810486418,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 11.953125,
+          "gotAtMax": 11.921875
+        }
+      },
+      {
+        "block": 17,
+        "cmp": {
+          "maxAbs": 0.0390625,
+          "relRms": 0.00019140589384042042,
+          "maxRel": 0.000024676247631080228,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 14.6875,
+          "gotAtMax": 14.6484375
+        }
+      },
+      {
+        "block": 18,
+        "cmp": {
+          "maxAbs": 0.03125,
+          "relRms": 0.00022478153769705793,
+          "maxRel": 0.000019753476611883693,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 22.78125,
+          "gotAtMax": 22.75
+        }
+      },
+      {
+        "block": 19,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.0002647951084246775,
+          "maxRel": 0.00002966772151898734,
+          "n": 28672,
+          "argmax": 10346,
+          "refAtMax": 23.390625,
+          "gotAtMax": 23.34375
+        }
+      },
+      {
+        "block": 20,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.00032641816390301755,
+          "maxRel": 0.00003965736040609137,
+          "n": 28672,
+          "argmax": 5866,
+          "refAtMax": 21.375,
+          "gotAtMax": 21.3125
+        }
+      },
+      {
+        "block": 21,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.00173642307953382,
+          "maxRel": 0.0010576414595452142,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 40.71875,
+          "gotAtMax": 40.78125
+        }
+      },
+      {
+        "block": 22,
+        "cmp": {
+          "maxAbs": 0.09375,
+          "relRms": 0.0019023813711520187,
+          "maxRel": 0.001509813789632612,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 38.0625,
+          "gotAtMax": 38.15625
+        }
+      },
+      {
+        "block": 23,
+        "cmp": {
+          "maxAbs": 0.125,
+          "relRms": 0.0028273926010390555,
+          "maxRel": 0.003108003108003108,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 8.15625,
+          "gotAtMax": 8.03125
+        }
+      }
+    ],
+    "{\"attnFlags\":3}:stages0": [
+      {
+        "stage": "input_norm",
+        "fixture": "post_input_norm",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "q_proj",
+        "fixture": "q_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "k_proj",
+        "fixture": "k_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "v_proj",
+        "fixture": "v_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "rope",
+        "fixture": "q_rope",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "attn",
+        "fixture": "attn_out",
+        "cmp": {
+          "maxAbs": 0.0001220703125,
+          "relRms": 0.0002819753783713316,
+          "maxRel": 0.00042087542087542086,
+          "n": 28672,
+          "argmax": 18912,
+          "refAtMax": 0.1298828125,
+          "gotAtMax": 0.1297607421875
+        }
+      },
+      {
+        "stage": "o_proj",
+        "fixture": "o_proj",
+        "cmp": {
+          "maxAbs": 0.000244140625,
+          "relRms": 0.00026315593150909333,
+          "maxRel": 0.0005012531328320802,
+          "n": 28672,
+          "argmax": 25930,
+          "refAtMax": 0.33447265625,
+          "gotAtMax": 0.334228515625
+        }
+      },
+      {
+        "stage": "residual1",
+        "fixture": "post_o_proj_residual",
+        "cmp": {
+          "maxAbs": 0.000244140625,
+          "relRms": 0.00023113645528941238,
+          "maxRel": 0.0004752851711026616,
+          "n": 28672,
+          "argmax": 25930,
+          "refAtMax": 0.343017578125,
+          "gotAtMax": 0.3427734375
+        }
+      },
+      {
+        "stage": "post_norm",
+        "fixture": "post_post_attn_norm",
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00028080895930095943,
+          "maxRel": 0.000657030223390276,
+          "n": 28672,
+          "argmax": 19490,
+          "refAtMax": -7.71875,
+          "gotAtMax": -7.7109375
+        }
+      },
+      {
+        "stage": "down",
+        "fixture": "mlp_out",
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.0004220218813846404,
+          "maxRel": 0.00015762925598991173,
+          "n": 28672,
+          "argmax": 3104,
+          "refAtMax": 1.0537109375,
+          "gotAtMax": 1.0546875
+        }
+      },
+      {
+        "stage": "residual2",
+        "fixture": "block_out",
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.00043314694552574557,
+          "maxRel": 0.00015782828282828284,
+          "n": 28672,
+          "argmax": 2634,
+          "refAtMax": -0.650390625,
+          "gotAtMax": -0.6494140625
+        }
+      }
+    ],
+    "{\"attnFlags\":5}": [
+      {
+        "block": 0,
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.007600336403440498,
+          "maxRel": 0.002840909090909091,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 1.8857421875,
+          "gotAtMax": 1.9033203125
+        }
+      },
+      {
+        "block": 1,
+        "cmp": {
+          "maxAbs": 0.017333984375,
+          "relRms": 0.0067887155494909335,
+          "maxRel": 0.002328174186778594,
+          "n": 28672,
+          "argmax": 3502,
+          "refAtMax": -0.37158203125,
+          "gotAtMax": -0.354248046875
+        }
+      },
+      {
+        "block": 2,
+        "cmp": {
+          "maxAbs": 0.0263671875,
+          "relRms": 0.0005281129915365343,
+          "maxRel": 0.000037775340257879655,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 1.1875,
+          "gotAtMax": 1.2138671875
+        }
+      },
+      {
+        "block": 3,
+        "cmp": {
+          "maxAbs": 0.025390625,
+          "relRms": 0.00027288871681678415,
+          "maxRel": 0.00001644470531088083,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 2.884765625,
+          "gotAtMax": 2.91015625
+        }
+      },
+      {
+        "block": 4,
+        "cmp": {
+          "maxAbs": 0.0546875,
+          "relRms": 0.0003029297535232132,
+          "maxRel": 0.000035373544631306595,
+          "n": 28672,
+          "argmax": 2282,
+          "refAtMax": 4.3515625,
+          "gotAtMax": 4.296875
+        }
+      },
+      {
+        "block": 5,
+        "cmp": {
+          "maxAbs": 0.0257568359375,
+          "relRms": 0.00029899128060186165,
+          "maxRel": 0.000016395185192552514,
+          "n": 28672,
+          "argmax": 3354,
+          "refAtMax": -0.2423095703125,
+          "gotAtMax": -0.216552734375
+        }
+      },
+      {
+        "block": 6,
+        "cmp": {
+          "maxAbs": 0.0322265625,
+          "relRms": 0.00029981330011219444,
+          "maxRel": 0.00002050035782442748,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 1.8642578125,
+          "gotAtMax": 1.896484375
+        }
+      },
+      {
+        "block": 7,
+        "cmp": {
+          "maxAbs": 0.037109375,
+          "relRms": 0.00030580257807770976,
+          "maxRel": 0.00002359146535282899,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 1.28515625,
+          "gotAtMax": 1.248046875
+        }
+      },
+      {
+        "block": 8,
+        "cmp": {
+          "maxAbs": 0.033203125,
+          "relRms": 0.0003254803899924237,
+          "maxRel": 0.000021094742693773826,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 2.9765625,
+          "gotAtMax": 2.943359375
+        }
+      },
+      {
+        "block": 9,
+        "cmp": {
+          "maxAbs": 0.0390625,
+          "relRms": 0.00033797150663142996,
+          "maxRel": 0.0000248015873015873,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 4.7578125,
+          "gotAtMax": 4.796875
+        }
+      },
+      {
+        "block": 10,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.0003563513950022792,
+          "maxRel": 0.00002972415979708307,
+          "n": 28672,
+          "argmax": 5866,
+          "refAtMax": 5.3515625,
+          "gotAtMax": 5.3046875
+        }
+      },
+      {
+        "block": 11,
+        "cmp": {
+          "maxAbs": 0.05859375,
+          "relRms": 0.00039155527128702326,
+          "maxRel": 0.000037131653992395436,
+          "n": 28672,
+          "argmax": 5866,
+          "refAtMax": 6.890625,
+          "gotAtMax": 6.83203125
+        }
+      },
+      {
+        "block": 12,
+        "cmp": {
+          "maxAbs": 0.0361328125,
+          "relRms": 0.0003950403945626526,
+          "maxRel": 0.000022883351804939836,
+          "n": 28672,
+          "argmax": 7354,
+          "refAtMax": -0.5751953125,
+          "gotAtMax": -0.5390625
+        }
+      },
+      {
+        "block": 13,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.0004083703061392021,
+          "maxRel": 0.00002966772151898734,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 5.5390625,
+          "gotAtMax": 5.5859375
+        }
+      },
+      {
+        "block": 14,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.00042225011892002367,
+          "maxRel": 0.000029648956356736243,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 5.609375,
+          "gotAtMax": 5.5625
+        }
+      },
+      {
+        "block": 15,
+        "cmp": {
+          "maxAbs": 0.0498046875,
+          "relRms": 0.00044372258556986513,
+          "maxRel": 0.00003146221572962729,
+          "n": 28672,
+          "argmax": 7376,
+          "refAtMax": 0.326171875,
+          "gotAtMax": 0.3759765625
+        }
+      },
+      {
+        "block": 16,
+        "cmp": {
+          "maxAbs": 0.0546875,
+          "relRms": 0.0005375733759505875,
+          "maxRel": 0.00003454674668351232,
+          "n": 28672,
+          "argmax": 7776,
+          "refAtMax": -1.552734375,
+          "gotAtMax": -1.498046875
+        }
+      },
+      {
+        "block": 17,
+        "cmp": {
+          "maxAbs": 0.0634765625,
+          "relRms": 0.0006093246191539944,
+          "maxRel": 0.00004009890240050537,
+          "n": 28672,
+          "argmax": 7776,
+          "refAtMax": -1.1767578125,
+          "gotAtMax": -1.11328125
+        }
+      },
+      {
+        "block": 18,
+        "cmp": {
+          "maxAbs": 0.078125,
+          "relRms": 0.0007150971212219304,
+          "maxRel": 0.000049383691529709226,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 16.390625,
+          "gotAtMax": 16.3125
+        }
+      },
+      {
+        "block": 19,
+        "cmp": {
+          "maxAbs": 0.072265625,
+          "relRms": 0.0008371520584562194,
+          "maxRel": 0.00004573773734177215,
+          "n": 28672,
+          "argmax": 7865,
+          "refAtMax": 2.181640625,
+          "gotAtMax": 2.109375
+        }
+      },
+      {
+        "block": 20,
+        "cmp": {
+          "maxAbs": 0.103515625,
+          "relRms": 0.0010071151470752275,
+          "maxRel": 0.00006568250317258883,
+          "n": 28672,
+          "argmax": 7309,
+          "refAtMax": -1.669921875,
+          "gotAtMax": -1.7734375
+        }
+      },
+      {
+        "block": 21,
+        "cmp": {
+          "maxAbs": 0.125,
+          "relRms": 0.0053021077930966,
+          "maxRel": 0.0021152829190904283,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 34.5625,
+          "gotAtMax": 34.6875
+        }
+      },
+      {
+        "block": 22,
+        "cmp": {
+          "maxAbs": 0.125,
+          "relRms": 0.005620558257553266,
+          "maxRel": 0.0020130850528434826,
+          "n": 28672,
+          "argmax": 2282,
+          "refAtMax": 43.25,
+          "gotAtMax": 43.125
+        }
+      },
+      {
+        "block": 23,
+        "cmp": {
+          "maxAbs": 0.3125,
+          "relRms": 0.007960058331154823,
+          "maxRel": 0.00777000777000777,
+          "n": 28672,
+          "argmax": 7658,
+          "refAtMax": 20.375,
+          "gotAtMax": 20.0625
+        }
+      }
+    ],
+    "{\"attnFlags\":5}:stages0": [
+      {
+        "stage": "input_norm",
+        "fixture": "post_input_norm",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "q_proj",
+        "fixture": "q_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "k_proj",
+        "fixture": "k_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "v_proj",
+        "fixture": "v_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "rope",
+        "fixture": "q_rope",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "attn",
+        "fixture": "attn_out",
+        "cmp": {
+          "maxAbs": 0.007568359375,
+          "relRms": 0.01824487440866228,
+          "maxRel": 0.026094276094276093,
+          "n": 28672,
+          "argmax": 24350,
+          "refAtMax": 0.1917724609375,
+          "gotAtMax": 0.1842041015625
+        }
+      },
+      {
+        "stage": "o_proj",
+        "fixture": "o_proj",
+        "cmp": {
+          "maxAbs": 0.0017547607421875,
+          "relRms": 0.011280180536073292,
+          "maxRel": 0.0036027568922305762,
+          "n": 28672,
+          "argmax": 4387,
+          "refAtMax": 0.023040771484375,
+          "gotAtMax": 0.0212860107421875
+        }
+      },
+      {
+        "stage": "residual1",
+        "fixture": "post_o_proj_residual",
+        "cmp": {
+          "maxAbs": 0.001953125,
+          "relRms": 0.007764412048579021,
+          "maxRel": 0.0038022813688212928,
+          "n": 28672,
+          "argmax": 25034,
+          "refAtMax": 0.513671875,
+          "gotAtMax": 0.51171875
+        }
+      },
+      {
+        "stage": "post_norm",
+        "fixture": "post_post_attn_norm",
+        "cmp": {
+          "maxAbs": 0.12890625,
+          "relRms": 0.008590606955046607,
+          "maxRel": 0.010840998685939553,
+          "n": 28672,
+          "argmax": 3640,
+          "refAtMax": -0.66064453125,
+          "gotAtMax": -0.78955078125
+        }
+      },
+      {
+        "stage": "down",
+        "fixture": "mlp_out",
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.007591385523747414,
+          "maxRel": 0.0028373266078184113,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 1.8740234375,
+          "gotAtMax": 1.8916015625
+        }
+      },
+      {
+        "stage": "residual2",
+        "fixture": "block_out",
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.007600336403440498,
+          "maxRel": 0.002840909090909091,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 1.8857421875,
+          "gotAtMax": 1.9033203125
+        }
+      }
+    ],
+    "{\"attnFlags\":7}": [
+      {
+        "block": 0,
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.0076079878707011285,
+          "maxRel": 0.002840909090909091,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 1.8857421875,
+          "gotAtMax": 1.9033203125
+        }
+      },
+      {
+        "block": 1,
+        "cmp": {
+          "maxAbs": 0.017333984375,
+          "relRms": 0.006805823678132377,
+          "maxRel": 0.002328174186778594,
+          "n": 28672,
+          "argmax": 3502,
+          "refAtMax": -0.37158203125,
+          "gotAtMax": -0.354248046875
+        }
+      },
+      {
+        "block": 2,
+        "cmp": {
+          "maxAbs": 0.033203125,
+          "relRms": 0.0005225994041572792,
+          "maxRel": 0.00004756894699140401,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 1.1875,
+          "gotAtMax": 1.220703125
+        }
+      },
+      {
+        "block": 3,
+        "cmp": {
+          "maxAbs": 0.025390625,
+          "relRms": 0.00026742001283136557,
+          "maxRel": 0.00001644470531088083,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 2.884765625,
+          "gotAtMax": 2.91015625
+        }
+      },
+      {
+        "block": 4,
+        "cmp": {
+          "maxAbs": 0.05859375,
+          "relRms": 0.00029520234148653273,
+          "maxRel": 0.00003790022639068564,
+          "n": 28672,
+          "argmax": 2282,
+          "refAtMax": 4.3515625,
+          "gotAtMax": 4.29296875
+        }
+      },
+      {
+        "block": 5,
+        "cmp": {
+          "maxAbs": 0.02734375,
+          "relRms": 0.00029427592897699313,
+          "maxRel": 0.000017405315085932528,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 2.09375,
+          "gotAtMax": 2.12109375
+        }
+      },
+      {
+        "block": 6,
+        "cmp": {
+          "maxAbs": 0.03125,
+          "relRms": 0.00029360250532126396,
+          "maxRel": 0.000019879134860050892,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 0.7021484375,
+          "gotAtMax": 0.6708984375
+        }
+      },
+      {
+        "block": 7,
+        "cmp": {
+          "maxAbs": 0.0380859375,
+          "relRms": 0.0002980841349401592,
+          "maxRel": 0.000024212293388429753,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 1.28515625,
+          "gotAtMax": 1.2470703125
+        }
+      },
+      {
+        "block": 8,
+        "cmp": {
+          "maxAbs": 0.03125,
+          "relRms": 0.00031433326471656846,
+          "maxRel": 0.000019853875476493012,
+          "n": 28672,
+          "argmax": 9450,
+          "refAtMax": 4.76953125,
+          "gotAtMax": 4.73828125
+        }
+      },
+      {
+        "block": 9,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.00032597947841999156,
+          "maxRel": 0.000029761904761904762,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 4.7578125,
+          "gotAtMax": 4.8046875
+        }
+      },
+      {
+        "block": 10,
+        "cmp": {
+          "maxAbs": 0.041015625,
+          "relRms": 0.0003418629745878001,
+          "maxRel": 0.000026008639822447684,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 3.826171875,
+          "gotAtMax": 3.8671875
+        }
+      },
+      {
+        "block": 11,
+        "cmp": {
+          "maxAbs": 0.048828125,
+          "relRms": 0.0003713054809422645,
+          "maxRel": 0.00003094304499366287,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 3.73828125,
+          "gotAtMax": 3.689453125
+        }
+      },
+      {
+        "block": 12,
+        "cmp": {
+          "maxAbs": 0.0546875,
+          "relRms": 0.0003823364465568394,
+          "maxRel": 0.000034634262191260294,
+          "n": 28672,
+          "argmax": 7658,
+          "refAtMax": 5.7734375,
+          "gotAtMax": 5.828125
+        }
+      },
+      {
+        "block": 13,
+        "cmp": {
+          "maxAbs": 0.06640625,
+          "relRms": 0.0004031364844759795,
+          "maxRel": 0.000042029272151898735,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 4.26953125,
+          "gotAtMax": 4.203125
+        }
+      },
+      {
+        "block": 14,
+        "cmp": {
+          "maxAbs": 0.0546875,
+          "relRms": 0.00041401105107158223,
+          "maxRel": 0.00003459044908285895,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 5.609375,
+          "gotAtMax": 5.5546875
+        }
+      },
+      {
+        "block": 15,
+        "cmp": {
+          "maxAbs": 0.07421875,
+          "relRms": 0.00043967347337301317,
+          "maxRel": 0.00004688487049905243,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 7.54296875,
+          "gotAtMax": 7.46875
+        }
+      },
+      {
+        "block": 16,
+        "cmp": {
+          "maxAbs": 0.0703125,
+          "relRms": 0.0005320062112757455,
+          "maxRel": 0.00004441724573594441,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 13.296875,
+          "gotAtMax": 13.2265625
+        }
+      },
+      {
+        "block": 17,
+        "cmp": {
+          "maxAbs": 0.09375,
+          "relRms": 0.000605421437513252,
+          "maxRel": 0.000059222994314592545,
+          "n": 28672,
+          "argmax": 9450,
+          "refAtMax": 18.90625,
+          "gotAtMax": 18.8125
+        }
+      },
+      {
+        "block": 18,
+        "cmp": {
+          "maxAbs": 0.109375,
+          "relRms": 0.0007031248192415499,
+          "maxRel": 0.00006913716814159292,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 16.390625,
+          "gotAtMax": 16.28125
+        }
+      },
+      {
+        "block": 19,
+        "cmp": {
+          "maxAbs": 0.109375,
+          "relRms": 0.0008194896004706936,
+          "maxRel": 0.0000692246835443038,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 21.578125,
+          "gotAtMax": 21.46875
+        }
+      },
+      {
+        "block": 20,
+        "cmp": {
+          "maxAbs": 0.109375,
+          "relRms": 0.000980402569576602,
+          "maxRel": 0.0000694003807106599,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 22.28125,
+          "gotAtMax": 22.171875
+        }
+      },
+      {
+        "block": 21,
+        "cmp": {
+          "maxAbs": 0.15625,
+          "relRms": 0.005126380886995931,
+          "maxRel": 0.0026441036488630354,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 46,
+          "gotAtMax": 45.84375
+        }
+      },
+      {
+        "block": 22,
+        "cmp": {
+          "maxAbs": 0.1875,
+          "relRms": 0.005468783648332639,
+          "maxRel": 0.003019627579265224,
+          "n": 28672,
+          "argmax": 2282,
+          "refAtMax": 43.25,
+          "gotAtMax": 43.0625
+        }
+      },
+      {
+        "block": 23,
+        "cmp": {
+          "maxAbs": 0.1875,
+          "relRms": 0.00781417288107637,
+          "maxRel": 0.004662004662004662,
+          "n": 28672,
+          "argmax": 11242,
+          "refAtMax": 8.15625,
+          "gotAtMax": 7.96875
+        }
+      }
+    ],
+    "{\"attnFlags\":7}:stages0": [
+      {
+        "stage": "input_norm",
+        "fixture": "post_input_norm",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "q_proj",
+        "fixture": "q_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "k_proj",
+        "fixture": "k_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "v_proj",
+        "fixture": "v_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "rope",
+        "fixture": "q_rope",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "attn",
+        "fixture": "attn_out",
+        "cmp": {
+          "maxAbs": 0.007568359375,
+          "relRms": 0.01825010243127508,
+          "maxRel": 0.026094276094276093,
+          "n": 28672,
+          "argmax": 24350,
+          "refAtMax": 0.1917724609375,
+          "gotAtMax": 0.1842041015625
+        }
+      },
+      {
+        "stage": "o_proj",
+        "fixture": "o_proj",
+        "cmp": {
+          "maxAbs": 0.0017547607421875,
+          "relRms": 0.01127359838145134,
+          "maxRel": 0.0036027568922305762,
+          "n": 28672,
+          "argmax": 4387,
+          "refAtMax": 0.023040771484375,
+          "gotAtMax": 0.0212860107421875
+        }
+      },
+      {
+        "stage": "residual1",
+        "fixture": "post_o_proj_residual",
+        "cmp": {
+          "maxAbs": 0.001953125,
+          "relRms": 0.007762100365045641,
+          "maxRel": 0.0038022813688212928,
+          "n": 28672,
+          "argmax": 25034,
+          "refAtMax": 0.513671875,
+          "gotAtMax": 0.51171875
+        }
+      },
+      {
+        "stage": "post_norm",
+        "fixture": "post_post_attn_norm",
+        "cmp": {
+          "maxAbs": 0.12890625,
+          "relRms": 0.008587696939542798,
+          "maxRel": 0.010840998685939553,
+          "n": 28672,
+          "argmax": 3640,
+          "refAtMax": -0.66064453125,
+          "gotAtMax": -0.78955078125
+        }
+      },
+      {
+        "stage": "down",
+        "fixture": "mlp_out",
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.007597367977570521,
+          "maxRel": 0.0028373266078184113,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 1.8740234375,
+          "gotAtMax": 1.8916015625
+        }
+      },
+      {
+        "stage": "residual2",
+        "fixture": "block_out",
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.0076079878707011285,
+          "maxRel": 0.002840909090909091,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 1.8857421875,
+          "gotAtMax": 1.9033203125
+        }
+      }
+    ],
+    "{\"siluMode\":1}": [
+      {
+        "block": 0,
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.0003837978494916846,
+          "maxRel": 0.00015782828282828284,
+          "n": 28672,
+          "argmax": 208,
+          "refAtMax": -1.6435546875,
+          "gotAtMax": -1.64453125
+        }
+      },
+      {
+        "block": 1,
+        "cmp": {
+          "maxAbs": 0.001953125,
+          "relRms": 0.0005756363515668734,
+          "maxRel": 0.00026232948583420777,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 2.447265625,
+          "gotAtMax": 2.4453125
+        }
+      },
+      {
+        "block": 2,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00008100312160258364,
+          "maxRel": 0.00001119269340974212,
+          "n": 28672,
+          "argmax": 697,
+          "refAtMax": 8.6953125,
+          "gotAtMax": 8.703125
+        }
+      },
+      {
+        "block": 3,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00004867541309736034,
+          "maxRel": 0.000005059909326424871,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.390625,
+          "gotAtMax": -9.3828125
+        }
+      },
+      {
+        "block": 4,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00005784870144152432,
+          "maxRel": 0.000005053363518758086,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.3125,
+          "gotAtMax": -9.3046875
+        }
+      },
+      {
+        "block": 5,
+        "cmp": {
+          "maxAbs": 0.009765625,
+          "relRms": 0.0000659908013554343,
+          "maxRel": 0.000006216183959261617,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 3.443359375,
+          "gotAtMax": 3.453125
+        }
+      },
+      {
+        "block": 6,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00007544439258918495,
+          "maxRel": 0.000004969783715012723,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.5078125,
+          "gotAtMax": -9.5
+        }
+      },
+      {
+        "block": 7,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00008255039573117511,
+          "maxRel": 0.000009933248569612206,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.359375,
+          "gotAtMax": -9.34375
+        }
+      },
+      {
+        "block": 8,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00008978124661393758,
+          "maxRel": 0.000009926937738246506,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.4765625,
+          "gotAtMax": -9.4609375
+        }
+      },
+      {
+        "block": 9,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00009510196418107665,
+          "maxRel": 0.00000992063492063492,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.53125,
+          "gotAtMax": -9.515625
+        }
+      },
+      {
+        "block": 10,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.00010254512457466058,
+          "maxRel": 0.000014862079898541535,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 4.0625,
+          "gotAtMax": 4.0859375
+        }
+      },
+      {
+        "block": 11,
+        "cmp": {
+          "maxAbs": 0.01953125,
+          "relRms": 0.00010953310543663624,
+          "maxRel": 0.000012377217997465145,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 3.298828125,
+          "gotAtMax": 3.318359375
+        }
+      },
+      {
+        "block": 12,
+        "cmp": {
+          "maxAbs": 0.01953125,
+          "relRms": 0.00011313068348592714,
+          "maxRel": 0.000012369379354021533,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 4.15234375,
+          "gotAtMax": 4.171875
+        }
+      },
+      {
+        "block": 13,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.0001195248633447112,
+          "maxRel": 0.00001483386075949367,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 5.0859375,
+          "gotAtMax": 5.109375
+        }
+      },
+      {
+        "block": 14,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.00012494743553506378,
+          "maxRel": 0.000014824478178368122,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 6.734375,
+          "gotAtMax": 6.7578125
+        }
+      },
+      {
+        "block": 15,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.00013503711430630874,
+          "maxRel": 0.000014805748578648136,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 5.30859375,
+          "gotAtMax": 5.33203125
+        }
+      },
+      {
+        "block": 16,
+        "cmp": {
+          "maxAbs": 0.01953125,
+          "relRms": 0.00015985324789643578,
+          "maxRel": 0.000012338123815540114,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 7.890625,
+          "gotAtMax": 7.91015625
+        }
+      },
+      {
+        "block": 17,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.0001838980741672541,
+          "maxRel": 0.00000987049905243209,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.6328125,
+          "gotAtMax": -9.6171875
+        }
+      },
+      {
+        "block": 18,
+        "cmp": {
+          "maxAbs": 0.03125,
+          "relRms": 0.00021757808122373245,
+          "maxRel": 0.000019753476611883693,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 13.203125,
+          "gotAtMax": 13.234375
+        }
+      },
+      {
+        "block": 19,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.0002580809843017395,
+          "maxRel": 0.00002966772151898734,
+          "n": 28672,
+          "argmax": 10346,
+          "refAtMax": 23.390625,
+          "gotAtMax": 23.34375
+        }
+      },
+      {
+        "block": 20,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.00031389946576674134,
+          "maxRel": 0.00003965736040609137,
+          "n": 28672,
+          "argmax": 10346,
+          "refAtMax": 34.9375,
+          "gotAtMax": 34.875
+        }
+      },
+      {
+        "block": 21,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.0016815472431049344,
+          "maxRel": 0.0010576414595452142,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 34.5625,
+          "gotAtMax": 34.625
+        }
+      },
+      {
+        "block": 22,
+        "cmp": {
+          "maxAbs": 0.09375,
+          "relRms": 0.0018472045892228778,
+          "maxRel": 0.001509813789632612,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 38.0625,
+          "gotAtMax": 38.15625
+        }
+      },
+      {
+        "block": 23,
+        "cmp": {
+          "maxAbs": 0.09375,
+          "relRms": 0.0026721621253783753,
+          "maxRel": 0.002331002331002331,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 8.96875,
+          "gotAtMax": 8.875
+        }
+      }
+    ],
+    "{\"siluMode\":1}:stages0": [
+      {
+        "stage": "input_norm",
+        "fixture": "post_input_norm",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "q_proj",
+        "fixture": "q_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "k_proj",
+        "fixture": "k_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "v_proj",
+        "fixture": "v_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "rope",
+        "fixture": "q_rope",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "attn",
+        "fixture": "attn_out",
+        "cmp": {
+          "maxAbs": 0.00006103515625,
+          "relRms": 0.00003434327988384215,
+          "maxRel": 0.00021043771043771043,
+          "n": 28672,
+          "argmax": 15264,
+          "refAtMax": 0.10333251953125,
+          "gotAtMax": 0.1033935546875
+        }
+      },
+      {
+        "stage": "o_proj",
+        "fixture": "o_proj",
+        "cmp": {
+          "maxAbs": 0.000030517578125,
+          "relRms": 0.00005404542843022407,
+          "maxRel": 0.00006265664160401002,
+          "n": 28672,
+          "argmax": 5344,
+          "refAtMax": 0.039306640625,
+          "gotAtMax": 0.039276123046875
+        }
+      },
+      {
+        "stage": "residual1",
+        "fixture": "post_o_proj_residual",
+        "cmp": {
+          "maxAbs": 0.000030517578125,
+          "relRms": 0.00005488512428700722,
+          "maxRel": 0.0000594106463878327,
+          "n": 28672,
+          "argmax": 932,
+          "refAtMax": -0.03265380859375,
+          "gotAtMax": -0.032623291015625
+        }
+      },
+      {
+        "stage": "post_norm",
+        "fixture": "post_post_attn_norm",
+        "cmp": {
+          "maxAbs": 0.001953125,
+          "relRms": 0.00007537889858490266,
+          "maxRel": 0.000164257555847569,
+          "n": 28672,
+          "argmax": 932,
+          "refAtMax": -1.2412109375,
+          "gotAtMax": -1.2392578125
+        }
+      },
+      {
+        "stage": "down",
+        "fixture": "mlp_out",
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.00037295309324794954,
+          "maxRel": 0.00015762925598991173,
+          "n": 28672,
+          "argmax": 208,
+          "refAtMax": -1.6298828125,
+          "gotAtMax": -1.630859375
+        }
+      },
+      {
+        "stage": "residual2",
+        "fixture": "block_out",
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.0003837978494916846,
+          "maxRel": 0.00015782828282828284,
+          "n": 28672,
+          "argmax": 208,
+          "refAtMax": -1.6435546875,
+          "gotAtMax": -1.64453125
+        }
+      }
+    ],
+    "{\"attnFlags\":3,\"siluMode\":1}": [
+      {
+        "block": 0,
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.0004986931945446588,
+          "maxRel": 0.00015782828282828284,
+          "n": 28672,
+          "argmax": 208,
+          "refAtMax": -1.6435546875,
+          "gotAtMax": -1.64453125
+        }
+      },
+      {
+        "block": 1,
+        "cmp": {
+          "maxAbs": 0.00390625,
+          "relRms": 0.0006593061925001059,
+          "maxRel": 0.0005246589716684155,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 4.16796875,
+          "gotAtMax": 4.171875
+        }
+      },
+      {
+        "block": 2,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00008413154823999211,
+          "maxRel": 0.00001119269340974212,
+          "n": 28672,
+          "argmax": 697,
+          "refAtMax": 8.6953125,
+          "gotAtMax": 8.703125
+        }
+      },
+      {
+        "block": 3,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.000052216041216555454,
+          "maxRel": 0.000005059909326424871,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.390625,
+          "gotAtMax": -9.3828125
+        }
+      },
+      {
+        "block": 4,
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00006109162361090748,
+          "maxRel": 0.000005053363518758086,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.3125,
+          "gotAtMax": -9.3046875
+        }
+      },
+      {
+        "block": 5,
+        "cmp": {
+          "maxAbs": 0.009765625,
+          "relRms": 0.00006928229660228867,
+          "maxRel": 0.000006216183959261617,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 3.443359375,
+          "gotAtMax": 3.453125
+        }
+      },
+      {
+        "block": 6,
+        "cmp": {
+          "maxAbs": 0.00830078125,
+          "relRms": 0.00007713632406045175,
+          "maxRel": 0.0000052803951972010176,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 0.7021484375,
+          "gotAtMax": 0.71044921875
+        }
+      },
+      {
+        "block": 7,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00008529550166307176,
+          "maxRel": 0.000009933248569612206,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.359375,
+          "gotAtMax": -9.34375
+        }
+      },
+      {
+        "block": 8,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00009221788853451258,
+          "maxRel": 0.000009926937738246506,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.4765625,
+          "gotAtMax": -9.4609375
+        }
+      },
+      {
+        "block": 9,
+        "cmp": {
+          "maxAbs": 0.015625,
+          "relRms": 0.00009695949679987693,
+          "maxRel": 0.00000992063492063492,
+          "n": 28672,
+          "argmax": 158,
+          "refAtMax": -9.53125,
+          "gotAtMax": -9.515625
+        }
+      },
+      {
+        "block": 10,
+        "cmp": {
+          "maxAbs": 0.01953125,
+          "relRms": 0.00010413899704778728,
+          "maxRel": 0.000012385066582117946,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 4.0625,
+          "gotAtMax": 4.08203125
+        }
+      },
+      {
+        "block": 11,
+        "cmp": {
+          "maxAbs": 0.017578125,
+          "relRms": 0.00011038506167238155,
+          "maxRel": 0.000011139496197718632,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 3.298828125,
+          "gotAtMax": 3.31640625
+        }
+      },
+      {
+        "block": 12,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.00011553998830890145,
+          "maxRel": 0.000014843255224825839,
+          "n": 28672,
+          "argmax": 3178,
+          "refAtMax": 5.8203125,
+          "gotAtMax": 5.84375
+        }
+      },
+      {
+        "block": 13,
+        "cmp": {
+          "maxAbs": 0.0234375,
+          "relRms": 0.00012315486437511418,
+          "maxRel": 0.00001483386075949367,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 5.0859375,
+          "gotAtMax": 5.109375
+        }
+      },
+      {
+        "block": 14,
+        "cmp": {
+          "maxAbs": 0.02734375,
+          "relRms": 0.00013309548243415768,
+          "maxRel": 0.000017295224541429476,
+          "n": 28672,
+          "argmax": 1386,
+          "refAtMax": 6.734375,
+          "gotAtMax": 6.76171875
+        }
+      },
+      {
+        "block": 15,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.00014591819176182257,
+          "maxRel": 0.000029611497157296273,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 7.54296875,
+          "gotAtMax": 7.49609375
+        }
+      },
+      {
+        "block": 16,
+        "cmp": {
+          "maxAbs": 0.0546875,
+          "relRms": 0.00017603009737913571,
+          "maxRel": 0.00003454674668351232,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 13.296875,
+          "gotAtMax": 13.2421875
+        }
+      },
+      {
+        "block": 17,
+        "cmp": {
+          "maxAbs": 0.046875,
+          "relRms": 0.0001996280235557908,
+          "maxRel": 0.000029611497157296273,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 17.28125,
+          "gotAtMax": 17.234375
+        }
+      },
+      {
+        "block": 18,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.0002357424875219423,
+          "maxRel": 0.000039506953223767386,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 22.78125,
+          "gotAtMax": 22.71875
+        }
+      },
+      {
+        "block": 19,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.00027720899158700574,
+          "maxRel": 0.000039556962025316456,
+          "n": 28672,
+          "argmax": 8554,
+          "refAtMax": 26.578125,
+          "gotAtMax": 26.515625
+        }
+      },
+      {
+        "block": 20,
+        "cmp": {
+          "maxAbs": 0.03125,
+          "relRms": 0.0003416009258980961,
+          "maxRel": 0.000019828680203045684,
+          "n": 28672,
+          "argmax": 4970,
+          "refAtMax": 22.28125,
+          "gotAtMax": 22.3125
+        }
+      },
+      {
+        "block": 21,
+        "cmp": {
+          "maxAbs": 0.0625,
+          "relRms": 0.0018188767370197001,
+          "maxRel": 0.0010576414595452142,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 34.5625,
+          "gotAtMax": 34.625
+        }
+      },
+      {
+        "block": 22,
+        "cmp": {
+          "maxAbs": 0.09375,
+          "relRms": 0.001973303459229439,
+          "maxRel": 0.001509813789632612,
+          "n": 28672,
+          "argmax": 4074,
+          "refAtMax": 38.0625,
+          "gotAtMax": 38.15625
+        }
+      },
+      {
+        "block": 23,
+        "cmp": {
+          "maxAbs": 0.09375,
+          "relRms": 0.0028597641754742826,
+          "maxRel": 0.002331002331002331,
+          "n": 28672,
+          "argmax": 12138,
+          "refAtMax": 11.71875,
+          "gotAtMax": 11.625
+        }
+      }
+    ],
+    "{\"attnFlags\":3,\"siluMode\":1}:stages0": [
+      {
+        "stage": "input_norm",
+        "fixture": "post_input_norm",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "q_proj",
+        "fixture": "q_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "k_proj",
+        "fixture": "k_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "v_proj",
+        "fixture": "v_proj",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 4096,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "rope",
+        "fixture": "q_rope",
+        "cmp": {
+          "maxAbs": 0,
+          "relRms": 0,
+          "maxRel": 0,
+          "n": 28672,
+          "argmax": -1,
+          "refAtMax": 0,
+          "gotAtMax": 0
+        }
+      },
+      {
+        "stage": "attn",
+        "fixture": "attn_out",
+        "cmp": {
+          "maxAbs": 0.0001220703125,
+          "relRms": 0.0002819753783713316,
+          "maxRel": 0.00042087542087542086,
+          "n": 28672,
+          "argmax": 18912,
+          "refAtMax": 0.1298828125,
+          "gotAtMax": 0.1297607421875
+        }
+      },
+      {
+        "stage": "o_proj",
+        "fixture": "o_proj",
+        "cmp": {
+          "maxAbs": 0.000244140625,
+          "relRms": 0.00026315593150909333,
+          "maxRel": 0.0005012531328320802,
+          "n": 28672,
+          "argmax": 25930,
+          "refAtMax": 0.33447265625,
+          "gotAtMax": 0.334228515625
+        }
+      },
+      {
+        "stage": "residual1",
+        "fixture": "post_o_proj_residual",
+        "cmp": {
+          "maxAbs": 0.000244140625,
+          "relRms": 0.00023113645528941238,
+          "maxRel": 0.0004752851711026616,
+          "n": 28672,
+          "argmax": 25930,
+          "refAtMax": 0.343017578125,
+          "gotAtMax": 0.3427734375
+        }
+      },
+      {
+        "stage": "post_norm",
+        "fixture": "post_post_attn_norm",
+        "cmp": {
+          "maxAbs": 0.0078125,
+          "relRms": 0.00028080895930095943,
+          "maxRel": 0.000657030223390276,
+          "n": 28672,
+          "argmax": 19490,
+          "refAtMax": -7.71875,
+          "gotAtMax": -7.7109375
+        }
+      },
+      {
+        "stage": "down",
+        "fixture": "mlp_out",
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.00048805897346894275,
+          "maxRel": 0.00015762925598991173,
+          "n": 28672,
+          "argmax": 208,
+          "refAtMax": -1.6298828125,
+          "gotAtMax": -1.630859375
+        }
+      },
+      {
+        "stage": "residual2",
+        "fixture": "block_out",
+        "cmp": {
+          "maxAbs": 0.0009765625,
+          "relRms": 0.0004986931945446588,
+          "maxRel": 0.00015782828282828284,
+          "n": 28672,
+          "argmax": 208,
+          "refAtMax": -1.6435546875,
+          "gotAtMax": -1.64453125
+        }
+      }
+    ]
+  }
+}

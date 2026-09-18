@@ -1,0 +1,4649 @@
+{
+  "info": null,
+  "runs": [
+    {
+      "variant": "fp16",
+      "N": 1,
+      "matvec": "seq",
+      "prefillTokPerS": 8421.054322303837,
+      "decodeTokPerS": 714.2859089131788,
+      "prefillMs": 3.799999237060547,
+      "decodeMsMedian": 1.3999996185302734,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 52172544,
+        "weightBytes": 29824768,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 8.09999942779541,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 1.6999998092651367,
+        "lastExportMs": 0.8999996185302734,
+        "timeToFirstBlockMs": 330.4000005722046,
+        "loadMs": 330.4000005722046
+      },
+      "load": {
+        "ms": 1811.5999994277954,
+        "timeToFirstBlockMs": 330.4000005722046,
+        "bytes": 315141632,
+        "gpuBytes": 52172544
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 3950.617563032284,
+          "decodeTokPerS": 476.1903896894201,
+          "prefillMs": 8.09999942779541,
+          "decodeMsMedian": 2.1000003814697266,
+          "exportMs": 0.8999996185302734,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 8.09999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.6999998092651367,
+            "lastExportMs": 0.8999996185302734,
+            "timeToFirstBlockMs": 330.4000005722046,
+            "loadMs": 330.4000005722046
+          },
+          "load": {
+            "ms": 1811.5999994277954,
+            "timeToFirstBlockMs": 330.4000005722046,
+            "bytes": 315141632,
+            "gpuBytes": 52172544
+          }
+        },
+        {
+          "prefillTokPerS": 8421.054322303837,
+          "decodeTokPerS": 714.2859089131788,
+          "prefillMs": 3.799999237060547,
+          "decodeMsMedian": 1.3999996185302734,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.799999237060547,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.3000001907348633,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 330.4000005722046,
+            "loadMs": 330.4000005722046
+          },
+          "load": {
+            "ms": 1811.5999994277954,
+            "timeToFirstBlockMs": 330.4000005722046,
+            "bytes": 315141632,
+            "gpuBytes": 52172544
+          }
+        },
+        {
+          "prefillTokPerS": 9411.763121925278,
+          "decodeTokPerS": 714.2859089131788,
+          "prefillMs": 3.40000057220459,
+          "decodeMsMedian": 1.3999996185302734,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 3.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.7999992370605469,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 330.4000005722046,
+            "loadMs": 330.4000005722046
+          },
+          "load": {
+            "ms": 1811.5999994277954,
+            "timeToFirstBlockMs": 330.4000005722046,
+            "bytes": 315141632,
+            "gpuBytes": 52172544
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 1,
+      "matvec": "lanes",
+      "prefillTokPerS": 8888.890301739952,
+      "decodeTokPerS": 1111.1115820615905,
+      "prefillMs": 3.59999942779541,
+      "decodeMsMedian": 0.8999996185302734,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 52172544,
+        "weightBytes": 29824768,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 7.399999618530273,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 1,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 17.199999809265137,
+        "loadMs": 17.199999809265137
+      },
+      "load": {
+        "ms": 1597.0999994277954,
+        "timeToFirstBlockMs": 17.199999809265137,
+        "bytes": 302094080,
+        "gpuBytes": 52172544
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 4324.324547243095,
+          "decodeTokPerS": 1111.1115820615905,
+          "prefillMs": 7.399999618530273,
+          "decodeMsMedian": 0.8999996185302734,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 7.399999618530273,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 17.199999809265137,
+            "loadMs": 17.199999809265137
+          },
+          "load": {
+            "ms": 1597.0999994277954,
+            "timeToFirstBlockMs": 17.199999809265137,
+            "bytes": 302094080,
+            "gpuBytes": 52172544
+          }
+        },
+        {
+          "prefillTokPerS": 8888.890301739952,
+          "decodeTokPerS": 1111.1104046861408,
+          "prefillMs": 3.59999942779541,
+          "decodeMsMedian": 0.9000005722045898,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.59999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.5,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 17.199999809265137,
+            "loadMs": 17.199999809265137
+          },
+          "load": {
+            "ms": 1597.0999994277954,
+            "timeToFirstBlockMs": 17.199999809265137,
+            "bytes": 302094080,
+            "gpuBytes": 52172544
+          }
+        },
+        {
+          "prefillTokPerS": 13333.330154419704,
+          "decodeTokPerS": 1250.0011920940324,
+          "prefillMs": 2.40000057220459,
+          "decodeMsMedian": 0.7999992370605469,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.7999992370605469,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 17.199999809265137,
+            "loadMs": 17.199999809265137
+          },
+          "load": {
+            "ms": 1597.0999994277954,
+            "timeToFirstBlockMs": 17.199999809265137,
+            "bytes": 302094080,
+            "gpuBytes": 52172544
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 1,
+      "matvec": "tiled",
+      "prefillTokPerS": 9411.765761854032,
+      "decodeTokPerS": 454.54549395348755,
+      "prefillMs": 3.3999996185302734,
+      "decodeMsMedian": 2.1999998092651367,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 52172544,
+        "weightBytes": 29824768,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 6.600000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 2.299999237060547,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 22.399999618530273,
+        "loadMs": 22.399999618530273
+      },
+      "load": {
+        "ms": 1612.3000001907349,
+        "timeToFirstBlockMs": 22.399999618530273,
+        "bytes": 302094080,
+        "gpuBytes": 52172544
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 4848.484568249987,
+          "decodeTokPerS": 333.3333333333333,
+          "prefillMs": 6.600000381469727,
+          "decodeMsMedian": 3,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 6.600000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.299999237060547,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 22.399999618530273,
+            "loadMs": 22.399999618530273
+          },
+          "load": {
+            "ms": 1612.3000001907349,
+            "timeToFirstBlockMs": 22.399999618530273,
+            "bytes": 302094080,
+            "gpuBytes": 52172544
+          }
+        },
+        {
+          "prefillTokPerS": 9411.765761854032,
+          "decodeTokPerS": 454.54549395348755,
+          "prefillMs": 3.3999996185302734,
+          "decodeMsMedian": 2.1999998092651367,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.3999996185302734,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.299999237060547,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 22.399999618530273,
+            "loadMs": 22.399999618530273
+          },
+          "load": {
+            "ms": 1612.3000001907349,
+            "timeToFirstBlockMs": 22.399999618530273,
+            "bytes": 302094080,
+            "gpuBytes": 52172544
+          }
+        },
+        {
+          "prefillTokPerS": 13333.335452609928,
+          "decodeTokPerS": 476.1906059421192,
+          "prefillMs": 2.3999996185302734,
+          "decodeMsMedian": 2.09999942779541,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 52172544,
+            "weightBytes": 29824768,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.3999996185302734,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.1000003814697266,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 22.399999618530273,
+            "loadMs": 22.399999618530273
+          },
+          "load": {
+            "ms": 1612.3000001907349,
+            "timeToFirstBlockMs": 22.399999618530273,
+            "bytes": 302094080,
+            "gpuBytes": 52172544
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 8,
+      "matvec": "seq",
+      "prefillTokPerS": 2038.2165852712712,
+      "decodeTokPerS": 163.93441597770214,
+      "prefillMs": 15.699999809265137,
+      "decodeMsMedian": 6.100000381469727,
+      "exportMs": 0.39999961853027344,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 261863424,
+        "weightBytes": 238598144,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 15.899999618530273,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 5.90000057220459,
+        "lastExportMs": 0.5999994277954102,
+        "timeToFirstBlockMs": 157.19999980926514,
+        "loadMs": 1552.5999994277954
+      },
+      "load": {
+        "ms": 3074.9000005722046,
+        "timeToFirstBlockMs": 157.19999980926514,
+        "bytes": 510867456,
+        "gpuBytes": 261863424
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 2012.5786646375996,
+          "decodeTokPerS": 156.25000931322631,
+          "prefillMs": 15.899999618530273,
+          "decodeMsMedian": 6.399999618530273,
+          "exportMs": 0.5999994277954102,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 15.899999618530273,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.90000057220459,
+            "lastExportMs": 0.5999994277954102,
+            "timeToFirstBlockMs": 157.19999980926514,
+            "loadMs": 1552.5999994277954
+          },
+          "load": {
+            "ms": 3074.9000005722046,
+            "timeToFirstBlockMs": 157.19999980926514,
+            "bytes": 510867456,
+            "gpuBytes": 261863424
+          }
+        },
+        {
+          "prefillTokPerS": 2051.282126522631,
+          "decodeTokPerS": 163.93444160721967,
+          "prefillMs": 15.59999942779541,
+          "decodeMsMedian": 6.09999942779541,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 15.59999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.899999618530273,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 157.19999980926514,
+            "loadMs": 1552.5999994277954
+          },
+          "load": {
+            "ms": 3074.9000005722046,
+            "timeToFirstBlockMs": 157.19999980926514,
+            "bytes": 510867456,
+            "gpuBytes": 261863424
+          }
+        },
+        {
+          "prefillTokPerS": 2038.2165852712712,
+          "decodeTokPerS": 163.93441597770214,
+          "prefillMs": 15.699999809265137,
+          "decodeMsMedian": 6.100000381469727,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 15.699999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 6.100000381469727,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 157.19999980926514,
+            "loadMs": 1552.5999994277954
+          },
+          "load": {
+            "ms": 3074.9000005722046,
+            "timeToFirstBlockMs": 157.19999980926514,
+            "bytes": 510867456,
+            "gpuBytes": 261863424
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 8,
+      "matvec": "lanes",
+      "prefillTokPerS": 1975.3085489480973,
+      "decodeTokPerS": 256.41028149045127,
+      "prefillMs": 16.200000762939453,
+      "decodeMsMedian": 3.8999996185302734,
+      "exportMs": 0.39999961853027344,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 261863424,
+        "weightBytes": 238598144,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 19.40000057220459,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 4.199999809265137,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 305.5999994277954,
+        "loadMs": 1697.2999992370605
+      },
+      "load": {
+        "ms": 3214.9000005722046,
+        "timeToFirstBlockMs": 305.5999994277954,
+        "bytes": 510867456,
+        "gpuBytes": 261863424
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1649.4844874307942,
+          "decodeTokPerS": 238.09524890787256,
+          "prefillMs": 19.40000057220459,
+          "decodeMsMedian": 4.199999809265137,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 19.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 4.199999809265137,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 305.5999994277954,
+            "loadMs": 1697.2999992370605
+          },
+          "load": {
+            "ms": 3214.9000005722046,
+            "timeToFirstBlockMs": 305.5999994277954,
+            "bytes": 510867456,
+            "gpuBytes": 261863424
+          }
+        },
+        {
+          "prefillTokPerS": 1975.3085489480973,
+          "decodeTokPerS": 256.41028149045127,
+          "prefillMs": 16.200000762939453,
+          "decodeMsMedian": 3.8999996185302734,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 16.200000762939453,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 3.8000001907348633,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 305.5999994277954,
+            "loadMs": 1697.2999992370605
+          },
+          "load": {
+            "ms": 3214.9000005722046,
+            "timeToFirstBlockMs": 305.5999994277954,
+            "bytes": 510867456,
+            "gpuBytes": 261863424
+          }
+        },
+        {
+          "prefillTokPerS": 2051.282126522631,
+          "decodeTokPerS": 256.41028149045127,
+          "prefillMs": 15.59999942779541,
+          "decodeMsMedian": 3.8999996185302734,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 15.59999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 3.8999996185302734,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 305.5999994277954,
+            "loadMs": 1697.2999992370605
+          },
+          "load": {
+            "ms": 3214.9000005722046,
+            "timeToFirstBlockMs": 305.5999994277954,
+            "bytes": 510867456,
+            "gpuBytes": 261863424
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 8,
+      "matvec": "tiled",
+      "prefillTokPerS": 1916.1676865556876,
+      "decodeTokPerS": 70.9219838968376,
+      "prefillMs": 16.699999809265137,
+      "decodeMsMedian": 14.100000381469727,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 261863424,
+        "weightBytes": 238598144,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 19.300000190734863,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 14.199999809265137,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 8.700000762939453,
+        "loadMs": 1578.5
+      },
+      "load": {
+        "ms": 3122.8999996185303,
+        "timeToFirstBlockMs": 8.700000762939453,
+        "bytes": 523915008,
+        "gpuBytes": 261863424
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1658.0310716971849,
+          "decodeTokPerS": 69.44444628409403,
+          "prefillMs": 19.300000190734863,
+          "decodeMsMedian": 14.399999618530273,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 19.300000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 14.199999809265137,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 8.700000762939453,
+            "loadMs": 1578.5
+          },
+          "load": {
+            "ms": 3122.8999996185303,
+            "timeToFirstBlockMs": 8.700000762939453,
+            "bytes": 523915008,
+            "gpuBytes": 261863424
+          }
+        },
+        {
+          "prefillTokPerS": 2038.2165852712712,
+          "decodeTokPerS": 70.92198869375088,
+          "prefillMs": 15.699999809265137,
+          "decodeMsMedian": 14.09999942779541,
+          "exportMs": 0.19999980926513672,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 15.699999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 14.100000381469727,
+            "lastExportMs": 0.19999980926513672,
+            "timeToFirstBlockMs": 8.700000762939453,
+            "loadMs": 1578.5
+          },
+          "load": {
+            "ms": 3122.8999996185303,
+            "timeToFirstBlockMs": 8.700000762939453,
+            "bytes": 523915008,
+            "gpuBytes": 261863424
+          }
+        },
+        {
+          "prefillTokPerS": 1916.1676865556876,
+          "decodeTokPerS": 70.9219838968376,
+          "prefillMs": 16.699999809265137,
+          "decodeMsMedian": 14.100000381469727,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 261863424,
+            "weightBytes": 238598144,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 16.699999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 14.199999809265137,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 8.700000762939453,
+            "loadMs": 1578.5
+          },
+          "load": {
+            "ms": 3122.8999996185303,
+            "timeToFirstBlockMs": 8.700000762939453,
+            "bytes": 523915008,
+            "gpuBytes": 261863424
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 16,
+      "matvec": "seq",
+      "prefillTokPerS": 969.6969696969697,
+      "decodeTokPerS": 82.64463200740808,
+      "prefillMs": 33,
+      "decodeMsMedian": 12.09999942779541,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 501510144,
+        "weightBytes": 477196288,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 34.39999961853027,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 11.90000057220459,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 331.19999980926514,
+        "loadMs": 3504.199999809265
+      },
+      "load": {
+        "ms": 4896,
+        "timeToFirstBlockMs": 331.19999980926514,
+        "bytes": 779290368,
+        "gpuBytes": 501510144
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 930.2325684551035,
+          "decodeTokPerS": 81.30081174740657,
+          "prefillMs": 34.39999961853027,
+          "decodeMsMedian": 12.300000190734863,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 34.39999961853027,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 11.90000057220459,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 331.19999980926514,
+            "loadMs": 3504.199999809265
+          },
+          "load": {
+            "ms": 4896,
+            "timeToFirstBlockMs": 331.19999980926514,
+            "bytes": 779290368,
+            "gpuBytes": 501510144
+          }
+        },
+        {
+          "prefillTokPerS": 1032.258064516129,
+          "decodeTokPerS": 82.64463200740808,
+          "prefillMs": 31,
+          "decodeMsMedian": 12.09999942779541,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 31,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 11.800000190734863,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 331.19999980926514,
+            "loadMs": 3504.199999809265
+          },
+          "load": {
+            "ms": 4896,
+            "timeToFirstBlockMs": 331.19999980926514,
+            "bytes": 779290368,
+            "gpuBytes": 501510144
+          }
+        },
+        {
+          "prefillTokPerS": 969.6969696969697,
+          "decodeTokPerS": 84.74576134203635,
+          "prefillMs": 33,
+          "decodeMsMedian": 11.800000190734863,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 33,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 12.100000381469727,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 331.19999980926514,
+            "loadMs": 3504.199999809265
+          },
+          "load": {
+            "ms": 4896,
+            "timeToFirstBlockMs": 331.19999980926514,
+            "bytes": 779290368,
+            "gpuBytes": 501510144
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 16,
+      "matvec": "lanes",
+      "prefillTokPerS": 1022.3642110223483,
+      "decodeTokPerS": 131.5789407640286,
+      "prefillMs": 31.300000190734863,
+      "decodeMsMedian": 7.600000381469727,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 501510144,
+        "weightBytes": 477196288,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 31.5,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 7.399999618530273,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 14,
+        "loadMs": 3335.4000005722046
+      },
+      "load": {
+        "ms": 4996.89999961853,
+        "timeToFirstBlockMs": 14,
+        "bytes": 749465600,
+        "gpuBytes": 501510144
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1015.8730158730158,
+          "decodeTokPerS": 123.45678430925608,
+          "prefillMs": 31.5,
+          "decodeMsMedian": 8.100000381469727,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 31.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7.399999618530273,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 14,
+            "loadMs": 3335.4000005722046
+          },
+          "load": {
+            "ms": 4996.89999961853,
+            "timeToFirstBlockMs": 14,
+            "bytes": 749465600,
+            "gpuBytes": 501510144
+          }
+        },
+        {
+          "prefillTokPerS": 1022.3642110223483,
+          "decodeTokPerS": 131.5789407640286,
+          "prefillMs": 31.300000190734863,
+          "decodeMsMedian": 7.600000381469727,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 31.300000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7.5,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 14,
+            "loadMs": 3335.4000005722046
+          },
+          "load": {
+            "ms": 4996.89999961853,
+            "timeToFirstBlockMs": 14,
+            "bytes": 749465600,
+            "gpuBytes": 501510144
+          }
+        },
+        {
+          "prefillTokPerS": 1032.258064516129,
+          "decodeTokPerS": 131.5789407640286,
+          "prefillMs": 31,
+          "decodeMsMedian": 7.600000381469727,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 31,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7.899999618530273,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 14,
+            "loadMs": 3335.4000005722046
+          },
+          "load": {
+            "ms": 4996.89999961853,
+            "timeToFirstBlockMs": 14,
+            "bytes": 749465600,
+            "gpuBytes": 501510144
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 16,
+      "matvec": "tiled",
+      "prefillTokPerS": 1015.8730158730158,
+      "decodeTokPerS": 35.211266896195475,
+      "prefillMs": 31.5,
+      "decodeMsMedian": 28.40000057220459,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 501510144,
+        "weightBytes": 477196288,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 33.19999980926514,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 29.399999618530273,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 299,
+        "loadMs": 3307.199999809265
+      },
+      "load": {
+        "ms": 5012.199999809265,
+        "timeToFirstBlockMs": 299,
+        "bytes": 766242816,
+        "gpuBytes": 501510144
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 963.8554272241214,
+          "decodeTokPerS": 34.9650356645858,
+          "prefillMs": 33.19999980926514,
+          "decodeMsMedian": 28.59999942779541,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 33.19999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 29.399999618530273,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 299,
+            "loadMs": 3307.199999809265
+          },
+          "load": {
+            "ms": 5012.199999809265,
+            "timeToFirstBlockMs": 299,
+            "bytes": 766242816,
+            "gpuBytes": 501510144
+          }
+        },
+        {
+          "prefillTokPerS": 1025.6410319110737,
+          "decodeTokPerS": 35.2112680785927,
+          "prefillMs": 31.199999809265137,
+          "decodeMsMedian": 28.399999618530273,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 31.199999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 28.199999809265137,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 299,
+            "loadMs": 3307.199999809265
+          },
+          "load": {
+            "ms": 5012.199999809265,
+            "timeToFirstBlockMs": 299,
+            "bytes": 766242816,
+            "gpuBytes": 501510144
+          }
+        },
+        {
+          "prefillTokPerS": 1015.8730158730158,
+          "decodeTokPerS": 35.211266896195475,
+          "prefillMs": 31.5,
+          "decodeMsMedian": 28.40000057220459,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 501510144,
+            "weightBytes": 477196288,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 31.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 28.5,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 299,
+            "loadMs": 3307.199999809265
+          },
+          "load": {
+            "ms": 5012.199999809265,
+            "timeToFirstBlockMs": 299,
+            "bytes": 766242816,
+            "gpuBytes": 501510144
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 24,
+      "matvec": "seq",
+      "prefillTokPerS": 676.5327668279411,
+      "decodeTokPerS": 56.4971727059931,
+      "prefillMs": 47.30000019073486,
+      "decodeMsMedian": 17.700000762939453,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 741156864,
+        "weightBytes": 715794432,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 47.39999961853027,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 18.100000381469727,
+        "lastExportMs": 0.7999992370605469,
+        "timeToFirstBlockMs": 319.69999980926514,
+        "loadMs": 4924.60000038147
+      },
+      "load": {
+        "ms": 6422.699999809265,
+        "timeToFirstBlockMs": 319.69999980926514,
+        "bytes": 988065536,
+        "gpuBytes": 741156864
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 675.1054906652384,
+          "decodeTokPerS": 55.55555555555556,
+          "prefillMs": 47.39999961853027,
+          "decodeMsMedian": 18,
+          "exportMs": 0.7999992370605469,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 47.39999961853027,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 18.100000381469727,
+            "lastExportMs": 0.7999992370605469,
+            "timeToFirstBlockMs": 319.69999980926514,
+            "loadMs": 4924.60000038147
+          },
+          "load": {
+            "ms": 6422.699999809265,
+            "timeToFirstBlockMs": 319.69999980926514,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        },
+        {
+          "prefillTokPerS": 685.2248421990636,
+          "decodeTokPerS": 56.4971727059931,
+          "prefillMs": 46.69999980926514,
+          "decodeMsMedian": 17.700000762939453,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 46.69999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 18,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 319.69999980926514,
+            "loadMs": 4924.60000038147
+          },
+          "load": {
+            "ms": 6422.699999809265,
+            "timeToFirstBlockMs": 319.69999980926514,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        },
+        {
+          "prefillTokPerS": 676.5327668279411,
+          "decodeTokPerS": 56.81818366543327,
+          "prefillMs": 47.30000019073486,
+          "decodeMsMedian": 17.59999942779541,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 47.30000019073486,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 20.09999942779541,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 319.69999980926514,
+            "loadMs": 4924.60000038147
+          },
+          "load": {
+            "ms": 6422.699999809265,
+            "timeToFirstBlockMs": 319.69999980926514,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 24,
+      "matvec": "lanes",
+      "prefillTokPerS": 665.2806600044817,
+      "decodeTokPerS": 86.95652173913044,
+      "prefillMs": 48.10000038146973,
+      "decodeMsMedian": 11.5,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 741156864,
+        "weightBytes": 715794432,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 56.39999961853027,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 11.5,
+        "lastExportMs": 2.799999237060547,
+        "timeToFirstBlockMs": 300.80000019073486,
+        "loadMs": 5176
+      },
+      "load": {
+        "ms": 6773.89999961853,
+        "timeToFirstBlockMs": 300.80000019073486,
+        "bytes": 988065536,
+        "gpuBytes": 741156864
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 567.3758903623533,
+          "decodeTokPerS": 79.36507696227189,
+          "prefillMs": 56.39999961853027,
+          "decodeMsMedian": 12.600000381469727,
+          "exportMs": 2.799999237060547,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 56.39999961853027,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 11.5,
+            "lastExportMs": 2.799999237060547,
+            "timeToFirstBlockMs": 300.80000019073486,
+            "loadMs": 5176
+          },
+          "load": {
+            "ms": 6773.89999961853,
+            "timeToFirstBlockMs": 300.80000019073486,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        },
+        {
+          "prefillTokPerS": 679.4055146672476,
+          "decodeTokPerS": 89.28571580624096,
+          "prefillMs": 47.10000038146973,
+          "decodeMsMedian": 11.199999809265137,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 47.10000038146973,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 12.699999809265137,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 300.80000019073486,
+            "loadMs": 5176
+          },
+          "load": {
+            "ms": 6773.89999961853,
+            "timeToFirstBlockMs": 300.80000019073486,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        },
+        {
+          "prefillTokPerS": 665.2806600044817,
+          "decodeTokPerS": 86.95652173913044,
+          "prefillMs": 48.10000038146973,
+          "decodeMsMedian": 11.5,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 48.10000038146973,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 12,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 300.80000019073486,
+            "loadMs": 5176
+          },
+          "load": {
+            "ms": 6773.89999961853,
+            "timeToFirstBlockMs": 300.80000019073486,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        }
+      ]
+    },
+    {
+      "variant": "fp16",
+      "N": 24,
+      "matvec": "tiled",
+      "prefillTokPerS": 603.7735849056603,
+      "decodeTokPerS": 22.471910112359552,
+      "prefillMs": 53,
+      "decodeMsMedian": 44.5,
+      "exportMs": 0.8000001907348633,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "fp16",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 741156864,
+        "weightBytes": 715794432,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 55.19999980926514,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 47.80000019073486,
+        "lastExportMs": 4.800000190734863,
+        "timeToFirstBlockMs": 478.30000019073486,
+        "loadMs": 5549.699999809265
+      },
+      "load": {
+        "ms": 7420.599999427795,
+        "timeToFirstBlockMs": 478.30000019073486,
+        "bytes": 988065536,
+        "gpuBytes": 741156864
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 579.710146930633,
+          "decodeTokPerS": 22.522522232263725,
+          "prefillMs": 55.19999980926514,
+          "decodeMsMedian": 44.40000057220459,
+          "exportMs": 4.800000190734863,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 55.19999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 47.80000019073486,
+            "lastExportMs": 4.800000190734863,
+            "timeToFirstBlockMs": 478.30000019073486,
+            "loadMs": 5549.699999809265
+          },
+          "load": {
+            "ms": 7420.599999427795,
+            "timeToFirstBlockMs": 478.30000019073486,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        },
+        {
+          "prefillTokPerS": 631.1637104612411,
+          "decodeTokPerS": 22.471910112359552,
+          "prefillMs": 50.69999980926514,
+          "decodeMsMedian": 44.5,
+          "exportMs": 0.5,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 50.69999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 44,
+            "lastExportMs": 0.5,
+            "timeToFirstBlockMs": 478.30000019073486,
+            "loadMs": 5549.699999809265
+          },
+          "load": {
+            "ms": 7420.599999427795,
+            "timeToFirstBlockMs": 478.30000019073486,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        },
+        {
+          "prefillTokPerS": 603.7735849056603,
+          "decodeTokPerS": 21.73913043478261,
+          "prefillMs": 53,
+          "decodeMsMedian": 46,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "fp16",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 741156864,
+            "weightBytes": 715794432,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 53,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 45.40000057220459,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 478.30000019073486,
+            "loadMs": 5549.699999809265
+          },
+          "load": {
+            "ms": 7420.599999427795,
+            "timeToFirstBlockMs": 478.30000019073486,
+            "bytes": 988065536,
+            "gpuBytes": 741156864
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 1,
+      "matvec": "seq",
+      "prefillTokPerS": 8888.887946988429,
+      "decodeTokPerS": 769.2312206744975,
+      "prefillMs": 3.6000003814697266,
+      "decodeMsMedian": 1.2999992370605469,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 37288448,
+        "weightBytes": 14940672,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 3.6000003814697266,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 1.1000003814697266,
+        "lastExportMs": 0.7999992370605469,
+        "timeToFirstBlockMs": 47.60000038146973,
+        "loadMs": 47.60000038146973
+      },
+      "load": {
+        "ms": 891.7999992370605,
+        "timeToFirstBlockMs": 47.60000038146973,
+        "bytes": 157931264,
+        "gpuBytes": 37288448
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 8888.887946988429,
+          "decodeTokPerS": 666.6666666666666,
+          "prefillMs": 3.6000003814697266,
+          "decodeMsMedian": 1.5,
+          "exportMs": 0.7999992370605469,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 3.6000003814697266,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.1000003814697266,
+            "lastExportMs": 0.7999992370605469,
+            "timeToFirstBlockMs": 47.60000038146973,
+            "loadMs": 47.60000038146973
+          },
+          "load": {
+            "ms": 891.7999992370605,
+            "timeToFirstBlockMs": 47.60000038146973,
+            "bytes": 157931264,
+            "gpuBytes": 37288448
+          }
+        },
+        {
+          "prefillTokPerS": 6274.50933460091,
+          "decodeTokPerS": 769.2312206744975,
+          "prefillMs": 5.100000381469727,
+          "decodeMsMedian": 1.2999992370605469,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 5.100000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.6999998092651367,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 47.60000038146973,
+            "loadMs": 47.60000038146973
+          },
+          "load": {
+            "ms": 891.7999992370605,
+            "timeToFirstBlockMs": 47.60000038146973,
+            "bytes": 157931264,
+            "gpuBytes": 37288448
+          }
+        },
+        {
+          "prefillTokPerS": 11034.48421011092,
+          "decodeTokPerS": 1000,
+          "prefillMs": 2.8999996185302734,
+          "decodeMsMedian": 1,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.8999996185302734,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.0999994277954102,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 47.60000038146973,
+            "loadMs": 47.60000038146973
+          },
+          "load": {
+            "ms": 891.7999992370605,
+            "timeToFirstBlockMs": 47.60000038146973,
+            "bytes": 157931264,
+            "gpuBytes": 37288448
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 1,
+      "matvec": "lanes",
+      "prefillTokPerS": 8421.052208897832,
+      "decodeTokPerS": 1428.5718178263576,
+      "prefillMs": 3.8000001907348633,
+      "decodeMsMedian": 0.6999998092651367,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 37288448,
+        "weightBytes": 14940672,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 3.8000001907348633,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 0.8000001907348633,
+        "lastExportMs": 0.5999994277954102,
+        "timeToFirstBlockMs": 6.699999809265137,
+        "loadMs": 6.699999809265137
+      },
+      "load": {
+        "ms": 842.8000001907349,
+        "timeToFirstBlockMs": 6.699999809265137,
+        "bytes": 151379200,
+        "gpuBytes": 37288448
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 8421.052208897832,
+          "decodeTokPerS": 1250.0011920940324,
+          "prefillMs": 3.8000001907348633,
+          "decodeMsMedian": 0.7999992370605469,
+          "exportMs": 0.5999994277954102,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 3.8000001907348633,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.8000001907348633,
+            "lastExportMs": 0.5999994277954102,
+            "timeToFirstBlockMs": 6.699999809265137,
+            "loadMs": 6.699999809265137
+          },
+          "load": {
+            "ms": 842.8000001907349,
+            "timeToFirstBlockMs": 6.699999809265137,
+            "bytes": 151379200,
+            "gpuBytes": 37288448
+          }
+        },
+        {
+          "prefillTokPerS": 8421.052208897832,
+          "decodeTokPerS": 1428.5718178263576,
+          "prefillMs": 3.8000001907348633,
+          "decodeMsMedian": 0.6999998092651367,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.8000001907348633,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.5,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 6.699999809265137,
+            "loadMs": 6.699999809265137
+          },
+          "load": {
+            "ms": 842.8000001907349,
+            "timeToFirstBlockMs": 6.699999809265137,
+            "bytes": 151379200,
+            "gpuBytes": 37288448
+          }
+        },
+        {
+          "prefillTokPerS": 13333.335452609928,
+          "decodeTokPerS": 1666.665607029211,
+          "prefillMs": 2.3999996185302734,
+          "decodeMsMedian": 0.6000003814697266,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.3999996185302734,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.8000001907348633,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 6.699999809265137,
+            "loadMs": 6.699999809265137
+          },
+          "load": {
+            "ms": 842.8000001907349,
+            "timeToFirstBlockMs": 6.699999809265137,
+            "bytes": 151379200,
+            "gpuBytes": 37288448
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 1,
+      "matvec": "tiled",
+      "prefillTokPerS": 8421.052208897832,
+      "decodeTokPerS": 526.3156309683054,
+      "prefillMs": 3.8000001907348633,
+      "decodeMsMedian": 1.9000005722045898,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 37288448,
+        "weightBytes": 14940672,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 4.5,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 2.299999237060547,
+        "lastExportMs": 1,
+        "timeToFirstBlockMs": 273.80000019073486,
+        "loadMs": 273.80000019073486
+      },
+      "load": {
+        "ms": 1116.5999994277954,
+        "timeToFirstBlockMs": 273.80000019073486,
+        "bytes": 164483328,
+        "gpuBytes": 37288448
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 7111.11111111111,
+          "decodeTokPerS": 357.1428328144324,
+          "prefillMs": 4.5,
+          "decodeMsMedian": 2.8000001907348633,
+          "exportMs": 1,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 4.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.299999237060547,
+            "lastExportMs": 1,
+            "timeToFirstBlockMs": 273.80000019073486,
+            "loadMs": 273.80000019073486
+          },
+          "load": {
+            "ms": 1116.5999994277954,
+            "timeToFirstBlockMs": 273.80000019073486,
+            "bytes": 164483328,
+            "gpuBytes": 37288448
+          }
+        },
+        {
+          "prefillTokPerS": 8421.052208897832,
+          "decodeTokPerS": 526.3156309683054,
+          "prefillMs": 3.8000001907348633,
+          "decodeMsMedian": 1.9000005722045898,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.8000001907348633,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.8000001907348633,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 273.80000019073486,
+            "loadMs": 273.80000019073486
+          },
+          "load": {
+            "ms": 1116.5999994277954,
+            "timeToFirstBlockMs": 273.80000019073486,
+            "bytes": 164483328,
+            "gpuBytes": 37288448
+          }
+        },
+        {
+          "prefillTokPerS": 13913.048093397088,
+          "decodeTokPerS": 526.3158951439898,
+          "prefillMs": 2.299999237060547,
+          "decodeMsMedian": 1.8999996185302734,
+          "exportMs": 0.19999980926513672,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 37288448,
+            "weightBytes": 14940672,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.299999237060547,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.9000005722045898,
+            "lastExportMs": 0.19999980926513672,
+            "timeToFirstBlockMs": 273.80000019073486,
+            "loadMs": 273.80000019073486
+          },
+          "load": {
+            "ms": 1116.5999994277954,
+            "timeToFirstBlockMs": 273.80000019073486,
+            "bytes": 164483328,
+            "gpuBytes": 37288448
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 8,
+      "matvec": "seq",
+      "prefillTokPerS": 2119.205244475984,
+      "decodeTokPerS": 188.67923849288513,
+      "prefillMs": 15.100000381469727,
+      "decodeMsMedian": 5.300000190734863,
+      "exportMs": 0.5,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 142790656,
+        "weightBytes": 119525376,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 15.100000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 5.600000381469727,
+        "lastExportMs": 0.8999996185302734,
+        "timeToFirstBlockMs": 41.69999980926514,
+        "loadMs": 914.5
+      },
+      "load": {
+        "ms": 1707.5,
+        "timeToFirstBlockMs": 41.69999980926514,
+        "bytes": 255963904,
+        "gpuBytes": 142790656
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 2119.205244475984,
+          "decodeTokPerS": 175.4386023617996,
+          "prefillMs": 15.100000381469727,
+          "decodeMsMedian": 5.699999809265137,
+          "exportMs": 0.8999996185302734,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 15.100000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.600000381469727,
+            "lastExportMs": 0.8999996185302734,
+            "timeToFirstBlockMs": 41.69999980926514,
+            "loadMs": 914.5
+          },
+          "load": {
+            "ms": 1707.5,
+            "timeToFirstBlockMs": 41.69999980926514,
+            "bytes": 255963904,
+            "gpuBytes": 142790656
+          }
+        },
+        {
+          "prefillTokPerS": 2133.3333333333335,
+          "decodeTokPerS": 188.67923849288513,
+          "prefillMs": 15,
+          "decodeMsMedian": 5.300000190734863,
+          "exportMs": 0.19999980926513672,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 15,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.100000381469727,
+            "lastExportMs": 0.19999980926513672,
+            "timeToFirstBlockMs": 41.69999980926514,
+            "loadMs": 914.5
+          },
+          "load": {
+            "ms": 1707.5,
+            "timeToFirstBlockMs": 41.69999980926514,
+            "bytes": 255963904,
+            "gpuBytes": 142790656
+          }
+        },
+        {
+          "prefillTokPerS": 2119.205244475984,
+          "decodeTokPerS": 188.67927244355866,
+          "prefillMs": 15.100000381469727,
+          "decodeMsMedian": 5.299999237060547,
+          "exportMs": 0.5,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 15.100000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 6.40000057220459,
+            "lastExportMs": 0.5,
+            "timeToFirstBlockMs": 41.69999980926514,
+            "loadMs": 914.5
+          },
+          "load": {
+            "ms": 1707.5,
+            "timeToFirstBlockMs": 41.69999980926514,
+            "bytes": 255963904,
+            "gpuBytes": 142790656
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 8,
+      "matvec": "lanes",
+      "prefillTokPerS": 2147.651061695561,
+      "decodeTokPerS": 400,
+      "prefillMs": 14.899999618530273,
+      "decodeMsMedian": 2.5,
+      "exportMs": 0.39999961853027344,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 142790656,
+        "weightBytes": 119525376,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 15.300000190734863,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 3.1999998092651367,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 165.89999961853027,
+        "loadMs": 821
+      },
+      "load": {
+        "ms": 1425.4000005722046,
+        "timeToFirstBlockMs": 165.89999961853027,
+        "bytes": 262515968,
+        "gpuBytes": 142790656
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 2091.5032419004847,
+          "decodeTokPerS": 400,
+          "prefillMs": 15.300000190734863,
+          "decodeMsMedian": 2.5,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 15.300000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 3.1999998092651367,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 165.89999961853027,
+            "loadMs": 821
+          },
+          "load": {
+            "ms": 1425.4000005722046,
+            "timeToFirstBlockMs": 165.89999961853027,
+            "bytes": 262515968,
+            "gpuBytes": 142790656
+          }
+        },
+        {
+          "prefillTokPerS": 2147.651061695561,
+          "decodeTokPerS": 384.6154692610526,
+          "prefillMs": 14.899999618530273,
+          "decodeMsMedian": 2.59999942779541,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 14.899999618530273,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.5,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 165.89999961853027,
+            "loadMs": 821
+          },
+          "load": {
+            "ms": 1425.4000005722046,
+            "timeToFirstBlockMs": 165.89999961853027,
+            "bytes": 262515968,
+            "gpuBytes": 142790656
+          }
+        },
+        {
+          "prefillTokPerS": 2176.870776544568,
+          "decodeTokPerS": 400,
+          "prefillMs": 14.699999809265137,
+          "decodeMsMedian": 2.5,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 14.699999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.5,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 165.89999961853027,
+            "loadMs": 821
+          },
+          "load": {
+            "ms": 1425.4000005722046,
+            "timeToFirstBlockMs": 165.89999961853027,
+            "bytes": 262515968,
+            "gpuBytes": 142790656
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 8,
+      "matvec": "tiled",
+      "prefillTokPerS": 2133.3333333333335,
+      "decodeTokPerS": 76.33588119692683,
+      "prefillMs": 15,
+      "decodeMsMedian": 13.09999942779541,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 142790656,
+        "weightBytes": 119525376,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 25.5,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 13.199999809265137,
+        "lastExportMs": 0.9000005722045898,
+        "timeToFirstBlockMs": 204.69999980926514,
+        "loadMs": 1082.5999994277954
+      },
+      "load": {
+        "ms": 1644.6999998092651,
+        "timeToFirstBlockMs": 204.69999980926514,
+        "bytes": 255963904,
+        "gpuBytes": 142790656
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1254.9019607843138,
+          "decodeTokPerS": 75.18797423788511,
+          "prefillMs": 25.5,
+          "decodeMsMedian": 13.299999237060547,
+          "exportMs": 0.9000005722045898,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 25.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 13.199999809265137,
+            "lastExportMs": 0.9000005722045898,
+            "timeToFirstBlockMs": 204.69999980926514,
+            "loadMs": 1082.5999994277954
+          },
+          "load": {
+            "ms": 1644.6999998092651,
+            "timeToFirstBlockMs": 204.69999980926514,
+            "bytes": 255963904,
+            "gpuBytes": 142790656
+          }
+        },
+        {
+          "prefillTokPerS": 2147.6509242351867,
+          "decodeTokPerS": 76.33588119692683,
+          "prefillMs": 14.90000057220459,
+          "decodeMsMedian": 13.09999942779541,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 14.90000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 13.5,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 204.69999980926514,
+            "loadMs": 1082.5999994277954
+          },
+          "load": {
+            "ms": 1644.6999998092651,
+            "timeToFirstBlockMs": 204.69999980926514,
+            "bytes": 255963904,
+            "gpuBytes": 142790656
+          }
+        },
+        {
+          "prefillTokPerS": 2133.3333333333335,
+          "decodeTokPerS": 76.92307692307692,
+          "prefillMs": 15,
+          "decodeMsMedian": 13,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 142790656,
+            "weightBytes": 119525376,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 15,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 13.40000057220459,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 204.69999980926514,
+            "loadMs": 1082.5999994277954
+          },
+          "load": {
+            "ms": 1644.6999998092651,
+            "timeToFirstBlockMs": 204.69999980926514,
+            "bytes": 255963904,
+            "gpuBytes": 142790656
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 16,
+      "matvec": "seq",
+      "prefillTokPerS": 1095.8903823254107,
+      "decodeTokPerS": 96.15384968074834,
+      "prefillMs": 29.200000762939453,
+      "decodeMsMedian": 10.399999618530273,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 263364608,
+        "weightBytes": 239050752,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 29.600000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 10.300000190734863,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 157.5,
+        "loadMs": 1610.8000001907349
+      },
+      "load": {
+        "ms": 2235.5999994277954,
+        "timeToFirstBlockMs": 157.5,
+        "bytes": 383877888,
+        "gpuBytes": 263364608
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1081.0810671486588,
+          "decodeTokPerS": 94.33961924644257,
+          "prefillMs": 29.600000381469727,
+          "decodeMsMedian": 10.600000381469727,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 29.600000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 10.300000190734863,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 157.5,
+            "loadMs": 1610.8000001907349
+          },
+          "load": {
+            "ms": 2235.5999994277954,
+            "timeToFirstBlockMs": 157.5,
+            "bytes": 383877888,
+            "gpuBytes": 263364608
+          }
+        },
+        {
+          "prefillTokPerS": 1095.8903823254107,
+          "decodeTokPerS": 96.15384968074834,
+          "prefillMs": 29.200000762939453,
+          "decodeMsMedian": 10.399999618530273,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 29.200000762939453,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 10.299999237060547,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 157.5,
+            "loadMs": 1610.8000001907349
+          },
+          "load": {
+            "ms": 2235.5999994277954,
+            "timeToFirstBlockMs": 157.5,
+            "bytes": 383877888,
+            "gpuBytes": 263364608
+          }
+        },
+        {
+          "prefillTokPerS": 1095.8904181172777,
+          "decodeTokPerS": 97.08737684291772,
+          "prefillMs": 29.199999809265137,
+          "decodeMsMedian": 10.300000190734863,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 29.199999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 10.300000190734863,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 157.5,
+            "loadMs": 1610.8000001907349
+          },
+          "load": {
+            "ms": 2235.5999994277954,
+            "timeToFirstBlockMs": 157.5,
+            "bytes": 383877888,
+            "gpuBytes": 263364608
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 16,
+      "matvec": "lanes",
+      "prefillTokPerS": 1038.961032527075,
+      "decodeTokPerS": 208.33332505491077,
+      "prefillMs": 30.800000190734863,
+      "decodeMsMedian": 4.800000190734863,
+      "exportMs": 0.5,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 263364608,
+        "weightBytes": 239050752,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 31.5,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 5,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 133.80000019073486,
+        "loadMs": 1567
+      },
+      "load": {
+        "ms": 2249.699999809265,
+        "timeToFirstBlockMs": 133.80000019073486,
+        "bytes": 375489280,
+        "gpuBytes": 263364608
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1015.8730158730158,
+          "decodeTokPerS": 181.8181818181818,
+          "prefillMs": 31.5,
+          "decodeMsMedian": 5.5,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 31.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 133.80000019073486,
+            "loadMs": 1567
+          },
+          "load": {
+            "ms": 2249.699999809265,
+            "timeToFirstBlockMs": 133.80000019073486,
+            "bytes": 375489280,
+            "gpuBytes": 263364608
+          }
+        },
+        {
+          "prefillTokPerS": 1038.961032527075,
+          "decodeTokPerS": 208.33332505491077,
+          "prefillMs": 30.800000190734863,
+          "decodeMsMedian": 4.800000190734863,
+          "exportMs": 0.5,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 30.800000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.09999942779541,
+            "lastExportMs": 0.5,
+            "timeToFirstBlockMs": 133.80000019073486,
+            "loadMs": 1567
+          },
+          "load": {
+            "ms": 2249.699999809265,
+            "timeToFirstBlockMs": 133.80000019073486,
+            "bytes": 375489280,
+            "gpuBytes": 263364608
+          }
+        },
+        {
+          "prefillTokPerS": 1081.0810671486588,
+          "decodeTokPerS": 212.76592290903898,
+          "prefillMs": 29.600000381469727,
+          "decodeMsMedian": 4.700000762939453,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 29.600000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 4.700000762939453,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 133.80000019073486,
+            "loadMs": 1567
+          },
+          "load": {
+            "ms": 2249.699999809265,
+            "timeToFirstBlockMs": 133.80000019073486,
+            "bytes": 375489280,
+            "gpuBytes": 263364608
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 16,
+      "matvec": "tiled",
+      "prefillTokPerS": 1077.4410843604571,
+      "decodeTokPerS": 38.167939209158654,
+      "prefillMs": 29.699999809265137,
+      "decodeMsMedian": 26.199999809265137,
+      "exportMs": 0.5,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 263364608,
+        "weightBytes": 239050752,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 30.600000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 25.800000190734863,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 354.5,
+        "loadMs": 1786.5
+      },
+      "load": {
+        "ms": 2451.4000005722046,
+        "timeToFirstBlockMs": 354.5,
+        "bytes": 375489280,
+        "gpuBytes": 263364608
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1045.7516209502423,
+          "decodeTokPerS": 37.87878705778728,
+          "prefillMs": 30.600000381469727,
+          "decodeMsMedian": 26.40000057220459,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 30.600000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 25.800000190734863,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 354.5,
+            "loadMs": 1786.5
+          },
+          "load": {
+            "ms": 2451.4000005722046,
+            "timeToFirstBlockMs": 354.5,
+            "bytes": 375489280,
+            "gpuBytes": 263364608
+          }
+        },
+        {
+          "prefillTokPerS": 1077.4410843604571,
+          "decodeTokPerS": 38.167939209158654,
+          "prefillMs": 29.699999809265137,
+          "decodeMsMedian": 26.199999809265137,
+          "exportMs": 0.5,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 29.699999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 26.399999618530273,
+            "lastExportMs": 0.5,
+            "timeToFirstBlockMs": 354.5,
+            "loadMs": 1786.5
+          },
+          "load": {
+            "ms": 2451.4000005722046,
+            "timeToFirstBlockMs": 354.5,
+            "bytes": 375489280,
+            "gpuBytes": 263364608
+          }
+        },
+        {
+          "prefillTokPerS": 1103.4482758620688,
+          "decodeTokPerS": 38.31417708519341,
+          "prefillMs": 29,
+          "decodeMsMedian": 26.09999942779541,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 263364608,
+            "weightBytes": 239050752,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 29,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 26.59999942779541,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 354.5,
+            "loadMs": 1786.5
+          },
+          "load": {
+            "ms": 2451.4000005722046,
+            "timeToFirstBlockMs": 354.5,
+            "bytes": 375489280,
+            "gpuBytes": 263364608
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 24,
+      "matvec": "seq",
+      "prefillTokPerS": 723.9819035766649,
+      "decodeTokPerS": 64.93506654355598,
+      "prefillMs": 44.19999980926514,
+      "decodeMsMedian": 15.399999618530273,
+      "exportMs": 0.5999994277954102,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 383938560,
+        "weightBytes": 358576128,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 78.69999980926514,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 15.90000057220459,
+        "lastExportMs": 0.5999994277954102,
+        "timeToFirstBlockMs": 182.0999994277954,
+        "loadMs": 2439.5
+      },
+      "load": {
+        "ms": 3133.300000190735,
+        "timeToFirstBlockMs": 182.0999994277954,
+        "bytes": 495016448,
+        "gpuBytes": 383938560
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 406.6073707440178,
+          "decodeTokPerS": 64.51612903225806,
+          "prefillMs": 78.69999980926514,
+          "decodeMsMedian": 15.5,
+          "exportMs": 0.5999994277954102,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 78.69999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 15.90000057220459,
+            "lastExportMs": 0.5999994277954102,
+            "timeToFirstBlockMs": 182.0999994277954,
+            "loadMs": 2439.5
+          },
+          "load": {
+            "ms": 3133.300000190735,
+            "timeToFirstBlockMs": 182.0999994277954,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        },
+        {
+          "prefillTokPerS": 740.7407276587887,
+          "decodeTokPerS": 64.93506654355598,
+          "prefillMs": 43.20000076293945,
+          "decodeMsMedian": 15.399999618530273,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 43.20000076293945,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 15.300000190734863,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 182.0999994277954,
+            "loadMs": 2439.5
+          },
+          "load": {
+            "ms": 3133.300000190735,
+            "timeToFirstBlockMs": 182.0999994277954,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        },
+        {
+          "prefillTokPerS": 723.9819035766649,
+          "decodeTokPerS": 65.35947630939015,
+          "prefillMs": 44.19999980926514,
+          "decodeMsMedian": 15.300000190734863,
+          "exportMs": 1.1000003814697266,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 44.19999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 15.199999809265137,
+            "lastExportMs": 1.1000003814697266,
+            "timeToFirstBlockMs": 182.0999994277954,
+            "loadMs": 2439.5
+          },
+          "load": {
+            "ms": 3133.300000190735,
+            "timeToFirstBlockMs": 182.0999994277954,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 24,
+      "matvec": "lanes",
+      "prefillTokPerS": 727.2727272727273,
+      "decodeTokPerS": 136.98629779067633,
+      "prefillMs": 44,
+      "decodeMsMedian": 7.300000190734863,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 383938560,
+        "weightBytes": 358576128,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 44.30000019073486,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 7.300000190734863,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 261.4000005722046,
+        "loadMs": 2408.2000007629395
+      },
+      "load": {
+        "ms": 3070.699999809265,
+        "timeToFirstBlockMs": 261.4000005722046,
+        "bytes": 495016448,
+        "gpuBytes": 383938560
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 722.3476266867523,
+          "decodeTokPerS": 131.57895727501096,
+          "prefillMs": 44.30000019073486,
+          "decodeMsMedian": 7.59999942779541,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 44.30000019073486,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7.300000190734863,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 261.4000005722046,
+            "loadMs": 2408.2000007629395
+          },
+          "load": {
+            "ms": 3070.699999809265,
+            "timeToFirstBlockMs": 261.4000005722046,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        },
+        {
+          "prefillTokPerS": 727.2727272727273,
+          "decodeTokPerS": 136.98629779067633,
+          "prefillMs": 44,
+          "decodeMsMedian": 7.300000190734863,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 44,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7.09999942779541,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 261.4000005722046,
+            "loadMs": 2408.2000007629395
+          },
+          "load": {
+            "ms": 3070.699999809265,
+            "timeToFirstBlockMs": 261.4000005722046,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        },
+        {
+          "prefillTokPerS": 737.3271954209217,
+          "decodeTokPerS": 147.05881940452298,
+          "prefillMs": 43.39999961853027,
+          "decodeMsMedian": 6.800000190734863,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 43.39999961853027,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 261.4000005722046,
+            "loadMs": 2408.2000007629395
+          },
+          "load": {
+            "ms": 3070.699999809265,
+            "timeToFirstBlockMs": 261.4000005722046,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q8",
+      "N": 24,
+      "matvec": "tiled",
+      "prefillTokPerS": 737.3271954209217,
+      "decodeTokPerS": 26.109660444385835,
+      "prefillMs": 43.39999961853027,
+      "decodeMsMedian": 38.30000019073486,
+      "exportMs": 0.5,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "q8",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 383938560,
+        "weightBytes": 358576128,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 45.19999980926514,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 38.39999961853027,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 143.89999961853027,
+        "loadMs": 2509.0999994277954
+      },
+      "load": {
+        "ms": 3154.800000190735,
+        "timeToFirstBlockMs": 143.89999961853027,
+        "bytes": 495016448,
+        "gpuBytes": 383938560
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 707.964604757379,
+          "decodeTokPerS": 26.041666925367384,
+          "prefillMs": 45.19999980926514,
+          "decodeMsMedian": 38.39999961853027,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 45.19999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 38.39999961853027,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 143.89999961853027,
+            "loadMs": 2509.0999994277954
+          },
+          "load": {
+            "ms": 3154.800000190735,
+            "timeToFirstBlockMs": 143.89999961853027,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        },
+        {
+          "prefillTokPerS": 737.3271954209217,
+          "decodeTokPerS": 26.109660444385835,
+          "prefillMs": 43.39999961853027,
+          "decodeMsMedian": 38.30000019073486,
+          "exportMs": 0.5,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 43.39999961853027,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 37.69999980926514,
+            "lastExportMs": 0.5,
+            "timeToFirstBlockMs": 143.89999961853027,
+            "loadMs": 2509.0999994277954
+          },
+          "load": {
+            "ms": 3154.800000190735,
+            "timeToFirstBlockMs": 143.89999961853027,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        },
+        {
+          "prefillTokPerS": 739.0300198392889,
+          "decodeTokPerS": 26.178010601912547,
+          "prefillMs": 43.30000019073486,
+          "decodeMsMedian": 38.19999980926514,
+          "exportMs": 0.5,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q8",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 383938560,
+            "weightBytes": 358576128,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 43.30000019073486,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 37.79999923706055,
+            "lastExportMs": 0.5,
+            "timeToFirstBlockMs": 143.89999961853027,
+            "loadMs": 2509.0999994277954
+          },
+          "load": {
+            "ms": 3154.800000190735,
+            "timeToFirstBlockMs": 143.89999961853027,
+            "bytes": 495016448,
+            "gpuBytes": 383938560
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 1,
+      "matvec": "seq",
+      "prefillTokPerS": 7804.877322603801,
+      "decodeTokPerS": 909.0913819875103,
+      "prefillMs": 4.100000381469727,
+      "decodeMsMedian": 1.0999994277954102,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 30157824,
+        "weightBytes": 7810048,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 4.100000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 1.5,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 65.20000076293945,
+        "loadMs": 65.20000076293945
+      },
+      "load": {
+        "ms": 905.6999998092651,
+        "timeToFirstBlockMs": 65.20000076293945,
+        "bytes": 144249088,
+        "gpuBytes": 30157824
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 7804.877322603801,
+          "decodeTokPerS": 526.3158951439898,
+          "prefillMs": 4.100000381469727,
+          "decodeMsMedian": 1.8999996185302734,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 4.100000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.5,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 65.20000076293945,
+            "loadMs": 65.20000076293945
+          },
+          "load": {
+            "ms": 905.6999998092651,
+            "timeToFirstBlockMs": 65.20000076293945,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        },
+        {
+          "prefillTokPerS": 5245.9013112864695,
+          "decodeTokPerS": 909.0913819875103,
+          "prefillMs": 6.100000381469727,
+          "decodeMsMedian": 1.0999994277954102,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 6.100000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 65.20000076293945,
+            "loadMs": 65.20000076293945
+          },
+          "load": {
+            "ms": 905.6999998092651,
+            "timeToFirstBlockMs": 65.20000076293945,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        },
+        {
+          "prefillTokPerS": 16000,
+          "decodeTokPerS": 1000,
+          "prefillMs": 2,
+          "decodeMsMedian": 1,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.9000005722045898,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 65.20000076293945,
+            "loadMs": 65.20000076293945
+          },
+          "load": {
+            "ms": 905.6999998092651,
+            "timeToFirstBlockMs": 65.20000076293945,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 1,
+      "matvec": "lanes",
+      "prefillTokPerS": 8648.64909448619,
+      "decodeTokPerS": 1249.999701976847,
+      "prefillMs": 3.6999998092651367,
+      "decodeMsMedian": 0.8000001907348633,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 30157824,
+        "weightBytes": 7810048,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 6.100000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 0.7999992370605469,
+        "lastExportMs": 0.6000003814697266,
+        "timeToFirstBlockMs": 298,
+        "loadMs": 298
+      },
+      "load": {
+        "ms": 907.3000001907349,
+        "timeToFirstBlockMs": 298,
+        "bytes": 144249088,
+        "gpuBytes": 30157824
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 5245.9013112864695,
+          "decodeTokPerS": 833.3328035146055,
+          "prefillMs": 6.100000381469727,
+          "decodeMsMedian": 1.2000007629394531,
+          "exportMs": 0.6000003814697266,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 6.100000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.7999992370605469,
+            "lastExportMs": 0.6000003814697266,
+            "timeToFirstBlockMs": 298,
+            "loadMs": 298
+          },
+          "load": {
+            "ms": 907.3000001907349,
+            "timeToFirstBlockMs": 298,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        },
+        {
+          "prefillTokPerS": 8648.64909448619,
+          "decodeTokPerS": 1249.999701976847,
+          "prefillMs": 3.6999998092651367,
+          "decodeMsMedian": 0.8000001907348633,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.6999998092651367,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.5999994277954102,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 298,
+            "loadMs": 298
+          },
+          "load": {
+            "ms": 907.3000001907349,
+            "timeToFirstBlockMs": 298,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        },
+        {
+          "prefillTokPerS": 13913.042324477294,
+          "decodeTokPerS": 1666.6682561253765,
+          "prefillMs": 2.3000001907348633,
+          "decodeMsMedian": 0.5999994277954102,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.3000001907348633,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 0.5,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 298,
+            "loadMs": 298
+          },
+          "load": {
+            "ms": 907.3000001907349,
+            "timeToFirstBlockMs": 298,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 1,
+      "matvec": "tiled",
+      "prefillTokPerS": 8648.64909448619,
+      "decodeTokPerS": 526.3156309683054,
+      "prefillMs": 3.6999998092651367,
+      "decodeMsMedian": 1.9000005722045898,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 1,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 1,
+        "gpuBytes": 30157824,
+        "weightBytes": 7810048,
+        "kvBytes": 131072,
+        "workspaceBytes": 22216704,
+        "dispatches": 477,
+        "lastPrefillMs": 4,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 2.1999998092651367,
+        "lastExportMs": 0.8000001907348633,
+        "timeToFirstBlockMs": 73.09999942779541,
+        "loadMs": 73.09999942779541
+      },
+      "load": {
+        "ms": 845.4000005722046,
+        "timeToFirstBlockMs": 73.09999942779541,
+        "bytes": 144249088,
+        "gpuBytes": 30157824
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 8000,
+          "decodeTokPerS": 400,
+          "prefillMs": 4,
+          "decodeMsMedian": 2.5,
+          "exportMs": 0.8000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 477,
+            "lastPrefillMs": 4,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.1999998092651367,
+            "lastExportMs": 0.8000001907348633,
+            "timeToFirstBlockMs": 73.09999942779541,
+            "loadMs": 73.09999942779541
+          },
+          "load": {
+            "ms": 845.4000005722046,
+            "timeToFirstBlockMs": 73.09999942779541,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        },
+        {
+          "prefillTokPerS": 8648.64909448619,
+          "decodeTokPerS": 526.3156309683054,
+          "prefillMs": 3.6999998092651367,
+          "decodeMsMedian": 1.9000005722045898,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 954,
+            "lastPrefillMs": 3.6999998092651367,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 1.8999996185302734,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 73.09999942779541,
+            "loadMs": 73.09999942779541
+          },
+          "load": {
+            "ms": 845.4000005722046,
+            "timeToFirstBlockMs": 73.09999942779541,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        },
+        {
+          "prefillTokPerS": 14545.455806511603,
+          "decodeTokPerS": 526.3156309683054,
+          "prefillMs": 2.1999998092651367,
+          "decodeMsMedian": 1.9000005722045898,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 1,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 1,
+            "gpuBytes": 30157824,
+            "weightBytes": 7810048,
+            "kvBytes": 131072,
+            "workspaceBytes": 22216704,
+            "dispatches": 1431,
+            "lastPrefillMs": 2.1999998092651367,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 73.09999942779541,
+            "loadMs": 73.09999942779541
+          },
+          "load": {
+            "ms": 845.4000005722046,
+            "timeToFirstBlockMs": 73.09999942779541,
+            "bytes": 144249088,
+            "gpuBytes": 30157824
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 8,
+      "matvec": "seq",
+      "prefillTokPerS": 2222.2221339190482,
+      "decodeTokPerS": 185.18516556225893,
+      "prefillMs": 14.40000057220459,
+      "decodeMsMedian": 5.40000057220459,
+      "exportMs": 0.39999961853027344,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 85745664,
+        "weightBytes": 62480384,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 15,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 6.699999809265137,
+        "lastExportMs": 0.9000005722045898,
+        "timeToFirstBlockMs": 217.4000005722046,
+        "loadMs": 442.20000076293945
+      },
+      "load": {
+        "ms": 992.6000003814697,
+        "timeToFirstBlockMs": 217.4000005722046,
+        "bytes": 198923008,
+        "gpuBytes": 85745664
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 2133.3333333333335,
+          "decodeTokPerS": 172.41381578298316,
+          "prefillMs": 15,
+          "decodeMsMedian": 5.799999237060547,
+          "exportMs": 0.9000005722045898,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 15,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 6.699999809265137,
+            "lastExportMs": 0.9000005722045898,
+            "timeToFirstBlockMs": 217.4000005722046,
+            "loadMs": 442.20000076293945
+          },
+          "load": {
+            "ms": 992.6000003814697,
+            "timeToFirstBlockMs": 217.4000005722046,
+            "bytes": 198923008,
+            "gpuBytes": 85745664
+          }
+        },
+        {
+          "prefillTokPerS": 2222.2221339190482,
+          "decodeTokPerS": 185.18516556225893,
+          "prefillMs": 14.40000057220459,
+          "decodeMsMedian": 5.40000057220459,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 14.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 6.300000190734863,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 217.4000005722046,
+            "loadMs": 442.20000076293945
+          },
+          "load": {
+            "ms": 992.6000003814697,
+            "timeToFirstBlockMs": 217.4000005722046,
+            "bytes": 198923008,
+            "gpuBytes": 85745664
+          }
+        },
+        {
+          "prefillTokPerS": 2237.762207914737,
+          "decodeTokPerS": 188.67923849288513,
+          "prefillMs": 14.300000190734863,
+          "decodeMsMedian": 5.300000190734863,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 14.300000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.300000190734863,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 217.4000005722046,
+            "loadMs": 442.20000076293945
+          },
+          "load": {
+            "ms": 992.6000003814697,
+            "timeToFirstBlockMs": 217.4000005722046,
+            "bytes": 198923008,
+            "gpuBytes": 85745664
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 8,
+      "matvec": "lanes",
+      "prefillTokPerS": 2091.5032419004847,
+      "decodeTokPerS": 400,
+      "prefillMs": 15.300000190734863,
+      "decodeMsMedian": 2.5,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 85745664,
+        "weightBytes": 62480384,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 15.300000190734863,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 2.5,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 114.19999980926514,
+        "loadMs": 575.6999998092651
+      },
+      "load": {
+        "ms": 1228,
+        "timeToFirstBlockMs": 114.19999980926514,
+        "bytes": 206733568,
+        "gpuBytes": 85745664
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 2091.5032419004847,
+          "decodeTokPerS": 400,
+          "prefillMs": 15.300000190734863,
+          "decodeMsMedian": 2.5,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 15.300000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.5,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 114.19999980926514,
+            "loadMs": 575.6999998092651
+          },
+          "load": {
+            "ms": 1228,
+            "timeToFirstBlockMs": 114.19999980926514,
+            "bytes": 206733568,
+            "gpuBytes": 85745664
+          }
+        },
+        {
+          "prefillTokPerS": 2077.9220007145127,
+          "decodeTokPerS": 400,
+          "prefillMs": 15.40000057220459,
+          "decodeMsMedian": 2.5,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 15.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.6999998092651367,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 114.19999980926514,
+            "loadMs": 575.6999998092651
+          },
+          "load": {
+            "ms": 1228,
+            "timeToFirstBlockMs": 114.19999980926514,
+            "bytes": 206733568,
+            "gpuBytes": 85745664
+          }
+        },
+        {
+          "prefillTokPerS": 2222.2221339190482,
+          "decodeTokPerS": 400,
+          "prefillMs": 14.40000057220459,
+          "decodeMsMedian": 2.5,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 14.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 2.3999996185302734,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 114.19999980926514,
+            "loadMs": 575.6999998092651
+          },
+          "load": {
+            "ms": 1228,
+            "timeToFirstBlockMs": 114.19999980926514,
+            "bytes": 206733568,
+            "gpuBytes": 85745664
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 8,
+      "matvec": "tiled",
+      "prefillTokPerS": 2025.3164312469335,
+      "decodeTokPerS": 76.92307692307692,
+      "prefillMs": 15.800000190734863,
+      "decodeMsMedian": 13,
+      "exportMs": 0.39999961853027344,
+      "stats": {
+        "N": 8,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 8,
+        "gpuBytes": 85745664,
+        "weightBytes": 62480384,
+        "kvBytes": 1048576,
+        "workspaceBytes": 22216704,
+        "dispatches": 3809,
+        "lastPrefillMs": 19.399999618530273,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 13.199999809265137,
+        "lastExportMs": 1,
+        "timeToFirstBlockMs": 130,
+        "loadMs": 638.3000001907349
+      },
+      "load": {
+        "ms": 1334.8000001907349,
+        "timeToFirstBlockMs": 130,
+        "bytes": 198923008,
+        "gpuBytes": 85745664
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1649.4845685169294,
+          "decodeTokPerS": 76.33588119692683,
+          "prefillMs": 19.399999618530273,
+          "decodeMsMedian": 13.09999942779541,
+          "exportMs": 1,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 3809,
+            "lastPrefillMs": 19.399999618530273,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 13.199999809265137,
+            "lastExportMs": 1,
+            "timeToFirstBlockMs": 130,
+            "loadMs": 638.3000001907349
+          },
+          "load": {
+            "ms": 1334.8000001907349,
+            "timeToFirstBlockMs": 130,
+            "bytes": 198923008,
+            "gpuBytes": 85745664
+          }
+        },
+        {
+          "prefillTokPerS": 2025.3164312469335,
+          "decodeTokPerS": 76.92307692307692,
+          "prefillMs": 15.800000190734863,
+          "decodeMsMedian": 13,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 7618,
+            "lastPrefillMs": 15.800000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 13.100000381469727,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 130,
+            "loadMs": 638.3000001907349
+          },
+          "load": {
+            "ms": 1334.8000001907349,
+            "timeToFirstBlockMs": 130,
+            "bytes": 198923008,
+            "gpuBytes": 85745664
+          }
+        },
+        {
+          "prefillTokPerS": 2237.762207914737,
+          "decodeTokPerS": 78.1249988358468,
+          "prefillMs": 14.300000190734863,
+          "decodeMsMedian": 12.800000190734863,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 8,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 8,
+            "gpuBytes": 85745664,
+            "weightBytes": 62480384,
+            "kvBytes": 1048576,
+            "workspaceBytes": 22216704,
+            "dispatches": 11427,
+            "lastPrefillMs": 14.300000190734863,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 12.699999809265137,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 130,
+            "loadMs": 638.3000001907349
+          },
+          "load": {
+            "ms": 1334.8000001907349,
+            "timeToFirstBlockMs": 130,
+            "bytes": 198923008,
+            "gpuBytes": 85745664
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 16,
+      "matvec": "seq",
+      "prefillTokPerS": 1118.8811412667455,
+      "decodeTokPerS": 96.15384968074834,
+      "prefillMs": 28.59999942779541,
+      "decodeMsMedian": 10.399999618530273,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 149274624,
+        "weightBytes": 124960768,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 28.59999942779541,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 10.5,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 35.19999980926514,
+        "loadMs": 1067.5
+      },
+      "load": {
+        "ms": 1702.6000003814697,
+        "timeToFirstBlockMs": 35.19999980926514,
+        "bytes": 261407488,
+        "gpuBytes": 149274624
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1118.8811412667455,
+          "decodeTokPerS": 95.23809523809524,
+          "prefillMs": 28.59999942779541,
+          "decodeMsMedian": 10.5,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 28.59999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 10.5,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 35.19999980926514,
+            "loadMs": 1067.5
+          },
+          "load": {
+            "ms": 1702.6000003814697,
+            "timeToFirstBlockMs": 35.19999980926514,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        },
+        {
+          "prefillTokPerS": 1088.435388272284,
+          "decodeTokPerS": 96.15384968074834,
+          "prefillMs": 29.399999618530273,
+          "decodeMsMedian": 10.399999618530273,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 29.399999618530273,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 10.199999809265137,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 35.19999980926514,
+            "loadMs": 1067.5
+          },
+          "load": {
+            "ms": 1702.6000003814697,
+            "timeToFirstBlockMs": 35.19999980926514,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        },
+        {
+          "prefillTokPerS": 1138.7900587765446,
+          "decodeTokPerS": 97.08737684291772,
+          "prefillMs": 28.09999942779541,
+          "decodeMsMedian": 10.300000190734863,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 28.09999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 10.199999809265137,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 35.19999980926514,
+            "loadMs": 1067.5
+          },
+          "load": {
+            "ms": 1702.6000003814697,
+            "timeToFirstBlockMs": 35.19999980926514,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 16,
+      "matvec": "lanes",
+      "prefillTokPerS": 1142.857142857143,
+      "decodeTokPerS": 208.33332505491077,
+      "prefillMs": 28,
+      "decodeMsMedian": 4.800000190734863,
+      "exportMs": 0.3000001907348633,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 149274624,
+        "weightBytes": 124960768,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 29.600000381469727,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 4.800000190734863,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 134.5,
+        "loadMs": 1000.5
+      },
+      "load": {
+        "ms": 1625.9000005722046,
+        "timeToFirstBlockMs": 134.5,
+        "bytes": 261407488,
+        "gpuBytes": 149274624
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1081.0810671486588,
+          "decodeTokPerS": 204.08164854101443,
+          "prefillMs": 29.600000381469727,
+          "decodeMsMedian": 4.899999618530273,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 29.600000381469727,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 4.800000190734863,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 134.5,
+            "loadMs": 1000.5
+          },
+          "load": {
+            "ms": 1625.9000005722046,
+            "timeToFirstBlockMs": 134.5,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        },
+        {
+          "prefillTokPerS": 1142.857142857143,
+          "decodeTokPerS": 208.33332505491077,
+          "prefillMs": 28,
+          "decodeMsMedian": 4.800000190734863,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 28,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 4.899999618530273,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 134.5,
+            "loadMs": 1000.5
+          },
+          "load": {
+            "ms": 1625.9000005722046,
+            "timeToFirstBlockMs": 134.5,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        },
+        {
+          "prefillTokPerS": 1146.9534206999285,
+          "decodeTokPerS": 208.33332505491077,
+          "prefillMs": 27.899999618530273,
+          "decodeMsMedian": 4.800000190734863,
+          "exportMs": 0.3000001907348633,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 27.899999618530273,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 5.300000190734863,
+            "lastExportMs": 0.3000001907348633,
+            "timeToFirstBlockMs": 134.5,
+            "loadMs": 1000.5
+          },
+          "load": {
+            "ms": 1625.9000005722046,
+            "timeToFirstBlockMs": 134.5,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 16,
+      "matvec": "tiled",
+      "prefillTokPerS": 1103.4482758620688,
+      "decodeTokPerS": 38.91050468146462,
+      "prefillMs": 29,
+      "decodeMsMedian": 25.700000762939453,
+      "exportMs": 0.39999961853027344,
+      "stats": {
+        "N": 16,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 16,
+        "gpuBytes": 149274624,
+        "weightBytes": 124960768,
+        "kvBytes": 2097152,
+        "workspaceBytes": 22216704,
+        "dispatches": 7617,
+        "lastPrefillMs": 29.199999809265137,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 25.59999942779541,
+        "lastExportMs": 0.6000003814697266,
+        "timeToFirstBlockMs": 8.100000381469727,
+        "loadMs": 787.6000003814697
+      },
+      "load": {
+        "ms": 1622.0999994277954,
+        "timeToFirstBlockMs": 8.100000381469727,
+        "bytes": 261407488,
+        "gpuBytes": 149274624
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 1095.8904181172777,
+          "decodeTokPerS": 38.91050468146462,
+          "prefillMs": 29.199999809265137,
+          "decodeMsMedian": 25.700000762939453,
+          "exportMs": 0.6000003814697266,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 7617,
+            "lastPrefillMs": 29.199999809265137,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 25.59999942779541,
+            "lastExportMs": 0.6000003814697266,
+            "timeToFirstBlockMs": 8.100000381469727,
+            "loadMs": 787.6000003814697
+          },
+          "load": {
+            "ms": 1622.0999994277954,
+            "timeToFirstBlockMs": 8.100000381469727,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        },
+        {
+          "prefillTokPerS": 1122.8070175438595,
+          "decodeTokPerS": 39.0624994179234,
+          "prefillMs": 28.5,
+          "decodeMsMedian": 25.600000381469727,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 15234,
+            "lastPrefillMs": 28.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 25.5,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 8.100000381469727,
+            "loadMs": 787.6000003814697
+          },
+          "load": {
+            "ms": 1622.0999994277954,
+            "timeToFirstBlockMs": 8.100000381469727,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        },
+        {
+          "prefillTokPerS": 1103.4482758620688,
+          "decodeTokPerS": 38.46153846153846,
+          "prefillMs": 29,
+          "decodeMsMedian": 26,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 16,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 16,
+            "gpuBytes": 149274624,
+            "weightBytes": 124960768,
+            "kvBytes": 2097152,
+            "workspaceBytes": 22216704,
+            "dispatches": 22851,
+            "lastPrefillMs": 29,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 26.5,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 8.100000381469727,
+            "loadMs": 787.6000003814697
+          },
+          "load": {
+            "ms": 1622.0999994277954,
+            "timeToFirstBlockMs": 8.100000381469727,
+            "bytes": 261407488,
+            "gpuBytes": 149274624
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 24,
+      "matvec": "seq",
+      "prefillTokPerS": 694.1431756440761,
+      "decodeTokPerS": 62.893083269924986,
+      "prefillMs": 46.09999942779541,
+      "decodeMsMedian": 15.899999618530273,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 212803584,
+        "weightBytes": 187441152,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 49.30000019073486,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 17.699999809265137,
+        "lastExportMs": 1.0999994277954102,
+        "timeToFirstBlockMs": 0.39999961853027344,
+        "loadMs": 1093.5999994277954
+      },
+      "load": {
+        "ms": 1820.7999992370605,
+        "timeToFirstBlockMs": 0.39999961853027344,
+        "bytes": 323891968,
+        "gpuBytes": 212803584
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 649.0872185841063,
+          "decodeTokPerS": 58.1395323048289,
+          "prefillMs": 49.30000019073486,
+          "decodeMsMedian": 17.200000762939453,
+          "exportMs": 1.0999994277954102,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 49.30000019073486,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 17.699999809265137,
+            "lastExportMs": 1.0999994277954102,
+            "timeToFirstBlockMs": 0.39999961853027344,
+            "loadMs": 1093.5999994277954
+          },
+          "load": {
+            "ms": 1820.7999992370605,
+            "timeToFirstBlockMs": 0.39999961853027344,
+            "bytes": 323891968,
+            "gpuBytes": 212803584
+          }
+        },
+        {
+          "prefillTokPerS": 694.1431756440761,
+          "decodeTokPerS": 62.893083269924986,
+          "prefillMs": 46.09999942779541,
+          "decodeMsMedian": 15.899999618530273,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 46.09999942779541,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 15.899999618530273,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 0.39999961853027344,
+            "loadMs": 1093.5999994277954
+          },
+          "load": {
+            "ms": 1820.7999992370605,
+            "timeToFirstBlockMs": 0.39999961853027344,
+            "bytes": 323891968,
+            "gpuBytes": 212803584
+          }
+        },
+        {
+          "prefillTokPerS": 749.4145232538519,
+          "decodeTokPerS": 65.35947630939015,
+          "prefillMs": 42.69999980926514,
+          "decodeMsMedian": 15.300000190734863,
+          "exportMs": 0.2999992370605469,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 42.69999980926514,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 15.40000057220459,
+            "lastExportMs": 0.2999992370605469,
+            "timeToFirstBlockMs": 0.39999961853027344,
+            "loadMs": 1093.5999994277954
+          },
+          "load": {
+            "ms": 1820.7999992370605,
+            "timeToFirstBlockMs": 0.39999961853027344,
+            "bytes": 323891968,
+            "gpuBytes": 212803584
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 24,
+      "matvec": "lanes",
+      "prefillTokPerS": 719.1011235955056,
+      "decodeTokPerS": 129.87013308711195,
+      "prefillMs": 44.5,
+      "decodeMsMedian": 7.699999809265137,
+      "exportMs": 0.40000057220458984,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 212803584,
+        "weightBytes": 187441152,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 47,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 6.90000057220459,
+        "lastExportMs": 0.6999998092651367,
+        "timeToFirstBlockMs": 288,
+        "loadMs": 1380.2000007629395
+      },
+      "load": {
+        "ms": 2049.5,
+        "timeToFirstBlockMs": 288,
+        "bytes": 323893760,
+        "gpuBytes": 212803584
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 680.8510638297872,
+          "decodeTokPerS": 129.87013308711195,
+          "prefillMs": 47,
+          "decodeMsMedian": 7.699999809265137,
+          "exportMs": 0.6999998092651367,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 47,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 6.90000057220459,
+            "lastExportMs": 0.6999998092651367,
+            "timeToFirstBlockMs": 288,
+            "loadMs": 1380.2000007629395
+          },
+          "load": {
+            "ms": 2049.5,
+            "timeToFirstBlockMs": 288,
+            "bytes": 323893760,
+            "gpuBytes": 212803584
+          }
+        },
+        {
+          "prefillTokPerS": 719.1011235955056,
+          "decodeTokPerS": 119.04762445393628,
+          "prefillMs": 44.5,
+          "decodeMsMedian": 8.399999618530273,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 44.5,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 7.100000381469727,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 288,
+            "loadMs": 1380.2000007629395
+          },
+          "load": {
+            "ms": 2049.5,
+            "timeToFirstBlockMs": 288,
+            "bytes": 323893760,
+            "gpuBytes": 212803584
+          }
+        },
+        {
+          "prefillTokPerS": 730.5936041244368,
+          "decodeTokPerS": 140.84508177354962,
+          "prefillMs": 43.80000019073486,
+          "decodeMsMedian": 7.09999942779541,
+          "exportMs": 0.40000057220458984,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 43.80000019073486,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 8.59999942779541,
+            "lastExportMs": 0.40000057220458984,
+            "timeToFirstBlockMs": 288,
+            "loadMs": 1380.2000007629395
+          },
+          "load": {
+            "ms": 2049.5,
+            "timeToFirstBlockMs": 288,
+            "bytes": 323893760,
+            "gpuBytes": 212803584
+          }
+        }
+      ]
+    },
+    {
+      "variant": "q4",
+      "N": 24,
+      "matvec": "tiled",
+      "prefillTokPerS": 756.5011786219586,
+      "decodeTokPerS": 25.380710291295458,
+      "prefillMs": 42.30000019073486,
+      "decodeMsMedian": 39.40000057220459,
+      "exportMs": 0.6000003814697266,
+      "stats": {
+        "N": 24,
+        "maxCtx": 256,
+        "variant": "q4",
+        "position": 64,
+        "blocksLoaded": 24,
+        "gpuBytes": 212803584,
+        "weightBytes": 187441152,
+        "kvBytes": 3145728,
+        "workspaceBytes": 22216704,
+        "dispatches": 11425,
+        "lastPrefillMs": 42.30000019073486,
+        "lastPrefillTokens": 32,
+        "lastDecodeMs": 41.09999942779541,
+        "lastExportMs": 1.1000003814697266,
+        "timeToFirstBlockMs": 8.699999809265137,
+        "loadMs": 1529.2999992370605
+      },
+      "load": {
+        "ms": 2078.300000190735,
+        "timeToFirstBlockMs": 8.699999809265137,
+        "bytes": 323893760,
+        "gpuBytes": 212803584
+      },
+      "runs": [
+        {
+          "prefillTokPerS": 756.5011786219586,
+          "decodeTokPerS": 26.178010601912547,
+          "prefillMs": 42.30000019073486,
+          "decodeMsMedian": 38.19999980926514,
+          "exportMs": 1.1000003814697266,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 11425,
+            "lastPrefillMs": 42.30000019073486,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 41.09999942779541,
+            "lastExportMs": 1.1000003814697266,
+            "timeToFirstBlockMs": 8.699999809265137,
+            "loadMs": 1529.2999992370605
+          },
+          "load": {
+            "ms": 2078.300000190735,
+            "timeToFirstBlockMs": 8.699999809265137,
+            "bytes": 323893760,
+            "gpuBytes": 212803584
+          }
+        },
+        {
+          "prefillTokPerS": 760.0950049892343,
+          "decodeTokPerS": 25.380710291295458,
+          "prefillMs": 42.10000038146973,
+          "decodeMsMedian": 39.40000057220459,
+          "exportMs": 0.39999961853027344,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 22850,
+            "lastPrefillMs": 42.10000038146973,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 38.10000038146973,
+            "lastExportMs": 0.39999961853027344,
+            "timeToFirstBlockMs": 8.699999809265137,
+            "loadMs": 1529.2999992370605
+          },
+          "load": {
+            "ms": 2078.300000190735,
+            "timeToFirstBlockMs": 8.699999809265137,
+            "bytes": 323893760,
+            "gpuBytes": 212803584
+          }
+        },
+        {
+          "prefillTokPerS": 754.7169709468747,
+          "decodeTokPerS": 25.188916997592056,
+          "prefillMs": 42.40000057220459,
+          "decodeMsMedian": 39.69999980926514,
+          "exportMs": 0.6000003814697266,
+          "stats": {
+            "N": 24,
+            "maxCtx": 256,
+            "variant": "q4",
+            "position": 64,
+            "blocksLoaded": 24,
+            "gpuBytes": 212803584,
+            "weightBytes": 187441152,
+            "kvBytes": 3145728,
+            "workspaceBytes": 22216704,
+            "dispatches": 34275,
+            "lastPrefillMs": 42.40000057220459,
+            "lastPrefillTokens": 32,
+            "lastDecodeMs": 37.80000019073486,
+            "lastExportMs": 0.6000003814697266,
+            "timeToFirstBlockMs": 8.699999809265137,
+            "loadMs": 1529.2999992370605
+          },
+          "load": {
+            "ms": 2078.300000190735,
+            "timeToFirstBlockMs": 8.699999809265137,
+            "bytes": 323893760,
+            "gpuBytes": 212803584
+          }
+        }
+      ]
+    }
+  ]
+}

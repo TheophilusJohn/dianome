@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dianome runtime bench</title>
+<style>
+  body { font: 14px/1.4 system-ui, sans-serif; margin: 0; padding: 16px; max-width: 960px; }
+  h1 { font-size: 18px; margin: 0 0 12px; }
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 12px; align-items: end; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #444; }
+  input, select, button, textarea { font: inherit; padding: 4px 6px; }
+  label.wide { grid-column: 1 / -1; }
+  #actions { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  table { border-collapse: collapse; margin-top: 12px; }
+  td, th { border: 1px solid #ccc; padding: 4px 8px; text-align: left; font-variant-numeric: tabular-nums; }
+  th { background: #f3f3f3; }
+  pre { background: #f7f7f7; padding: 8px; overflow-x: auto; white-space: pre-wrap; }
+  #status { margin: 8px 0; color: #333; }
+</style>
+</head>
+<body>
+<h1>dianome runtime bench</h1>
+<form id="f" onsubmit="return false">
+  <label>model id <input name="model" value="qwen2.5-0.5b-instruct"></label>
+  <label>variant <select name="variant"><option>q4</option><option>q8</option><option>fp16</option></select></label>
+  <label>N (blocks on the client) <input name="N" type="number" min="1" max="24" value="24"></label>
+  <label>maxCtx <input name="maxCtx" type="number" min="16" max="4096" value="512"></label>
+  <label>decode steps <input name="steps" type="number" min="1" max="512" value="64"></label>
+  <label>T = 1 kernel <select name="matvec"><option value="auto">auto (seq if emulation on, lanes if off)</option><option value="seq">matvec seq</option><option value="lanes">matvec lanes</option><option value="tiled">tiled forced</option></select></label>
+  <label>fp16 emulation <select name="round16"><option value="1">on (matches fixtures)</option><option value="0">off (pure f32)</option></select></label>
+  <label class="wide">prompt <textarea name="prompt" rows="3">The quick brown fox jumps over the lazy dog while the sun sets slowly behind the distant mountains, casting long shadows across the quiet valley below, where a small river</textarea></label>
+</form>
+<div id="actions">
+  <button id="load">load model</button>
+  <button id="run" disabled>run prefill + decode</button>
+  <button id="both" disabled>time both T=1 kernels</button>
+</div>
+<div id="status">idle</div>
+<table id="out"><tbody></tbody></table>
+<pre id="log"></pre>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

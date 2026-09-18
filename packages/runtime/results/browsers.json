@@ -1,0 +1,170 @@
+[
+  {
+    "browser": "firefox",
+    "version": "155.0",
+    "gpu": {
+      "available": true,
+      "adapter": null
+    },
+    "adapter": null,
+    "status": "error: WebGPU: no adapter",
+    "log": "api http://localhost:8788 cdn http://localhost:8788; WebGPU available\nvr@http://localhost:5176/assets/index-D-MDPfoX.js:1:38197\nasync*at@http://localhost:5176/assets/index-D-MDPfoX.js:520:266\nye.onclick@http://localhost:5176/assets/index-D-MDPfoX.js:520:1786\nEventHandlerNonNull*@http://localhost:5176/assets/index-D-MDPfoX.js:520:1664\n\n",
+    "error": null,
+    "table": []
+  },
+  {
+    "browser": "webkit",
+    "version": "26.6",
+    "gpu": {
+      "available": true,
+      "adapter": {
+        "vendor": "apple",
+        "architecture": "apple",
+        "description": "apple"
+      },
+      "features": [
+        "depth-clip-control",
+        "depth32float-stencil8",
+        "timestamp-query",
+        "texture-compression-bc",
+        "texture-compression-bc-sliced-3d",
+        "texture-compression-etc2",
+        "texture-compression-astc",
+        "texture-compression-astc-sliced-3d",
+        "indirect-first-instance",
+        "shader-f16",
+        "rg11b10ufloat-renderable",
+        "bgra8unorm-storage",
+        "float32-filterable",
+        "float32-blendable",
+        "clip-distances",
+        "primitive-index",
+        "float16-renderable",
+        "float32-renderable",
+        "core-features-and-limits",
+        "texture-formats-tier1",
+        "texture-formats-tier2",
+        "subgroups"
+      ],
+      "maxBufferSize": 2147483644,
+      "maxWorkgroupStorage": 32768,
+      "maxStorageBinding": 2147483644
+    },
+    "adapter": null,
+    "status": "done",
+    "log": "api http://localhost:8788 cdn http://localhost:8788; WebGPU available\nq4 N=24 seq: T=32 prefill 116.0 ms (276 tok/s), decode median 19.00 ms (52.6 tok/s) over 32 steps, export 1792 bytes in 16.00 ms\n",
+    "error": null,
+    "table": [
+      [
+        "adapter",
+        "apple apple apple apple (shader-f16 yes, subgroups yes, maxBufferSize 1024 MiB)"
+      ],
+      [
+        "model / variant / N",
+        "qwen2.5-0.5b-instruct / q4 / 24"
+      ],
+      [
+        "time to first block",
+        "45 ms"
+      ],
+      [
+        "total load time",
+        "1013 ms for 308.9 MiB"
+      ],
+      [
+        "GPU buffer bytes",
+        "227.1 MiB (weights 178.8, KV 6.0, workspace 42.4)"
+      ],
+      [
+        "prefill tok/s (seq)",
+        "276 (T=32)"
+      ],
+      [
+        "decode tok/s (seq)",
+        "52.6 (median 19.00 ms/token)"
+      ],
+      [
+        "hidden-state export",
+        "16.00 ms"
+      ]
+    ]
+  },
+  {
+    "browser": "chrome",
+    "version": "153.0.8010.48",
+    "gpu": {
+      "available": true,
+      "adapter": {
+        "vendor": "apple",
+        "architecture": "metal-3",
+        "description": ""
+      },
+      "features": [
+        "depth32float-stencil8",
+        "rg11b10ufloat-renderable",
+        "bgra8unorm-storage",
+        "texture-formats-tier1",
+        "texture-compression-bc",
+        "dual-source-blending",
+        "core-features-and-limits",
+        "float32-filterable",
+        "indirect-first-instance",
+        "texture-compression-astc-sliced-3d",
+        "float32-blendable",
+        "subgroup-size-control",
+        "texture-compression-astc",
+        "texture-compression-etc2",
+        "depth-clip-control",
+        "texture-compression-bc-sliced-3d",
+        "clip-distances",
+        "timestamp-query",
+        "shader-f16",
+        "texture-formats-tier2",
+        "primitive-index",
+        "texture-component-swizzle",
+        "subgroups"
+      ],
+      "maxBufferSize": 4294967292,
+      "maxWorkgroupStorage": 32768,
+      "maxStorageBinding": 4294967292
+    },
+    "adapter": null,
+    "status": "done",
+    "log": "api http://localhost:8788 cdn http://localhost:8788; WebGPU available\nq4 N=24 seq: T=32 prefill 46.1 ms (694 tok/s), decode median 16.70 ms (59.9 tok/s) over 32 steps, export 1792 bytes in 28.30 ms\n",
+    "error": null,
+    "table": [
+      [
+        "adapter",
+        "apple metal-3 (shader-f16 yes, subgroups yes, maxBufferSize 1024 MiB)"
+      ],
+      [
+        "model / variant / N",
+        "qwen2.5-0.5b-instruct / q4 / 24"
+      ],
+      [
+        "time to first block",
+        "13 ms"
+      ],
+      [
+        "total load time",
+        "1348 ms for 308.9 MiB"
+      ],
+      [
+        "GPU buffer bytes",
+        "227.1 MiB (weights 178.8, KV 6.0, workspace 42.4)"
+      ],
+      [
+        "prefill tok/s (seq)",
+        "694 (T=32)"
+      ],
+      [
+        "decode tok/s (seq)",
+        "59.9 (median 16.70 ms/token)"
+      ],
+      [
+        "hidden-state export",
+        "28.30 ms"
+      ]
+    ]
+  }
+]
