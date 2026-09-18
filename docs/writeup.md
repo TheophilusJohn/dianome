@@ -9,9 +9,10 @@ files do not exist.
 Dianome packs an open-weight language model once into content-addressed chunks, serves them from a CDN, loads them in
 the browser progressively with every chunk verified, and runs the model on WebGPU, on a split server, or split between
 the two at a chosen layer through one `run()` call that plans per device and network. Two results are positive: the
-edge CDN with a cross-site cache works on Chrome, so a second site reuses a model the first one downloaded, and split
-inference is bit-exact against the full model at every split point tested, with a measured cost curve whose floor is
-the language-model head. Two results are negative: the cross-site cache is Chrome-only, because Firefox and Safari do
+edge CDN with a cross-site cache works on Chrome, so a second site reuses a model the first one downloaded, and the
+server half of split inference is bit-exact against the full model at every split point tested, and the browser runtime
+reproduces the full model's greedy tokens at every split point in fp16 (one recorded near-tie in q4), with a measured
+cost curve whose floor is the language-model head. Two results are negative: the cross-site cache is Chrome-only, because Firefox and Safari do
 not unpartition the Cache API through Storage Access, and the hidden state at every layer boundary remains linearly
 invertible to the input tokens, so a split server can read most of the prompt. The product framing that survives is
 hybrid inference behind one API, chosen per device for cost and latency, where the honest claim is "raw text is not
