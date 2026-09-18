@@ -6,6 +6,8 @@ import { loadStats } from "./stats";
 import { sessionStats } from "./sessions";
 import { createSession, planProxy, rates, servers } from "./split";
 import { ingestLoad } from "./telemetry";
+import { createKeyOpen } from "./keys";
+import { createOwnedKey, listKeys, revokeOwnedKey, usage } from "./dashboard-api";
 import type { Env } from "./types";
 
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -37,6 +39,21 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
     if (path === "/v1/split/rates" && method === "GET") return rates();
     if (path === "/v1/split/servers" && method === "GET") return servers(env);
     if (path === "/v1/split/plan" && method === "GET") return planProxy(request, env);
+    // Phase 6: keys, usage, dashboard
+    if (path === "/v1/keys") {
+      if (request.method === "POST") return createKeyOpen(request, env);
+      return error(405, "method_not_allowed");
+    }
+    if (path === "/v1/me/usage" && method === "GET") return usage(request, env);
+    if (path === "/v1/me/keys") {
+      if (method === "GET") return listKeys(request, env);
+      if (request.method === "POST") return createOwnedKey(request, env);
+      return error(405, "method_not_allowed");
+    }
+    if (parts[1] === "me" && parts[2] === "keys" && parts.length === 4) {
+      if (request.method === "DELETE") return revokeOwnedKey(request, env, parts[3]!);
+      return error(405, "method_not_allowed");
+    }
   }
   return error(404, "not_found");
 }

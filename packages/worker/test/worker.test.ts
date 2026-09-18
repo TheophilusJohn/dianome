@@ -151,9 +151,9 @@ describe("telemetry", () => {
     expect((await post({ ...validReportV2(), ip: "1.2.3.4" })).status).toBe(400);
     expect((await post({ ...validReport(), schema: 3 })).status).toBe(400);
   });
-  it("maps schema 1 and 2 onto the Analytics Engine columns (absent doubles are -1, cache_mode is blob8)", () => {
+  it("maps schema 1 and 2 onto the Analytics Engine columns (absent doubles are -1, cache_mode is blob8, key id blob9)", () => {
     const p1 = dataPoint(validReport() as never, "US", "ATL", "2026-09-16T23:00:00.000Z");
-    expect(p1.blobs).toEqual(["qwen2.5-0.5b-instruct", "q4", "network", "chrome", "US", "ATL", "2026-09-16T23:00:00.000Z", ""]);
+    expect(p1.blobs).toEqual(["qwen2.5-0.5b-instruct", "q4", "network", "chrome", "US", "ATL", "2026-09-16T23:00:00.000Z", "", ""]);
     expect(p1.doubles).toEqual([323893760, 42, 8420, 0, 1, -1, -1, -1, -1, -1]);
     expect(p1.indexes).toEqual(["qwen2.5-0.5b-instruct"]);
     const p2 = dataPoint(validReportV2() as never, "US", "ATL", "h");
@@ -191,7 +191,7 @@ describe("telemetry v3 (session reports)", () => {
   });
   it("maps schema 3 onto the sessions dataset columns", () => {
     const p = sessionDataPoint(validSession() as never, "US", "ATL", "h");
-    expect(p.blobs).toEqual(["qwen2.5-0.5b-instruct", "q4", "split", "cost", "per-site", "chrome", "US", "ATL", "h"]);
+    expect(p.blobs).toEqual(["qwen2.5-0.5b-instruct", "q4", "split", "cost", "per-site", "chrome", "US", "ATL", "h", ""]);
     expect(p.doubles).toEqual([12, 24, 40, 64, 620.5, 710.2, 3.8, 41.7, 1]);
     expect(p.indexes).toEqual(["qwen2.5-0.5b-instruct"]);
   });

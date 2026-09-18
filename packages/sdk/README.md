@@ -105,6 +105,14 @@ One JSON report per completed load (`schemas/telemetry.v2.json`): model, variant
 time, source breakdown, browser family, WebGPU limits, storage quota. No IP address, no user-agent string,
 nothing on failure or abort. `new Dianome({ telemetry: false })` sends nothing.
 
+## Keys
+
+`POST https://api.dianome.dev/v1/keys` returns a `dk_live_…` key once (no accounts: the key is the identity; keep it).
+`new Dianome({ apiKey })` sends it as `Authorization: Bearer` when minting a split session and when posting telemetry.
+Session reports then carry the key's `id` (never the key) and `/dashboard` on dianome.dev shows what the key consumed.
+Keyed apps mint sessions from any origin; without a key only the demo origins can. Revoke on the dashboard.
+Self-hosting: `new Dianome({ split: { servers: { "<model>": { ws: "wss://your-host", token } } } })` skips the API's session mint; see `server/README.md`.
+
 ## Development
 
 ```sh

@@ -97,11 +97,14 @@ export interface SessionReport {
   cache_mode: CacheMode;
   browser: Browser;
   webgpu: boolean;
+  /** Phase 6: the API key's id as the session mint returned it; never the key. Absent without a key. */
+  key_id?: string;
 }
 
 export interface SessionReportInput {
   model: string; variant: string; mode: SessionReport["mode"]; N: number; L: number; promptTokens: number; newTokens: number;
   clientMs: number; serverBusyMs: number; rttMs: number; tokPerS: number; planPolicy: SessionReport["plan_policy"]; cacheMode: CacheMode; device: DeviceInfo;
+  keyId?: string | null;
 }
 
 const ms1 = (n: number): number => Math.max(0, Math.round(n * 10) / 10);
@@ -111,14 +114,18 @@ export function buildSessionReport(i: SessionReportInput): SessionReport {
     schema: 3, model: i.model, variant: i.variant, mode: i.mode, N: int(i.N), L: int(i.L), prompt_tokens: int(i.promptTokens), new_tokens: int(i.newTokens),
     client_ms: ms1(i.clientMs), server_busy_ms: ms1(i.serverBusyMs), rtt_ms: ms1(i.rttMs), tok_per_s: ms1(i.tokPerS),
     plan_policy: i.planPolicy, cache_mode: i.cacheMode, browser: i.device.browser, webgpu: i.device.webgpu,
+    ...(i.keyId ? { key_id: i.keyId } : {}),
   };
 }
 
-/** POSTs the report; resolves to the HTTP status, or null when the request itself failed. Never throws. */
-export async function postReport(api: string, report: LoadReport | SessionReport, f: FetchLike = (u, i) => fetch(u, i)): Promise<number | null> {
+/**
+ * POSTs the report; resolves to the HTTP status, or null when the request itself failed. Never throws.
+ * With an API key the key travels as the bearer (Phase 6 metering); the body never contains it.
+ */
+export async function postReport(api: string, report: LoadReport | SessionReport, f: FetchLike = (u, i) => fetch(u, i), apiKey?: string): Promise<number | null> {
   try {
     const res = await f(`${api.replace(/\/+$/, "")}/v1/telemetry/load`, {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(report), keepalive: true,
+      method: "POST", headers: { "Content-Type": "application/json", ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) }, body: JSON.stringify(report), keepalive: true,
     });
     return res.status;
   } catch {

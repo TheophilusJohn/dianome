@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "dianome.dev: home, /summarize (Phase 7 vertical demo), /stats (load + session dashboards), /writeup",
+  "description": "dianome.dev: home, /summarize (Phase 7 vertical demo), /stats (load + session dashboards), /writeup, /dashboard (Phase 6 keys + usage)",
   "scripts": {
     "dev": "vite",
     "build": "node ../../scripts/writeup-check.mjs && tsc --noEmit && vite build",

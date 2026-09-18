@@ -1,8 +1,13 @@
 // POST /v1/telemetry/load: validate one load report and write one Analytics Engine point.
 // Privacy: the IP address and user agent string are never read; only request.cf.country / colo are kept,
 // and the timestamp we attach is rounded to the hour.
+// Phase 6: telemetry stays keyless, but a report posted with `Authorization: Bearer dk_live_…` records the key's id
+// (never the key) in the data point and meters the key's hourly usage bucket (metering.ts). A bad or revoked key is
+// refused so a misconfigured app notices; a schema-3 `key_id` in the body must match the bearer.
 
 import { error } from "./http";
+import { KEY_ID_RE, authenticateKey, keyError } from "./keys";
+import { recordLoad, recordSession } from "./metering";
 import { BROWSERS, CACHE_MODES, LOAD_SOURCES, PLAN_POLICIES, SESSION_MODES, type Env, type LoadReport, type LoadReportV1, type LoadReportV2, type SessionReportV3 } from "./types";
 
 export const MAX_BODY_BYTES = 4096;
@@ -40,13 +45,14 @@ function isNum(v: unknown, min: number, max: number): v is number {
 /** Schema 3 (schemas/telemetry.v3.json): every field required, no prompt content. */
 const V3_INTS: Record<"N" | "L" | "prompt_tokens" | "new_tokens", [number, number]> = { N: [0, 1000], L: [1, 1000], prompt_tokens: [0, 1_000_000], new_tokens: [0, 1_000_000] };
 const V3_NUMS: Record<"client_ms" | "server_busy_ms" | "rtt_ms" | "tok_per_s", [number, number]> = { client_ms: [0, 86_400_000], server_busy_ms: [0, 86_400_000], rtt_ms: [0, 86_400_000], tok_per_s: [0, 1_000_000] };
-const V3_FIELDS: Record<keyof SessionReportV3, true> = {
+const V3_FIELDS: Record<Exclude<keyof SessionReportV3, "key_id">, true> = {
   schema: true, model: true, variant: true, mode: true, N: true, L: true, prompt_tokens: true, new_tokens: true,
   client_ms: true, server_busy_ms: true, rtt_ms: true, tok_per_s: true, plan_policy: true, cache_mode: true, browser: true, webgpu: true,
 };
+const V3_OPTIONAL: Record<"key_id", true> = { key_id: true };
 
 export function validateSessionReport(o: Record<string, unknown>): ValidSession | Invalid {
-  for (const k of Object.keys(o)) if (!(k in V3_FIELDS)) return { ok: false, reason: `unknown field: ${k}` };
+  for (const k of Object.keys(o)) if (!(k in V3_FIELDS) && !(k in V3_OPTIONAL)) return { ok: false, reason: `unknown field: ${k}` };
   for (const k of Object.keys(V3_FIELDS)) if (!(k in o)) return { ok: false, reason: `missing field: ${k}` };
   if (typeof o.model !== "string" || o.model.length > 128 || !MODEL_RE.test(o.model)) return { ok: false, reason: "bad model" };
   if (typeof o.variant !== "string" || o.variant.length > 128 || !VARIANT_RE.test(o.variant)) return { ok: false, reason: "bad variant" };
@@ -59,6 +65,7 @@ export function validateSessionReport(o: Record<string, unknown>): ValidSession 
   if (!(CACHE_MODES as readonly unknown[]).includes(o.cache_mode)) return { ok: false, reason: "bad cache_mode" };
   if (!(BROWSERS as readonly unknown[]).includes(o.browser)) return { ok: false, reason: "bad browser" };
   if (typeof o.webgpu !== "boolean") return { ok: false, reason: "bad webgpu" };
+  if ("key_id" in o && (typeof o.key_id !== "string" || !KEY_ID_RE.test(o.key_id))) return { ok: false, reason: "bad key_id" };
   return { ok: true, session: o as unknown as SessionReportV3 };
 }
 
@@ -127,6 +134,11 @@ export async function ingestLoad(request: Request, env: Env): Promise<Response> 
   const isV3 = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed) && (parsed as Record<string, unknown>).schema === 3;
   const v = isV3 ? validateSessionReport(parsed as Record<string, unknown>) : validateLoadReport(parsed);
   if (!v.ok) return error(400, "invalid_report", v.reason);
+  const auth = await authenticateKey(request, env);
+  const authErr = keyError(auth);
+  if (authErr) return authErr;
+  const keyId = auth.status === "ok" ? auth.record.id : "";
+  if ("session" in v && v.session.key_id !== undefined && v.session.key_id !== keyId) return error(400, "invalid_report", keyId ? "key_id does not match the bearer key" : "key_id given without the key as bearer");
 
   const cf = (request as Request & { cf?: IncomingRequestCfProperties }).cf;
   const country = typeof cf?.country === "string" ? cf.country : "XX";
@@ -134,33 +146,40 @@ export async function ingestLoad(request: Request, env: Env): Promise<Response> 
   if (await overLimit(env, country, colo)) return error(429, "rate_limited");
 
   const hour = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
-  if ("session" in v) env.SESSIONS.writeDataPoint(sessionDataPoint(v.session, country, colo, hour));
-  else env.TELEMETRY.writeDataPoint(dataPoint(v.report, country, colo, hour));
+  if ("session" in v) env.SESSIONS.writeDataPoint(sessionDataPoint(v.session, country, colo, hour, keyId));
+  else env.TELEMETRY.writeDataPoint(dataPoint(v.report, country, colo, hour, keyId));
+  if (keyId) {
+    // Metering is the key's own usage record: a failed bucket write is a 500 the SDK can see, never a silent miss.
+    if ("session" in v) await recordSession(env, keyId, v.session);
+    else await recordLoad(env, keyId, v.report);
+  }
   return new Response(null, { status: 202 });
 }
 
 /**
- * dianome_sessions: blobs 1 model, 2 variant, 3 mode, 4 plan_policy, 5 cache_mode, 6 browser, 7 country, 8 colo, 9 hour;
- * doubles 1 N, 2 L, 3 prompt_tokens, 4 new_tokens, 5 client_ms, 6 server_busy_ms, 7 rtt_ms, 8 tok_per_s, 9 webgpu.
+ * dianome_sessions: blobs 1 model, 2 variant, 3 mode, 4 plan_policy, 5 cache_mode, 6 browser, 7 country, 8 colo, 9 hour,
+ * 10 key_id ("" when the report came without a key; blob 9 is taken here, so the key id sits one column later than
+ * in dianome_loads); doubles 1 N, 2 L, 3 prompt_tokens, 4 new_tokens, 5 client_ms, 6 server_busy_ms, 7 rtt_ms, 8 tok_per_s, 9 webgpu.
  */
-export function sessionDataPoint(s: SessionReportV3, country: string, colo: string, hour: string): AnalyticsEngineDataPoint {
+export function sessionDataPoint(s: SessionReportV3, country: string, colo: string, hour: string, keyId = ""): AnalyticsEngineDataPoint {
   return {
-    blobs: [s.model, s.variant, s.mode, s.plan_policy, s.cache_mode, s.browser, country, colo, hour],
+    blobs: [s.model, s.variant, s.mode, s.plan_policy, s.cache_mode, s.browser, country, colo, hour, keyId],
     doubles: [s.N, s.L, s.prompt_tokens, s.new_tokens, s.client_ms, s.server_busy_ms, s.rtt_ms, s.tok_per_s, s.webgpu ? 1 : 0],
     indexes: [s.model],
   };
 }
 
 /**
- * blobs: 1 model, 2 variant, 3 source, 4 browser, 5 country, 6 colo, 7 hour, 8 cache_mode ("" for schema 1).
+ * blobs: 1 model, 2 variant, 3 source, 4 browser, 5 country, 6 colo, 7 hour, 8 cache_mode ("" for schema 1),
+ * 9 key_id ("" when the report came without a key).
  * doubles: 1 bytes, 2 chunks, 3 ms, 4 cache_hits, 5 webgpu, 6 bytes_per_second, 7 verify_ms, 8 transfer_ms,
  * 9 quota_bytes, 10 max_buffer_size (6-10 are ABSENT for schema 1 or when the client omitted them).
  */
-export function dataPoint(r: LoadReport, country: string, colo: string, hour: string): AnalyticsEngineDataPoint {
+export function dataPoint(r: LoadReport, country: string, colo: string, hour: string, keyId = ""): AnalyticsEngineDataPoint {
   const v2: Partial<LoadReportV2> = r.schema === 2 ? r : {};
   const d = (n: number | undefined): number => (typeof n === "number" ? n : ABSENT);
   return {
-    blobs: [r.model, r.variant, r.source, r.browser, country, colo, hour, v2.cache_mode ?? ""],
+    blobs: [r.model, r.variant, r.source, r.browser, country, colo, hour, v2.cache_mode ?? "", keyId],
     doubles: [r.bytes, r.chunks, r.ms, r.cache_hits, r.webgpu ? 1 : 0, d(v2.bytes_per_second), d(v2.verify_ms), d(v2.transfer_ms), d(v2.quota_bytes), d(v2.max_buffer_size)],
     indexes: [r.model],
   };

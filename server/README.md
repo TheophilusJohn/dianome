@@ -43,7 +43,7 @@ SPLIT_TOKEN=... .venv/bin/dianome-server serve   [--model qwen2.5-0.5b-instruct]
 .venv/bin/dianome-server linear-probe [--train-tokens 500000] [--seed 1] [--max-epochs 3] [--notes ../docs/phase-4-notes.md]
 ```
 
-`serve` refuses to start without `SPLIT_TOKEN`. A WebSocket upgrade carries either
+`serve` refuses to start without `SPLIT_TOKEN` or `SPLIT_SIGNING_KEY` (either is enough since Phase 6). A WebSocket upgrade carries either
 the static bearer (`Authorization: Bearer <SPLIT_TOKEN>`, or `?token=<SPLIT_TOKEN>`
 because browsers cannot set upgrade headers) or, since Phase 5b, a short-lived HMAC
 session token minted by the Worker (`?token=`; verified with `SPLIT_SIGNING_KEY`
@@ -52,13 +52,43 @@ with `payload = {sid, model, exp, max_ctx, origin}`. Expired tokens and bad
 signatures are refused at the upgrade; the `Origin` header, when present, must
 equal the token's `origin`; a session opened with a token is bound to its `sid`
 (the same `sid` cannot be open twice) and capped at its `max_ctx`. Limits: one
-model per process, `max_ctx ≤ 4096`, at most 4 concurrent sessions, idle sessions
+model per process, `max_ctx ≤ 8192`, at most 4 concurrent sessions, idle sessions
 closed after 120 s. `GET /plan` is public load information (no auth, 120
 requests per minute per client address): `{model, L, d_model, active_sessions,
 busy_fraction_60s, ms_per_block_decode, ms_per_block_prefill, lm_head_ms,
 microbench, device}`, the timings from a startup microbench (median of 5;
 `--no-microbench` skips it). `ping` → `pong` is allowed before `open` (RTT).
 Nothing here exposes a port beyond localhost or runs a tunnel.
+
+## Self-host (Phase 6)
+
+The whole server half is one image, so hidden states can stay in your infrastructure: the browser runs blocks
+`0..N-1`, your container runs the rest, and Dianome only ever mints the session token (the Worker) and serves the
+weights (the CDN). `Dockerfile` builds a CUDA image by default (`pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime`) or a
+CPU one with `--build-arg VARIANT=cpu` (`python:3.12-slim` + the CPU torch wheel; this is also what runs on an
+Apple-silicon Mac, since a container has no MPS).
+
+```sh
+docker build -t dianome/server .                                 # CUDA
+docker build --build-arg VARIANT=cpu -t dianome/server:cpu .     # CPU
+docker run -e SPLIT_SIGNING_KEY=… -e MODEL=qwen2.5-0.5b-instruct -p 8765:8765 -v dianome-models:/models dianome/server
+```
+
+Env: `MODEL` (any id in `dianome_server/model.py`'s table, or a Hugging Face repo), `SPLIT_SIGNING_KEY` (verifies the
+Worker's session tokens; the Worker holds the same value), `SPLIT_TOKEN` (optional static bearer for direct clients
+such as `tests/ws_client.py` or the SDK's `split.servers` override), `SERVE_ARGS` (extra `serve` flags, e.g.
+`--no-microbench`), `HF_TOKEN` (gated repos only). At least one of the two credentials is required. Weights download
+from Hugging Face on first start into `/models` (mount a volume, or the download repeats on every start); the health
+check is `GET /plan`, public, with a 15 min start period for that first download. Nothing else is exposed.
+
+Then either point the Worker at it, so your app keeps using the API for keys, metering and session tokens:
+`SPLIT_SERVERS={"qwen2.5-0.5b-instruct":{"ws":"wss://your-host","plan":"https://your-host/plan"}}` with your
+`SPLIT_SIGNING_KEY`; or point the SDK straight at it with
+`new Dianome({ split: { servers: { "qwen2.5-0.5b-instruct": { ws: "wss://your-host", token: "<SPLIT_TOKEN>" } } } })`,
+which skips the API's session mint (the static token is then readable by anyone who can load your page, so use the
+Worker route for anything public). Either way hidden states never reach Dianome. `docker-compose.yml` runs the server
+with an optional `cloudflared` tunnel (`--profile tunnel`, `TUNNEL_TOKEN` from the Zero Trust dashboard, public
+hostname → `http://server:8765`). Measured image sizes and the CPU start-up time are in `docs/phase-6-notes.md`.
 
 A small client for the real socket lives in `tests/ws_client.py`:
 

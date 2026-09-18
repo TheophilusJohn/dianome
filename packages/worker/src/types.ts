@@ -79,6 +79,8 @@ export interface SessionReportV3 {
   cache_mode: CacheMode;
   browser: Browser;
   webgpu: boolean;
+  /** Phase 6: the API key id (never the key) the SDK learnt from the session mint; optional, must match the bearer. */
+  key_id?: string;
 }
 
 /** GET /v1/stats/sessions (Phase 7): aggregates of the schema-3 reports. */

@@ -21,7 +21,8 @@ textarea.drop { outline: 2px dashed var(--accent); }
 table { border-collapse: collapse; margin: 0.5rem 0 1rem; font-variant-numeric: tabular-nums; }
 th, td { border: 1px solid var(--line); padding: 0.2rem 0.6rem; text-align: left; } td.num, th.num { text-align: right; }
 .bars div { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; } .bars span.label { width: 4rem; display: inline-block; }
-.bar { height: 0.8rem; background: #5470c6; display: inline-block; } .empty { color: #888; font-style: italic; } .err { color: var(--warn); }
+.bar { height: 0.8rem; background: #5470c6; display: inline-block; } .bar.server { background: #e8933a; }
+.bars .hour span.label { width: 6rem; } .empty { color: #888; font-style: italic; } .err { color: var(--warn); }
 .banner { display: none; background: #fff3cd; border: 1px solid #e0c36a; padding: 0.5rem 0.8rem; margin: 0.5rem 0 1rem; } .banner.on { display: block; }
 article.writeup { max-width: 48rem; } article.writeup table { display: block; overflow-x: auto; max-width: 100%; }
 article.writeup pre { background: var(--panel); padding: 8px 10px; overflow-x: auto; border-radius: 6px; }

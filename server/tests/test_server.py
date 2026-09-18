@@ -58,8 +58,18 @@ async def test_refuses_without_token(server):
 
 def test_refuses_to_start_without_split_token(lm, monkeypatch):
     monkeypatch.delenv("SPLIT_TOKEN", raising=False)
+    monkeypatch.delenv("SPLIT_SIGNING_KEY", raising=False)
     with pytest.raises(RuntimeError):
         SplitServer(lm)
+
+
+def test_starts_with_signing_key_only_and_refuses_the_bearer(lm, monkeypatch):
+    """Phase 6 self-host: SPLIT_SIGNING_KEY alone is enough to start; there is then no static bearer to present."""
+    monkeypatch.delenv("SPLIT_TOKEN", raising=False)
+    s = SplitServer(lm, signing_key="k")
+    assert s.token is None and s.signing_key == b"k"
+    ok, st, reason = s._authenticate(type("R", (), {"path": "/?token=anything", "headers": {"Authorization": "Bearer anything"}})())
+    assert not ok and st is None and reason.startswith("malformed")
 
 
 async def test_plan_shape(server, lm):

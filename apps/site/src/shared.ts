@@ -1,4 +1,4 @@
-// Shared by the four pages: endpoint resolution (?api=&cdn= overrides for local servers), the nav, DOM helpers.
+// Shared by the five pages: endpoint resolution (?api=&cdn= overrides for local servers), the nav, DOM helpers.
 import "./site.css";
 
 export const params = new URLSearchParams(location.search);
@@ -14,7 +14,7 @@ export function localQuery(): string {
 }
 
 export function nav(current: string): void {
-  const pages: [string, string][] = [["/", "home"], ["/summarize/", "summarise"], ["/stats/", "stats"], ["/writeup/", "write-up"]];
+  const pages: [string, string][] = [["/", "home"], ["/summarize/", "summarise"], ["/stats/", "stats"], ["/dashboard/", "dashboard"], ["/writeup/", "write-up"]];
   const n = document.querySelector("nav");
   if (!n) return;
   const brand = el("span", "dianome", "brand");

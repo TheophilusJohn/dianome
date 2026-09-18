@@ -1,6 +1,6 @@
 {
   "name": "dianome",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Progressive, verified, cached model weight loading from cdn.dianome.dev, and run(): local / split / server generation chosen per device and network",
   "license": "MIT",
   "type": "module",

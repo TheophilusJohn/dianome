@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dianome dashboard</title>
+</head>
+<body>
+<nav></nav>
+<h1>Dashboard</h1>
+<p class="sub">What your app consumed, per API key: sessions, the layer-tokens your users' browsers ran and the ones the server ran, server busy time, bytes served, and an estimate of the server share at the stated GPU rate. Counted from the session reports the SDK posts when a <code>run()</code> call finishes (nothing is counted with <code>telemetry: false</code>). No prompt or output content is ever sent.</p>
+
+<section id="signin" class="panel">
+  <div class="controls">
+    <label>API key <input id="key" type="password" size="44" placeholder="dk_live_…" autocomplete="off"></label>
+    <button id="signin-btn">Sign in</button>
+    <button id="create-btn">No key yet? Create one</button>
+  </div>
+  <p class="small">The key stays in this tab's <code>sessionStorage</code> and is sent only to the API as a bearer. There are no accounts in this phase: the key is the identity, and a key created here is shown once.</p>
+  <p id="signin-status" class="small"></p>
+</section>
+<div id="new-key" class="banner"></div>
+
+<main id="app" hidden>
+  <div class="controls"><span id="who" class="small"></span> <button id="refresh">Refresh</button> <button id="signout">Sign out</button></div>
+  <p id="status" class="small"></p>
+
+  <h2>Usage</h2>
+  <p id="usage-note" class="small"></p>
+  <div id="totals"></div>
+
+  <h3>Per hour: layer-tokens run by the client (blue) and by the server (orange)</h3>
+  <p class="small">A layer-token is one transformer block applied to one new token; the server's count includes the language-model head as one block-equivalent per token whenever the server ran it. Hours with nothing are omitted.</p>
+  <div id="hours" class="bars"></div>
+
+  <h3>Modes</h3>
+  <div id="modes"></div>
+
+  <h3>Server cost estimate</h3>
+  <div id="cost"></div>
+
+  <h2>Keys</h2>
+  <div class="controls"><button id="newkey">Create another key</button></div>
+  <div id="keys"></div>
+</main>
+<script type="module" src="/src/dashboard.ts"></script>
+</body>
+</html>

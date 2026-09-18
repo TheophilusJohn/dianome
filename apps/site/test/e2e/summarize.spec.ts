@@ -12,7 +12,7 @@ const telemetry = async () => (await (await fetch("http://127.0.0.1:8797/__telem
 test("home, stats and write-up pages render", async ({ page }) => {
   await page.goto("/" + LOCAL);
   await expect(page.locator("h1")).toHaveText("dianome");
-  await expect(page.locator("nav a")).toHaveCount(4);
+  await expect(page.locator("nav a")).toHaveCount(5);
   await page.goto("/stats/" + LOCAL);
   await expect(page.locator("#loads-status")).toContainText(/loaded|failed/, { timeout: 30_000 });
   await expect(page.locator("#sessions-status")).toContainText(/loaded|failed/, { timeout: 30_000 });

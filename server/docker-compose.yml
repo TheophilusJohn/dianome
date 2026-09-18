@@ -1,0 +1,48 @@
+# dianome/server + an optional cloudflared tunnel (Phase 6 self-host).
+#
+#   SPLIT_SIGNING_KEY=… docker compose up --build                       # server only, port 8765 on this host
+#   SPLIT_SIGNING_KEY=… TUNNEL_TOKEN=… docker compose --profile tunnel up   # plus a Cloudflare Tunnel
+#
+# The tunnel's public hostname (set in the Cloudflare dashboard when you create the tunnel and copy its token) should
+# forward to http://server:8765. Then point the Worker's SPLIT_SERVERS at wss://<that hostname> (plan: https://…/plan)
+# with the same SPLIT_SIGNING_KEY, or the SDK's `split.servers` at it with SPLIT_TOKEN set here.
+# For the CPU image: VARIANT=cpu docker compose up --build, and drop the `deploy` block (or ignore its warning).
+services:
+  server:
+    image: dianome/server:${VARIANT:-cuda}
+    build:
+      context: .
+      args:
+        VARIANT: ${VARIANT:-cuda}
+    environment:
+      MODEL: ${MODEL:-qwen2.5-0.5b-instruct}
+      SPLIT_SIGNING_KEY: ${SPLIT_SIGNING_KEY:?set SPLIT_SIGNING_KEY to the value the Worker signs session tokens with}
+      SPLIT_TOKEN: ${SPLIT_TOKEN:-}
+      SERVE_ARGS: ${SERVE_ARGS:-}
+      HF_TOKEN: ${HF_TOKEN:-}
+    ports:
+      - "8765:8765"
+    volumes:
+      - models:/models
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set TUNNEL_TOKEN from the Cloudflare Zero Trust dashboard}
+    depends_on:
+      - server
+    restart: unless-stopped
+    profiles:
+      - tunnel
+
+volumes:
+  models:

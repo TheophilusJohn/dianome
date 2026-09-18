@@ -24,8 +24,8 @@ export function preflight(): Response {
   return new Response(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Methods": "GET, HEAD, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, If-None-Match",
+      "Access-Control-Allow-Methods": "GET, HEAD, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, If-None-Match, Authorization",
       "Access-Control-Max-Age": "86400",
     },
   });

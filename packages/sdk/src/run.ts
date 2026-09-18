@@ -168,7 +168,7 @@ async function getJson<T>(url: string, signal?: AbortSignal): Promise<T | null> 
 
 interface ServerPlanJson { L: number; busy_fraction_60s: number; ms_per_block_decode: number | null; ms_per_block_prefill: number | null; lm_head_ms: number | null; device?: string; active_sessions?: number }
 interface RatesJson { gpu: string; usd_per_hour: number | null; source: string; retrieved: string }
-interface SessionJson { url: string; token: string; expires_at: string }
+interface SessionJson { url: string; token: string; expires_at: string; key_id?: string }
 
 const MB_KEY = "dianome:microbench:v2";
 
@@ -237,9 +237,12 @@ export async function prepare(d: Dianome, id: string, opts: RunOptions = {}): Pr
     } catch (e) { mb = null; console.warn(`dianome: WebGPU microbench failed, planning without the browser side: ${(e as Error).message ?? e}`); }
   }
 
-  // server: plan, rates, session token, connect + rtt
+  // server: plan, rates, session token, connect + rtt. A self-host override (Phase 6) replaces the API's plan proxy
+  // and session mint with the developer's own server and static token.
+  const override = d.splitServers?.[id] ?? null;
+  const planUrl = override ? (override.plan ?? override.ws.replace(/^ws/, "http").replace(/\/+$/, "") + "/plan") : `${d.api}/v1/split/plan?model=${encodeURIComponent(id)}`;
   const [serverPlan, rates, cached, bandwidth] = await Promise.all([
-    getJson<ServerPlanJson>(`${d.api}/v1/split/plan?model=${encodeURIComponent(id)}`, signal),
+    getJson<ServerPlanJson>(planUrl, signal),
     getJson<RatesJson>(`${d.api}/v1/split/rates`, signal),
     cachedGroups(d, manifest, variant),
     measureBandwidth(d, manifest, variant, signal),
@@ -247,7 +250,7 @@ export async function prepare(d: Dianome, id: string, opts: RunOptions = {}): Pr
   const sessMod = await import("dianome-runtime/session");
   let client: SplitClient | null = null;
   let rttMs: number | null = null;
-  const split = opts.split === undefined ? await mintSession(d, id, maxCtx, signal) : opts.split;
+  const split = opts.split !== undefined ? opts.split : override ? { url: override.ws, token: override.token ?? "" } : await mintSession(d, id, maxCtx, signal);
   if (split) {
     try {
       client = new sessMod.SplitClient(split.url, split.token);
@@ -360,9 +363,9 @@ export async function run(d: Dianome, id: string, opts: RunOptions = {}): Promis
   if (d.telemetry) {
     report = buildSessionReport({
       model: id, variant, mode, N, L, promptTokens: promptIds.length, newTokens: tokens.length, clientMs, serverBusyMs,
-      rttMs: rttMs ?? 0, tokPerS, planPolicy: policy.prefer, cacheMode: (await d.cache.mode()), device,
+      rttMs: rttMs ?? 0, tokPerS, planPolicy: policy.prefer, cacheMode: (await d.cache.mode()), device, keyId: d.apiKey ? d.keyId : null,
     });
-    status = await postReport(d.api, report);
+    status = await postReport(d.api, report, undefined, d.apiKey);
   }
   return {
     text, tokens, mode, N, plan, timings: steps, serverBusyMs, tokPerS,
@@ -371,11 +374,14 @@ export async function run(d: Dianome, id: string, opts: RunOptions = {}): Promis
   };
 }
 
+/** POST /v1/split/session, with the API key as the bearer when there is one; remembers the key id the API names. */
 async function mintSession(d: Dianome, model: string, maxCtx: number, signal?: AbortSignal): Promise<{ url: string; token: string } | null> {
   try {
-    const r = await fetch(`${d.api}/v1/split/session`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model, max_ctx: maxCtx }), ...(signal ? { signal } : {}) });
-    if (!r.ok) return null;
+    const headers: Record<string, string> = { "Content-Type": "application/json", ...(d.apiKey ? { Authorization: `Bearer ${d.apiKey}` } : {}) };
+    const r = await fetch(`${d.api}/v1/split/session`, { method: "POST", headers, body: JSON.stringify({ model, max_ctx: maxCtx }), ...(signal ? { signal } : {}) });
+    if (!r.ok) { if (d.apiKey && (r.status === 401 || r.status === 403)) console.warn(`dianome: the API key was refused by ${d.api}/v1/split/session (HTTP ${r.status})`); return null; }
     const j = (await r.json()) as SessionJson;
+    d.keyId = typeof j.key_id === "string" ? j.key_id : null;
     return typeof j.url === "string" && typeof j.token === "string" ? { url: j.url, token: j.token } : null;
   } catch { return null; }
 }

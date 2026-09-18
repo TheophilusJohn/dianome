@@ -22,7 +22,22 @@ export interface DianomeOptions {
   frameUrl?: string;
   /** Injected fetch (tests). */
   fetch?: (input: string, init?: RequestInit) => Promise<Response>;
+  /**
+   * Phase 6: an API key (`dk_live_…` from POST /v1/keys or the dashboard). Sent as `Authorization: Bearer` on the
+   * session mint and on telemetry posts; the session report then carries the key's id (never the key) and the
+   * dashboard meters the session. Without it everything behaves as before (the demo origins can still mint sessions).
+   */
+  apiKey?: string;
+  /**
+   * Phase 6 self-host: connect run() straight to your own split server per model instead of minting a session
+   * through the API, so hidden states never reach Dianome. `token` is that server's static SPLIT_TOKEN (anyone who
+   * can load your page can read it; for a public site point the Worker's SPLIT_SERVERS at your host instead and share
+   * SPLIT_SIGNING_KEY). `plan` defaults to the ws URL as http(s) plus /plan.
+   */
+  split?: { servers: Record<string, SplitServerOverride> };
 }
+
+export interface SplitServerOverride { ws: string; token?: string; plan?: string }
 
 export interface StreamOptions {
   /** Model manifests: which variant (default: the smallest present, q4 > q8 > fp16). Ignored for files manifests. */

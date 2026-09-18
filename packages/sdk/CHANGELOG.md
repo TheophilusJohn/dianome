@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (unreleased)
+
+- `new Dianome({ apiKey })`: the `dk_live_…` key is sent as `Authorization: Bearer` on the session mint and on
+  telemetry posts (Phase 6 keys and metering). Never placed in any report.
+- `split: { servers: { "<model>": { ws, token?, plan? } } }`: self-host override that points `run()` at your own split
+  server per model instead of the API's session mint; `plan` defaults to the ws URL as http(s) plus `/plan`.
+- Session reports (schema 3) gain an optional `key_id`, the id the API returned on the session mint, never the key.
+
 ## 0.2.0 (unreleased)
 
 - `Dianome.run(id, { messages | prompt, variant, policy, maxTokens, sampling, onToken, onPlan, signal })`: generates

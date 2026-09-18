@@ -12,7 +12,7 @@ import { fetchChunks, type ChunkResult } from "./fetcher";
 import { fetchManifest, isModelManifest, type FetchLike, type Manifest, type VariantName } from "./manifest";
 import { planFiles, planVariant, type LoadPlan } from "./plan";
 import { buildReport, median, postReport } from "./telemetry";
-import type { CacheStatus, CrossSiteResult, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
+import type { CacheStatus, CrossSiteResult, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, SplitServerOverride, StreamOptions } from "./types";
 import type { RunOptions, RunResult } from "./run";
 
 export type { LoadedEntry, EntryParts } from "./assemble";
@@ -24,7 +24,7 @@ export type { Config, Entry, File, FilesManifest, Group, Manifest, ModelManifest
 export { validateManifest, isModelManifest, isFilesManifest } from "./manifest";
 export type { LoadReport, LoadSource, SessionReport } from "./telemetry";
 export type { RunOptions, RunResult, Plan, PlanCandidate, PlanInput, PlanPolicy, ChatMessage, StepTiming, SamplingOptions } from "./run";
-export type { CacheStatus, CrossSiteProgress, CrossSiteResult, CrossSiteState, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
+export type { CacheStatus, CrossSiteProgress, CrossSiteResult, CrossSiteState, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, SplitServerOverride, StreamOptions } from "./types";
 
 export const DEFAULT_API = "https://api.dianome.dev";
 export const DEFAULT_CDN = "https://cdn.dianome.dev";
@@ -52,6 +52,12 @@ export class Dianome {
   readonly cdn: string;
   readonly telemetry: boolean;
   readonly cacheOption: "auto" | "per-site" | "none";
+  /** The API key (Phase 6), or undefined; never placed in any report. */
+  readonly apiKey: string | undefined;
+  /** Self-host override: model id → your own split server (Phase 6). */
+  readonly splitServers: Record<string, SplitServerOverride> | undefined;
+  /** @internal The key id the API returned on the last session mint (goes into session reports; never the key). */
+  keyId: string | null = null;
   private readonly concurrency: number | undefined;
   private readonly retries: number | undefined;
   private readonly frameUrl: string | undefined;
@@ -72,6 +78,8 @@ export class Dianome {
     this.retries = opts.retries;
     this.frameUrl = opts.frameUrl;
     this.fetchImpl = opts.fetch ?? ((u, i) => fetch(u, i));
+    this.apiKey = opts.apiKey;
+    this.splitServers = opts.split?.servers;
   }
 
   /** Fetches and validates the manifest for `id` through the API. */
@@ -220,7 +228,7 @@ export class Dianome {
     summary.cacheHits = report.cache_hits;
     if (this.telemetry) {
       summary.report = report;
-      summary.telemetryStatus = await postReport(this.api, report, this.fetchImpl);
+      summary.telemetryStatus = await postReport(this.api, report, this.fetchImpl, this.apiKey);
     }
     this.lastSummary = summary;
     return summary;

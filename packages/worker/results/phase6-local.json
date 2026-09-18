@@ -1,0 +1,176 @@
+{
+  "api": "http://127.0.0.1:8790",
+  "cdn": "http://127.0.0.1:8788",
+  "model": "qwen2.5-0.5b-instruct",
+  "started": "2026-09-18T07:45:04.330Z",
+  "steps": [
+    {
+      "name": "create key",
+      "status": 201,
+      "id": "k_73c3600ea20d1bed",
+      "owner": "k_73c3600ea20d1bed",
+      "plan": "free",
+      "keyPrefix": "dk_live_"
+    },
+    {
+      "name": "run()",
+      "mode": "server",
+      "N": 0,
+      "L": 24,
+      "text": "Hello, how can I help you today?",
+      "tokens": 9,
+      "promptTokens": 35,
+      "tokPerS": 11.7,
+      "serverBusyMs": 1678.3,
+      "rttMs": 0.6890409999999747,
+      "wallMs": 2482,
+      "serverStats": {
+        "tokens": 10,
+        "busy_seconds": 1.678281420841813,
+        "gpu_seconds_per_token": 0.16782814208418131,
+        "type": "stats"
+      },
+      "telemetryStatus": 202,
+      "report": {
+        "schema": 3,
+        "model": "qwen2.5-0.5b-instruct",
+        "variant": "q4",
+        "mode": "server",
+        "N": 0,
+        "L": 24,
+        "prompt_tokens": 35,
+        "new_tokens": 9,
+        "client_ms": 0,
+        "server_busy_ms": 1678.3,
+        "rtt_ms": 0.7,
+        "tok_per_s": 11.7,
+        "plan_policy": "cost",
+        "cache_mode": "none",
+        "browser": "other",
+        "webgpu": false,
+        "key_id": "k_73c3600ea20d1bed"
+      },
+      "reasons": [
+        "no WebGPU on this device: only the server can run the model",
+        "policy prefers cost: max feasible N = 0 (server share 1.00)"
+      ]
+    },
+    {
+      "name": "usage",
+      "status": 200,
+      "usage": {
+        "key_id": "k_73c3600ea20d1bed",
+        "owner": "k_73c3600ea20d1bed",
+        "keys": [
+          "k_73c3600ea20d1bed"
+        ],
+        "hours": 24,
+        "since": "2026-09-17T08:00:00.000Z",
+        "until": "2026-09-18T08:00:00.000Z",
+        "buckets": [
+          {
+            "hour": "2026-09-18T07:00:00.000Z",
+            "sessions": 1,
+            "client_layer_tokens": 0,
+            "server_layer_tokens": 225,
+            "new_tokens": 9,
+            "server_busy_ms": 1678.3,
+            "bytes_served": 0,
+            "modes": {
+              "local": 0,
+              "split": 0,
+              "server": 1
+            },
+            "key_id": "k_73c3600ea20d1bed"
+          }
+        ],
+        "totals": {
+          "sessions": 1,
+          "client_layer_tokens": 0,
+          "server_layer_tokens": 225,
+          "new_tokens": 9,
+          "server_busy_ms": 1678.3,
+          "bytes_served": 0,
+          "modes": {
+            "local": 0,
+            "split": 0,
+            "server": 1
+          }
+        },
+        "last_24h": {
+          "sessions": 1,
+          "client_layer_tokens": 0,
+          "server_layer_tokens": 225,
+          "new_tokens": 9,
+          "server_busy_ms": 1678.3,
+          "bytes_served": 0,
+          "modes": {
+            "local": 0,
+            "split": 0,
+            "server": 1
+          }
+        },
+        "cost_estimate": {
+          "estimate": true,
+          "basis": "server_busy_ms / 3.6e6 h × usd_per_hour from /v1/split/rates; busy time is model execution only, so this is a lower bound on what a server actually costs",
+          "usd": 0.000228,
+          "usd_per_hour": 0.49,
+          "gpu": "NVIDIA L4 24GB",
+          "source": "RunPod pod deploy screen (console.runpod.io, Secure Cloud, on-demand)",
+          "retrieved": "2026-09-17"
+        }
+      }
+    },
+    {
+      "name": "keys",
+      "status": 200,
+      "keys": {
+        "owner": "k_73c3600ea20d1bed",
+        "keys": [
+          {
+            "id": "k_73c3600ea20d1bed",
+            "owner": "k_73c3600ea20d1bed",
+            "created": "2026-09-18T07:45:04.374Z",
+            "revoked": null,
+            "plan": "free",
+            "current": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "revoke",
+      "status": 200,
+      "body": {
+        "id": "k_73c3600ea20d1bed",
+        "owner": "k_73c3600ea20d1bed",
+        "created": "2026-09-18T07:45:04.374Z",
+        "revoked": "2026-09-18T07:45:06.888Z",
+        "plan": "free",
+        "current": true
+      }
+    },
+    {
+      "name": "session mint after revoke",
+      "status": 403,
+      "body": {
+        "error": "key_revoked",
+        "detail": "key k_73c3600ea20d1bed was revoked 2026-09-18T07:45:06.888Z"
+      }
+    },
+    {
+      "name": "run() after revoke",
+      "error": "no feasible plan: server unreachable; no WebGPU on this device: only the server can run the model; server unreachable: only local candidates; no feasible candidate: server/N=0: server unreachable | split/N=1: server unreachable; no WebGPU; no client microbench | split/N=2: server unreachable; no WebGPU; no client microbench | split/N=3: server unreachable; no WebGPU; no client microbench | split/N=4: server unreachable; no WebGPU; no client microbench | split/N=5: server unreachable; no WebGPU; no client microbench | split/N=6: server unreachable; no WebGPU; no client microbench | split/N=7: server unreachable; no WebGPU; no client microbench | split/N=8: server unreachable; no WebGPU; no client microbench | split/N=9: server unreachable; no WebGPU; no client microbench | split/N=10: server unreachable; no WebGPU; no client microbench | split/N=11: server unreachable; no WebGPU; no client microbench | split/N=12: server unreachable; no WebGPU; no client microbench | split/N=13: server unreachable; no WebGPU; no client microbench | split/N=14: server unreachable; no WebGPU; no client microbench | split/N=15: server unreachable; no WebGPU; no client microbench | split/N=16: server unreachable; no WebGPU; no client microbench | split/N=17: server unreachable; no WebGPU; no client microbench | split/N=18: server unreachable; no WebGPU; no client microbench | split/N=19: server unreachable; no WebGPU; no client microbench | split/N=20: server unreachable; no WebGPU; no client microbench | split/N=21: server unreachable; no WebGPU; no client microbench | split/N=22: server unreachable; no WebGPU; no client microbench | split/N=23: server unreachable; no WebGPU; no client microbench | split/N=24: server unreachable; no WebGPU; no client microbench | local/N=24: no WebGPU; no client microbench"
+    },
+    {
+      "name": "usage after revoke",
+      "status": 403,
+      "body": {
+        "error": "key_revoked",
+        "detail": "key k_73c3600ea20d1bed was revoked 2026-09-18T07:45:06.888Z"
+      }
+    }
+  ],
+  "finished": "2026-09-18T07:45:07.178Z",
+  "ok": true
+}

@@ -31,7 +31,8 @@ class FakeWebSocket {
   private step = 0;
   private tokens = 0;
   private busy = 0;
-  constructor(readonly url: string) { setTimeout(() => { this.readyState = 1; this.onopen?.(); }, 0); }
+  static lastUrl = "";
+  constructor(readonly url: string) { FakeWebSocket.lastUrl = url; setTimeout(() => { this.readyState = 1; this.onopen?.(); }, 0); }
   send(buf: ArrayBuffer): void {
     const m = decodeFrame(buf);
     FakeWebSocket.log.push({ type: m.type, header: m.header, payloadBytes: m.payload.byteLength });
@@ -134,6 +135,64 @@ describe.skipIf(!existsSync(manifestPath))("run() in node (server mode against a
     expect(chat.telemetry.report).toBeNull();
     // the rendered prompt is the HF template's
     expect(renderChat([{ role: "user", content: "Hi" }])).toContain("<|im_start|>assistant\n");
+  });
+
+  it("apiKey: the session mint and the telemetry post carry the key as bearer; the report carries key_id, never the key", async () => {
+    const KEY = "dk_live_" + "Q".repeat(32);
+    const seen: { path: string; auth: string | null }[] = [];
+    vi.stubGlobal("fetch", async (input: string | URL | Request, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      const path = new URL(url).pathname;
+      seen.push({ path, auth: new Headers(init?.headers).get("Authorization") });
+      if (path === "/v1/split/session") return new Response(JSON.stringify({ url: "ws://fake.test/", token: "fake-token", expires_at: "2027-01-01T00:00:00Z", key_id: "k_0123456789abcdef" }), { headers: { "Content-Type": "application/json" } });
+      return fetchImpl(input, init);
+    });
+    const d = new Dianome({ api: API, cdn: CDN, cache: "none", telemetry: true, fetch: fetchImpl, apiKey: KEY });
+    const r = await d.run(MODEL, { prompt: "Hi", maxTokens: 4 });
+    expect(r.mode).toBe("server");
+    expect(seen.find((c) => c.path === "/v1/split/session")?.auth).toBe(`Bearer ${KEY}`);
+    expect(seen.find((c) => c.path === "/v1/telemetry/load")?.auth).toBe(`Bearer ${KEY}`);
+    expect(seen.filter((c) => c.path !== "/v1/split/session" && c.path !== "/v1/telemetry/load").every((c) => c.auth === null)).toBe(true);
+    expect(r.telemetry.report?.key_id).toBe("k_0123456789abcdef");
+    expect(d.keyId).toBe("k_0123456789abcdef");
+    const rep = posted[0] as Record<string, unknown>;
+    expect(rep.key_id).toBe("k_0123456789abcdef");
+    expect(JSON.stringify(rep)).not.toContain(KEY);
+    expect(JSON.stringify(r.plan)).not.toContain(KEY);
+  });
+
+  it("without apiKey nothing carries a bearer and the report has no key_id; a mint without key_id leaves it out too", async () => {
+    const seen: { path: string; auth: string | null }[] = [];
+    vi.stubGlobal("fetch", async (input: string | URL | Request, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      seen.push({ path: new URL(url).pathname, auth: new Headers(init?.headers).get("Authorization") });
+      return fetchImpl(input, init);
+    });
+    const d = new Dianome({ api: API, cdn: CDN, cache: "none", telemetry: true, fetch: fetchImpl });
+    const r = await d.run(MODEL, { prompt: "Hi", maxTokens: 4 });
+    expect(seen.every((c) => c.auth === null)).toBe(true);
+    expect("key_id" in (r.telemetry.report ?? {})).toBe(false);
+    expect("key_id" in (posted[0] as Record<string, unknown>)).toBe(false);
+  });
+
+  it("split.servers override: no session mint, the plan comes from that host, the socket opens there with the static token", async () => {
+    const seen: string[] = [];
+    vi.stubGlobal("fetch", async (input: string | URL | Request, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      seen.push(url);
+      if (url === "http://my-host.example:8765/plan") return new Response(JSON.stringify({ model: MODEL, L: 24, d_model: 896, active_sessions: 0, busy_fraction_60s: 0, ms_per_block_decode: 0.5, ms_per_block_prefill: 0.9, lm_head_ms: 3.0, device: "cuda" }), { headers: { "Content-Type": "application/json" } });
+      return fetchImpl(input, init);
+    });
+    const d = new Dianome({ api: API, cdn: CDN, cache: "none", telemetry: false, fetch: fetchImpl, split: { servers: { [MODEL]: { ws: "ws://my-host.example:8765", token: "my-static-token" } } } });
+    const r = await d.run(MODEL, { prompt: "Hi", maxTokens: 4 });
+    expect(r.mode).toBe("server");
+    expect(seen.some((u) => u.includes("/v1/split/session"))).toBe(false);
+    expect(seen.some((u) => u.includes("/v1/split/plan"))).toBe(false);
+    expect(seen).toContain("http://my-host.example:8765/plan");
+    expect(r.plan.inputs.server?.device).toBe("cuda");
+    const opened = FakeWebSocket.log.find((m) => m.type === "open");
+    expect(opened).toBeDefined();
+    expect(FakeWebSocket.lastUrl).toBe("ws://my-host.example:8765/?token=my-static-token");
   });
 
   it("without a reachable server and without WebGPU there is no feasible plan", async () => {

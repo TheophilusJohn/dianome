@@ -4,7 +4,7 @@ import Ajv2020 from "ajv/dist/2020";
 import { describe, expect, it } from "vitest";
 import type { DeviceInfo } from "../src/device";
 import { detectBrowser } from "../src/device";
-import { buildReport, classifySource, countCacheHits, median, postReport } from "../src/telemetry";
+import { buildReport, buildSessionReport, classifySource, countCacheHits, median, postReport } from "../src/telemetry";
 
 const device: DeviceInfo = { browser: "chrome", webgpu: true, maxBufferSize: 4294967292, maxStorageBufferBindingSize: 4294967292, maxComputeWorkgroupStorageSize: 32768, quotaBytes: 10_000_000_000, usageBytes: 0 };
 
@@ -62,6 +62,32 @@ describe("postReport", () => {
     expect(calls[0]!.url).toBe("https://api.test/v1/telemetry/load");
     expect(calls[0]!.init).toMatchObject({ method: "POST", keepalive: true, headers: { "Content-Type": "application/json" } });
     expect(await postReport("https://api.test", { schema: 2 } as never, async () => { throw new TypeError("offline"); })).toBeNull();
+  });
+});
+
+describe("session report and the API key (Phase 6)", () => {
+  const base = { model: "m", variant: "q4", mode: "split" as const, N: 12, L: 24, promptTokens: 40, newTokens: 64, clientMs: 620.54, serverBusyMs: 710.2, rttMs: 3.8, tokPerS: 41.7, planPolicy: "cost" as const, cacheMode: "per-site" as const, device };
+  it("buildSessionReport adds key_id only when a key id is known, and validates against schemas/telemetry.v3.json", () => {
+    const schema = JSON.parse(readFileSync(resolve(__dirname, "../../../schemas/telemetry.v3.json"), "utf8"));
+    const validate = new Ajv2020({ strict: false }).compile(schema);
+    const plain = buildSessionReport(base);
+    expect("key_id" in plain).toBe(false);
+    expect(validate(plain), JSON.stringify(validate.errors)).toBe(true);
+    const keyed = buildSessionReport({ ...base, keyId: "k_0123456789abcdef" });
+    expect(keyed.key_id).toBe("k_0123456789abcdef");
+    expect(validate(keyed), JSON.stringify(validate.errors)).toBe(true);
+    expect("key_id" in buildSessionReport({ ...base, keyId: null })).toBe(false);
+    expect(validate({ ...keyed, key_id: "dk_live_" + "x".repeat(32) })).toBe(false); // a key is never a valid key_id
+  });
+  it("postReport sends the key as the bearer and never in the body", async () => {
+    const calls: { init: RequestInit | undefined }[] = [];
+    const KEY = "dk_live_" + "Z".repeat(32);
+    await postReport("https://api.test", buildSessionReport({ ...base, keyId: "k_0123456789abcdef" }), async (_u, init) => { calls.push({ init }); return new Response(null, { status: 202 }); }, KEY);
+    expect(new Headers(calls[0]!.init?.headers).get("Authorization")).toBe(`Bearer ${KEY}`);
+    expect(String(calls[0]!.init?.body)).not.toContain(KEY);
+    expect(String(calls[0]!.init?.body)).toContain("k_0123456789abcdef");
+    await postReport("https://api.test", buildSessionReport(base), async (_u, init) => { calls.push({ init }); return new Response(null, { status: 202 }); });
+    expect(new Headers(calls[1]!.init?.headers).get("Authorization")).toBeNull();
   });
 });
 

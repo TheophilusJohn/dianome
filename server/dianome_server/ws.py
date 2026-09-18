@@ -52,10 +52,12 @@ class SplitServer:
         plan_rate_limit: int = PLAN_RATE_LIMIT_PER_MINUTE,
     ):
         tok = token if token is not None else os.environ.get("SPLIT_TOKEN")
-        if not tok:
-            raise RuntimeError("SPLIT_TOKEN is not set; refusing to start")
-        self.token = tok
         key = signing_key if signing_key is not None else os.environ.get("SPLIT_SIGNING_KEY")
+        # Phase 6: a self-hosted image may run with only SPLIT_SIGNING_KEY (sessions come from the Worker); at least
+        # one of the two credentials is required, or every upgrade would be refused and the server is pointless.
+        if not tok and not key:
+            raise RuntimeError("neither SPLIT_TOKEN nor SPLIT_SIGNING_KEY is set; refusing to start")
+        self.token: Optional[str] = tok or None
         self.signing_key: Optional[bytes] = key.encode() if key else None
         self.lm = lm
         self.manager = SessionManager(lm, max_sessions=max_sessions, idle_timeout=idle_timeout)
@@ -81,13 +83,13 @@ class SplitServer:
     def _authenticate(self, request: Request) -> tuple[bool, Optional[SessionToken], str]:
         """(ok, session token or None for the static bearer, reason)."""
         auth = request.headers.get("Authorization", "")
-        if auth == f"Bearer {self.token}":
+        if self.token is not None and auth == f"Bearer {self.token}":
             return True, None, "bearer"
         # Browsers cannot set headers on a WebSocket upgrade: the token travels as `?token=`.
         qt = self._query_token(request)
         if qt is None:
             return False, None, "missing token"
-        if qt == self.token:
+        if self.token is not None and qt == self.token:
             return True, None, "bearer"
         if self.signing_key is None:
             return False, None, "bad bearer token (no SPLIT_SIGNING_KEY configured)"

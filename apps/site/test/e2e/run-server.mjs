@@ -1,6 +1,7 @@
 // Static server for the site e2e (port 8797): dist/ (built first), the local chunk store with the api/cdn URL shapes
 // (/v1/models, /v1/models/:id/manifest, /chunks/:sha), and a proxy of the Worker routes (/v1/split/*, /v1/stats/*,
-// /v1/telemetry/load) to wrangler dev on 8787 with this origin, so the page has one `api` origin. Telemetry bodies
+// /v1/telemetry/load, and Phase 6's /v1/keys + /v1/me/* with Authorization forwarded) to wrangler dev on 8787 with this
+// origin, so the page has one `api` origin. Telemetry bodies
 // and the Worker's status codes are recorded and readable at /__telemetry.
 import http from "node:http";
 import { createReadStream, existsSync, readdirSync, statSync } from "node:fs";
@@ -30,7 +31,7 @@ function readBody(req) { return new Promise((resolve) => { const chunks = []; re
 http.createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   const p = url.pathname;
-  if (req.method === "OPTIONS") return send(res, 204, "", { "Access-Control-Allow-Methods": "GET, HEAD, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, If-None-Match" });
+  if (req.method === "OPTIONS") return send(res, 204, "", { "Access-Control-Allow-Methods": "GET, HEAD, POST, DELETE, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, If-None-Match, Authorization" });
   if (p === "/healthz") return send(res, 200, "ok");
   if (p === "/__telemetry") return send(res, 200, JSON.stringify(telemetry), { "Content-Type": "application/json", "Cache-Control": "no-store" });
   let m;
@@ -45,10 +46,11 @@ http.createServer(async (req, res) => {
     return file(res, join(dir, "latest.json"), "application/json", "no-store", { ETag: `"${sha}"`, "X-Dianome-Manifest-Sha": sha });
   }
   if ((m = /^\/chunks\/([0-9a-f]{64})$/.exec(p))) return file(res, join(store, "chunks", m[1]), "application/octet-stream", IMMUTABLE);
-  if (p.startsWith("/v1/split/") || p.startsWith("/v1/stats/") || p === "/v1/telemetry/load") {
+  if (p.startsWith("/v1/split/") || p.startsWith("/v1/stats/") || p === "/v1/telemetry/load" || p === "/v1/keys" || p.startsWith("/v1/me/")) {
     const body = req.method === "POST" ? await readBody(req) : undefined;
     try {
-      const r = await fetch(worker + p + url.search, { method: req.method, headers: { "Content-Type": req.headers["content-type"] ?? "application/json", Origin: `http://127.0.0.1:${port}` }, body });
+      const auth = req.headers["authorization"] ? { Authorization: req.headers["authorization"] } : {};
+      const r = await fetch(worker + p + url.search, { method: req.method, headers: { "Content-Type": req.headers["content-type"] ?? "application/json", Origin: `http://127.0.0.1:${port}`, ...auth }, body });
       const text = await r.text();
       if (p === "/v1/telemetry/load" && body) telemetry.push({ at: new Date().toISOString(), status: r.status, body: JSON.parse(body.toString("utf8")), response: text });
       return send(res, r.status, text, { "Content-Type": r.headers.get("content-type") ?? "application/json", "Cache-Control": "no-store" });

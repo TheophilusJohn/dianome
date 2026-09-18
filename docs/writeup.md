@@ -16,8 +16,8 @@ cost curve whose floor is the language-model head. Two results are negative: the
 not unpartition the Cache API through Storage Access, and the hidden state at every layer boundary remains linearly
 invertible to the input tokens, so a split server can read most of the prompt. The product framing that survives is
 hybrid inference behind one API, chosen per device for cost and latency, where the honest claim is "raw text is not
-transmitted", never "the server cannot read it". Phase 6, the control plane, is deferred, and the sections below say
-what else was not done.
+transmitted", never "the server cannot read it". Phase 6, the control plane, exists in a deliberately small form (API
+keys, per-key metering, a self-host image), and section 8 says what was not done.
 
 ## 2. System
 
@@ -316,10 +316,20 @@ with a share of 22 % and a band value of 78.8 % at that boundary, beside the loc
 ([summarize-e2e.json](../apps/site/results/summarize-e2e.json)). The three speeds are within a few tokens per second
 of each other; only the server share and what left the device differ, which is the point of the page.
 
+**Keys, metering and self-hosting.** Phase 6 adds per-developer API keys (`dk_live_…`, stored only as a SHA-256, no
+accounts: the key is the identity), hourly per-key metering of the layer-tokens the client ran and the ones the server
+ran, counted from the session reports the SDK already posts, a `/dashboard` page that shows them with a labelled cost
+estimate for the server share, and a Docker image of the server half so hidden states can stay in a developer's own
+infrastructure; on this Mac the CPU image answered `/plan` 57.4 s after a first start with an empty volume and 8.6 s
+after a warm restart, reproduced the full model's greedy tokens in the Phase 4 N = 8 socket test, and one keyed `run()`
+against it was counted as 225 server layer-tokens with an estimated server cost of $0.000228
+([Phase 6 notes § Self-host image](../docs/phase-6-notes.md#self-host-image), [§ The local flow](../docs/phase-6-notes.md#the-local-flow-create-a-key-run-see-it-counted-revoke-be-refused)).
+
 ## 8. What was not done
 
-- **Phase 6, the control plane** (per-developer API keys, quotas, billing): deferred; the session endpoint is gated by
-  origin and a shared signing key only ([Worker split endpoints](../packages/worker/src/split.ts)).
+- **Accounts, quotas and billing**: Phase 6 stops at keys and metering; a key is its own owner, `POST /v1/keys` is open
+  and rate-limited, and the cost figure is an estimate from server busy time at the stated rate, not an invoice
+  ([Phase 6 notes](../docs/phase-6-notes.md)).
 - **Firefox WebGPU**: Playwright's Firefox 155 exposes `navigator.gpu` but returns no adapter, so the runtime was not
   validated there and the planner routes Firefox to the server
   ([Phase 5a notes § firefox 155.0](../docs/phase-5a-notes.md#firefox-1550)).

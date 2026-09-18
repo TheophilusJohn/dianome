@@ -34,12 +34,12 @@ def _load(model: str, device: str | None) -> LoadedModel:
 @click.option("--device", default=None, help="override cuda/mps/cpu autodetection")
 @click.option("--no-microbench", is_flag=True, help="skip the startup microbench (/plan reports null timings)")
 def serve(model: str, host: str, port: int, device: str | None, no_microbench: bool) -> None:
-    """Run the split-inference WebSocket server (needs SPLIT_TOKEN; SPLIT_SIGNING_KEY enables session tokens)."""
+    """Run the split-inference WebSocket server (needs SPLIT_TOKEN and/or SPLIT_SIGNING_KEY, which enables session tokens)."""
     from .microbench import run_microbench
     from .ws import SplitServer
 
-    if not os.environ.get("SPLIT_TOKEN"):
-        click.echo("SPLIT_TOKEN is not set; refusing to start", err=True)
+    if not os.environ.get("SPLIT_TOKEN") and not os.environ.get("SPLIT_SIGNING_KEY"):
+        click.echo("neither SPLIT_TOKEN nor SPLIT_SIGNING_KEY is set; refusing to start", err=True)
         sys.exit(2)
     lm = _load(model, device)
     mb = None

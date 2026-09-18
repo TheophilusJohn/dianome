@@ -4,8 +4,10 @@
 //   POST /v1/split/session[?model=] → { url, token, expires_at }: a short-lived HMAC session token for that model's server.
 //       token = base64url(payload) + "." + base64url(HMAC-SHA256(SPLIT_SIGNING_KEY, payload)),
 //       payload = { sid, model, exp (unix, now + 3600), max_ctx, origin }. The model comes from ?model=, else the JSON
-//       body's `model`, else the map's first entry. The demo origin is the only allowed Origin (SPLIT_ALLOWED_ORIGINS);
-//       rate-limited per country:colo:minute like telemetry. Phase 6 puts per-developer API keys in front of this.
+//       body's `model`, else the map's first entry. Phase 6: the request needs an API key (`Authorization: Bearer
+//       dk_live_…`, see keys.ts) OR an allowed demo Origin (SPLIT_ALLOWED_ORIGINS); keyed requests skip the origin
+//       allowlist (a key with `allowed_origins` is limited to those) and the response names the key id (`key_id`), so the
+//       SDK can put the id, never the key, in its session report. Rate-limited per country:colo:minute like telemetry.
 //   GET  /v1/split/rates   → server/bench/rates.json (the stated GPU rate; the client computes cost from it).
 //   GET  /v1/split/plan[?model=] → that model's server's public /plan, cached 5 s per server.
 //
@@ -14,6 +16,7 @@
 //    "qwen2.5-7b-instruct":{"ws":"wss://gpu.dianome.dev","plan":"https://gpu.dianome.dev/plan"}}
 
 import { error, json } from "./http";
+import { authenticateKey, keyError } from "./keys";
 import { ID_RE } from "./manifest";
 import ratesJson from "../../../server/bench/rates.json";
 import type { Env } from "./types";
@@ -116,7 +119,16 @@ export async function createSession(request: Request, env: Env): Promise<Respons
   const map = splitServers(env);
   if (!env.SPLIT_SIGNING_KEY || !map) return error(503, "split_not_configured", NOT_CONFIGURED);
   const origin = (request.headers.get("Origin") ?? "").replace(/\/+$/, "");
-  if (!origin || !allowedOrigins(env).includes(origin)) return error(403, "origin_not_allowed");
+  const auth = await authenticateKey(request, env);
+  const authErr = keyError(auth);
+  if (authErr) return authErr;
+  const keyed = auth.status === "ok" ? auth.record : null;
+  if (keyed) {
+    const allowed = keyed.allowed_origins?.map((o) => o.replace(/\/+$/, ""));
+    if (allowed && !allowed.includes(origin)) return error(403, "origin_not_allowed", `key ${keyed.id} is limited to ${allowed.join(", ")}`);
+  } else if (!origin || !allowedOrigins(env).includes(origin)) {
+    return error(403, "origin_not_allowed", "send an API key (Authorization: Bearer dk_live_…) or call from an allowed demo origin");
+  }
   let body: Record<string, unknown> = {};
   const ct = request.headers.get("content-type") ?? "";
   if (ct.toLowerCase().startsWith("application/json")) {
@@ -139,7 +151,7 @@ export async function createSession(request: Request, env: Env): Promise<Respons
   const exp = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
   const sid = b64u(crypto.getRandomValues(new Uint8Array(12)));
   const token = await mintToken(env.SPLIT_SIGNING_KEY, { sid, model, exp, max_ctx: maxCtx, origin });
-  return json({ url: server.ws, token, expires_at: new Date(exp * 1000).toISOString(), sid, model, max_ctx: maxCtx }, { headers: { "Cache-Control": "no-store" } });
+  return json({ url: server.ws, token, expires_at: new Date(exp * 1000).toISOString(), sid, model, max_ctx: maxCtx, ...(keyed ? { key_id: keyed.id } : {}) }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export interface Rates { gpu: string; usd_per_hour: number | null; source: string; retrieved: string }

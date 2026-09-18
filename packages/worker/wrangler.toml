@@ -42,6 +42,8 @@ SPLIT_ALLOWED_ORIGINS = "https://dianome-demo-split.pages.dev,https://dianome.de
 [[kv_namespaces]]
 binding = "STATS_CACHE"
 id = "7c4f6c0ba5e44b0a82496b3639c90262"
+# Phase 6 also keeps API keys (hashed), owner lists, hourly usage buckets and the key-creation limit here under the
+# prefixes key:, keyid:, owner:, usage:, rl:keys: (src/keys.ts, src/metering.ts) so no new namespace has to be created.
 
 # Secrets (wrangler secret put …; local values in .dev.vars, gitignored):
 #   CF_ACCOUNT_ID      account that owns the dianome_loads dataset
