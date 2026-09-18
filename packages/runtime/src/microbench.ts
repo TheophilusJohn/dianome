@@ -10,7 +10,6 @@ import { createStorage, uploadWeight, type WeightBuffer } from "./gpu/buffers";
 import { GpuOps, type GpuTensor } from "./gpu/ops";
 import { createKv, type GpuKv } from "./kv";
 import { LmHead, type HeadMatvec } from "./lmhead";
-import { q4Bytes, q4Encode, q8Bytes, q8Encode } from "./quant";
 import { readback } from "./gpu/buffers";
 
 export interface Microbench {
@@ -65,11 +64,47 @@ export function syntheticWeight(device: GPUDevice, name: string, kind: Kind, sha
     return uploadWeight(device, { name, shape, storage: { kind: "fp16" }, bytes: new Uint8Array(u16.buffer) }, tally);
   }
   const [out, inn] = [shape[0]!, shape[1] ?? 1];
-  const w = new Float32Array(n);
-  for (let i = 0; i < n; i++) w[i] = (r() * 2 - 1) * scale;
-  if (kind === "q8") { const q = q8Encode(w, out, inn); const { bytes, parts } = q8Bytes(q); return uploadWeight(device, { name, shape, storage: { kind: "q8", parts }, bytes }, tally); }
-  const q = q4Encode(w, out, inn); const { bytes, parts } = q4Bytes(q);
-  return uploadWeight(device, { name, shape, storage: { kind: "q4", group_size: 128, parts }, bytes }, tally);
+  // q8/q4: random quantised bytes written straight into the entry layout (weights, scales[, zeros], 256-byte aligned).
+  // Encoding random floats would allocate a Float32 [out, in] first, 2.2 GB for a 7B head, which fails in the browser.
+  if (kind === "q8") {
+    const wl = out * inn, so = align256(wl), sl = out * 2;
+    const bytes = new Uint8Array(so + sl);
+    fillRandom(bytes, 0, wl, seed);
+    const scales = new Uint16Array(bytes.buffer, so, out);
+    for (let o = 0; o < out; o++) scales[o] = f16bits((scale / 127) * (0.5 + r()));
+    return uploadWeight(device, { name, shape, storage: { kind: "q8", parts: { weights: { offset: 0, length: wl }, scales: { offset: so, length: sl } } }, bytes }, tally);
+  }
+  const groups = out * (inn / 128);
+  const wl = (out * inn) / 2, so = align256(wl), sl = groups * 2, zo = align256(so + sl), zl = groups;
+  const bytes = new Uint8Array(zo + zl);
+  fillRandom(bytes, 0, wl, seed);
+  const scales = new Uint16Array(bytes.buffer, so, groups);
+  for (let g = 0; g < groups; g++) { scales[g] = f16bits((scale / 7) * (0.5 + r())); bytes[zo + g] = Math.floor(r() * 16); }
+  return uploadWeight(device, { name, shape, storage: { kind: "q4", group_size: 128, parts: { weights: { offset: 0, length: wl }, scales: { offset: so, length: sl }, zeros: { offset: zo, length: zl } } }, bytes }, tally);
+}
+
+const align256 = (n: number): number => Math.ceil(n / 256) * 256;
+
+/** Fills bytes[off, off+len) by tiling one 64 KiB block of seeded random bytes (values only have to look like weights). */
+function fillRandom(bytes: Uint8Array, off: number, len: number, seed: number): void {
+  const block = new Uint8Array(1 << 16);
+  const r = rng(seed * 7919 + 13);
+  for (let i = 0; i < block.length; i++) block[i] = Math.floor(r() * 256);
+  for (let p = 0; p < len; p += block.length) bytes.set(p + block.length <= len ? block : block.subarray(0, len - p), off + p);
+}
+
+const f16scratch = new DataView(new ArrayBuffer(4));
+/** fp16 bit pattern of a finite positive f32 (round to nearest even; subnormals flush toward zero, fine for scales). */
+function f16bits(x: number): number {
+  f16scratch.setFloat32(0, x);
+  const b = f16scratch.getUint32(0);
+  const sign = (b >>> 16) & 0x8000, exp = ((b >>> 23) & 0xff) - 127 + 15, mant = b & 0x7fffff;
+  if (exp <= 0) return sign;
+  if (exp >= 31) return sign | 0x7c00;
+  let h = sign | (exp << 10) | (mant >>> 13);
+  const rem = mant & 0x1fff;
+  if (rem > 0x1000 || (rem === 0x1000 && (h & 1))) h++;
+  return h;
 }
 
 const ROLES: Record<keyof BlockWeights<unknown>, string> = {
