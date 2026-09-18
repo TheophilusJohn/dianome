@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dianome stats</title>
+</head>
+<body>
+<nav></nav>
+<h1>Stats</h1>
+<p class="sub">Aggregates of the SDK's telemetry over the last 7 days: model loads (schema 1–2) and generation sessions (schema 3). No prompt or output content is ever sent or stored.</p>
+<h2>Model loads</h2>
+<p id="loads-status" class="small"></p>
+<div id="loads-banner" class="banner">Load stats are <b>degraded</b>: the API could not reach the Analytics Engine SQL API, so the tables below are empty.</div>
+<p id="loads-note" class="small"></p>
+<main id="loads"></main>
+<h2>Generation sessions</h2>
+<p id="sessions-status" class="small"></p>
+<div id="sessions-banner" class="banner">Session stats are <b>degraded</b>: the API could not reach the Analytics Engine SQL API, so the tables below are empty.</div>
+<p id="sessions-note" class="small"></p>
+<main id="sessions"></main>
+<script type="module" src="/src/stats.ts"></script>
+</body>
+</html>

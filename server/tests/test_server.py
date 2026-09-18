@@ -99,7 +99,7 @@ async def test_open_validation(server, lm):
         assert (await c.send("prefill", {"T": 1, "positions": [0, 1]}, b"\0" * 4))["code"] == "not_open"
         assert (await c.open(lm.id, lm.L + 1))["code"] == "bad_N"
     async with SplitClient(url(server), TOKEN) as c:
-        assert (await c.open(lm.id, 0, max_ctx=4097))["code"] == "bad_max_ctx"
+        assert (await c.open(lm.id, 0, max_ctx=8193))["code"] == "bad_max_ctx"
     async with SplitClient(url(server), TOKEN) as c:
         assert (await c.open("other-model", 0))["code"] == "wrong_model"
     async with SplitClient(url(server), TOKEN) as c:

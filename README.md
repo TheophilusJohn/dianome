@@ -93,7 +93,8 @@ packages/sdk          the npm package "dianome"
 packages/cache-frame  the cross-site frame (index.html, frame.js, optin.html, diag.html) served at cdn.dianome.dev/frame/v1/
 packages/worker       api.dianome.dev: manifests, telemetry ingest, aggregated stats
 ingest/               Python: pack a Hugging Face model (or any directory) into chunks + manifest, upload to R2
-apps/demo-site        the demo, deployed twice; apps/load-test, apps/load-dashboard, apps/manifest-browser
+apps/site             dianome.dev: home, /summarize (Phase 7 demo), /stats (load + session dashboards), /writeup
+apps/demo-site        the demo, deployed twice; apps/load-test, apps/manifest-browser
 schemas/              manifest v1, telemetry v1 and v2 (JSON Schema)
 scripts/              serve-store.mjs (local api+cdn), publish-frame.sh, check-edge.sh
 ```

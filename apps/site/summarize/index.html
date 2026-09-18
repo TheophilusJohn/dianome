@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dianome summariser</title>
+</head>
+<body>
+<nav></nav>
+<h1>Summarise a document</h1>
+<p class="sub">Paste or drop a text document (up to about 6,000 tokens). The planner picks local, split or server for this device with <code>prefer: "cost"</code>, the summary streams in, and the status line says what was chosen, why, what was cached, and at the end the speed, the server's share of the cost, and the privacy band at the split point. <b>What leaves this device in split mode is the hidden state at boundary N; a server can recover input tokens from it at the rate the band shows.</b> Local mode sends nothing.</p>
+
+<div class="controls">
+  <label>model <select id="model"></select></label>
+  <button id="run" disabled>summarise</button>
+  <button id="compare" disabled>compare all three modes</button>
+  <span id="models-status" class="small"></span>
+</div>
+<textarea id="doc" placeholder="Paste text here, or drop a .txt / .md file"></textarea>
+<div id="status"><div class="muted">idle</div></div>
+<div id="output" class="output"></div>
+<div id="compare-out" class="compare"></div>
+<pre id="result-json" hidden></pre>
+<script type="module" src="/src/summarize.ts"></script>
+</body>
+</html>

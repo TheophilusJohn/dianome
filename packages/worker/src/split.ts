@@ -22,7 +22,7 @@ export const SESSION_TTL_SECONDS = 3600;
 export const SESSION_RATE_LIMIT_PER_MINUTE = 60;
 export const PLAN_CACHE_MS = 5000;
 export const PLAN_TIMEOUT_MS = 3000;
-export const MAX_CTX = 4096;
+export const MAX_CTX = 8192; // Phase 7: the summariser takes ~6k-token documents + 256 new tokens; the server caps at the same value
 
 export interface SplitServer { ws: string; plan: string }
 

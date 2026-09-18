@@ -2,6 +2,7 @@ import { createExecutionContext, env, waitOnExecutionContext } from "cloudflare:
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import worker from "../src/index";
 import { STATS_CACHE_KEY } from "../src/stats";
+import { SESSIONS_CACHE_KEY } from "../src/sessions";
 import { dataPoint, sessionDataPoint } from "../src/telemetry";
 import { PLAN_CACHE_MS, SESSION_TTL_SECONDS, canonicalPayload, mintToken, resetPlanCache, verifyToken } from "../src/split";
 import { MODEL_ID, seedManifest, validReport, validReportV2, validSession } from "./fixtures";
@@ -236,7 +237,7 @@ describe("split: session tokens", () => {
     expect((await session({ max_ctx: 0 })).status).toBe(400);
     expect((await session({ max_ctx: "big" })).status).toBe(400);
     expect((await session({ max_ctx: 99999 })).status).toBe(200);
-    expect(((await (await session({ max_ctx: 99999 })).json()) as { max_ctx: number }).max_ctx).toBe(4096);
+    expect(((await (await session({ max_ctx: 99999 })).json()) as { max_ctx: number }).max_ctx).toBe(8192);
     expect((await call("/v1/split/session")).status).toBe(405);
   });
   it("picks the server per model: ?model= wins over the body, the body over the map's first entry", async () => {
@@ -438,5 +439,55 @@ describe("stats", () => {
     expect(seen).toHaveLength(3);
     expect(((await again.json()) as Record<string, unknown>).computed_at).toBe(body.computed_at);
     expect(await env.STATS_CACHE.get(STATS_CACHE_KEY)).not.toBeNull();
+  });
+});
+
+describe("stats: sessions", () => {
+  const SQL = /api\.cloudflare\.com\/client\/v4\/accounts\/acct\/analytics_engine\/sql$/;
+  const over = { CF_ANALYTICS_TOKEN: "t", CF_ACCOUNT_ID: "acct" };
+  function stubSql(handler: (sql: string) => Response) {
+    const real = globalThis.fetch;
+    vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (SQL.test(url)) return handler(String(init?.body));
+      return real(input, init);
+    });
+  }
+  afterEach(async () => { await env.STATS_CACHE.delete(SESSIONS_CACHE_KEY); vi.unstubAllGlobals(); });
+
+  it("degrades to the empty shape without the SQL token", async () => {
+    const res = await call("/v1/stats/sessions", {}, { CF_ANALYTICS_TOKEN: undefined, CF_ACCOUNT_ID: undefined });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ window_hours: 168, by_model_mode: [], by_policy: [], by_browser: [], degraded: true });
+  });
+  it("maps the dianome_sessions rows, never touches the loads dataset, and caches in KV", async () => {
+    const reply = (rows: unknown[]) => Response.json({ meta: [], data: rows, rows: rows.length });
+    const seen: string[] = [];
+    stubSql((sql) => {
+      seen.push(sql);
+      expect(sql).toContain("FROM dianome_sessions");
+      if (sql.includes("AS model")) return reply([{ model: "qwen2.5-0.5b-instruct", mode: "split", sessions: "7", p50_tok_per_s: 41.66, p50_n: 12, L: 24, p50_server_busy_ms: 710.2, p50_rtt_ms: 3.84, new_tokens: 448 }]);
+      if (sql.includes("AS policy")) return reply([{ policy: "cost", mode: "local", sessions: 5 }]);
+      return reply([{ browser: "chrome", sessions: 7, p50_tok_per_s: 44.1, webgpu_share: 1 }]);
+    });
+    const res = await call("/v1/stats/sessions", {}, over);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("X-Dianome-Stats")).toBe("computed");
+    const body = await res.json() as Record<string, unknown>;
+    expect(body.by_model_mode).toEqual([{ model: "qwen2.5-0.5b-instruct", mode: "split", sessions: 7, p50_tok_per_s: 41.7, p50_n: 12, L: 24, p50_server_busy_ms: 710, p50_rtt_ms: 3.8, new_tokens: 448 }]);
+    expect(body.by_policy).toEqual([{ policy: "cost", mode: "local", sessions: 5 }]);
+    expect(body.by_browser).toEqual([{ browser: "chrome", sessions: 7, p50_tok_per_s: 44.1, webgpu_share: 1 }]);
+    expect(seen.length).toBe(3);
+    expect(seen.every((q) => !q.includes("dianome_loads"))).toBe(true);
+    const hit = await call("/v1/stats/sessions", {}, over);
+    expect(hit.headers.get("X-Dianome-Stats")).toBe("kv-hit");
+    expect(seen.length).toBe(3);
+  });
+  it("degrades (not 500) when the SQL API errors and does not cache", async () => {
+    stubSql(() => new Response("no", { status: 401 }));
+    const res = await call("/v1/stats/sessions", {}, over);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("X-Dianome-Stats")).toBe("degraded:sql-error");
+    expect(await env.STATS_CACHE.get(SESSIONS_CACHE_KEY)).toBeNull();
   });
 });

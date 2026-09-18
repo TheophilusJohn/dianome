@@ -81,6 +81,20 @@ export interface SessionReportV3 {
   webgpu: boolean;
 }
 
+/** GET /v1/stats/sessions (Phase 7): aggregates of the schema-3 reports. */
+export interface ModelModeStats { model: string; mode: string; sessions: number; p50_tok_per_s: number; p50_n: number; L: number; p50_server_busy_ms: number; p50_rtt_ms: number; new_tokens: number }
+export interface PolicyStats { policy: string; mode: string; sessions: number }
+export interface BrowserSessionStats { browser: string; sessions: number; p50_tok_per_s: number; webgpu_share: number }
+export interface SessionStats {
+  since: string;
+  window_hours: number;
+  computed_at: string;
+  by_model_mode: ModelModeStats[];
+  by_policy: PolicyStats[];
+  by_browser: BrowserSessionStats[];
+  degraded?: true;
+}
+
 export interface CountryStats { country: string; loads: number; p50_ms: number; p90_ms: number; cache_hit_rate: number }
 export interface ModelVariantStats { model: string; variant: string; loads: number; p50_ms: number; bytes: number }
 export interface SourceStats { source: string; loads: number; p50_ms: number }

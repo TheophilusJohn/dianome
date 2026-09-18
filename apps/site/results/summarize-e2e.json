@@ -1,0 +1,61 @@
+{
+  "model": "qwen2.5-0.5b-instruct",
+  "status": "mode: local: all 24 blocks, lm_head and sampling in this browser\nwhy: policy prefers cost: local (server share 0)\ncached: nothing cached in this browser: the blocks the plan needs stream from the CDN\nestimate: 19.7 ms/token, server share 0 %\nloaded: 324 MB in 2.3 s (0 of 42 chunks from cache)\ndone: 161 tokens at 43.6 tok/s (server busy 0 ms over the session)\ncost: server share 0 % of an all-server run; no rate stated (bench/rates.json has none), so share only\nprivacy: nothing left this device (local mode)\ntelemetry: session report sent (HTTP 202), no prompt content",
+  "result": {
+    "model": "qwen2.5-0.5b-instruct",
+    "mode": "local",
+    "N": 24,
+    "tokens": 161,
+    "tokPerS": 43.63025391814758,
+    "serverShare": 0,
+    "costPer1M": null,
+    "privacy": null,
+    "telemetryStatus": 202,
+    "reasons": [
+      "policy prefers cost: local (server share 0)"
+    ],
+    "promptTokens": 522
+  },
+  "telemetry": {
+    "at": "2026-09-18T03:28:22.925Z",
+    "status": 202,
+    "body": {
+      "schema": 3,
+      "model": "qwen2.5-0.5b-instruct",
+      "variant": "q4",
+      "mode": "local",
+      "N": 24,
+      "L": 24,
+      "prompt_tokens": 522,
+      "new_tokens": 161,
+      "client_ms": 4272.2,
+      "server_busy_ms": 0,
+      "rtt_ms": 0.3,
+      "tok_per_s": 43.6,
+      "plan_policy": "cost",
+      "cache_mode": "per-site",
+      "browser": "chrome",
+      "webgpu": true
+    },
+    "response": ""
+  },
+  "summaryChars": 636,
+  "updated": "2026-09-18T03:28:23.007Z",
+  "compare": [
+    {
+      "title": "server (N = 0)",
+      "meta": "47.3 tok/s · server share 100 % · the server received the token ids themselves (N = 0), so it saw the whole document",
+      "chars": "561"
+    },
+    {
+      "title": "split (N = 24)",
+      "meta": "42.5 tok/s · server share 22 % · a server could recover 78.8 % of the input tokens from the hidden state it received (linear probe with a 500k-token training set on held-out WikiText, Phase 4)",
+      "chars": "363"
+    },
+    {
+      "title": "local",
+      "meta": "47.5 tok/s · server share 0 % · nothing left this device (local mode) (the run above)",
+      "chars": "592"
+    }
+  ]
+}

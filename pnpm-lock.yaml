@@ -73,6 +73,34 @@ importers:
         specifier: ^6.0.0
         version: 6.4.3(@types/node@20.19.43)
 
+  apps/site:
+    dependencies:
+      dianome:
+        specifier: workspace:*
+        version: link:../../packages/sdk
+      dianome-runtime:
+        specifier: workspace:*
+        version: link:../../packages/runtime
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.63.0
+        version: 1.63.0
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.5
+      '@webgpu/types':
+        specifier: ^0.1.60
+        version: 0.1.72
+      marked:
+        specifier: ^17.0.0
+        version: 17.0.6
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.0
+        version: 6.4.3(@types/node@24.13.5)
+
   apps/split-demo:
     dependencies:
       dianome:
@@ -121,7 +149,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43))
+        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
 
   packages/sdk:
     devDependencies:
@@ -151,13 +179,13 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43))
+        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
 
   packages/worker:
     devDependencies:
       '@cloudflare/vitest-pool-workers':
         specifier: ^0.22.0
-        version: 0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43)))
+        version: 0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)))
       '@cloudflare/workers-types':
         specifier: ^5.20260916.1
         version: 5.20260916.1
@@ -166,7 +194,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43))
+        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
       wrangler:
         specifier: ^4.133.0
         version: 4.133.0(@cloudflare/workers-types@5.20260916.1)(@types/node@20.19.43)
@@ -1276,6 +1304,9 @@ packages:
   '@types/node@20.19.43':
     resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
 
+  '@types/node@24.13.5':
+    resolution: {integrity: sha512-TXyindR+lBr22aJIdMQzCFHPHR6cR4js838mRDCSz5hOKWZvZwsXSSiXDmjRj4iJmgl+sR9O+1mkoVBSMadNug==}
+
   '@types/whatwg-mimetype@3.0.2':
     resolution: {integrity: sha512-c2AKvDT8ToxLIOUlN51gTiHXflsfIFisS4pO7pDPoKouJCESkhZnEy623gwP9laCy5lnLDAw1vAzu2vM2YLOrA==}
 
@@ -1465,6 +1496,11 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
+  marked@17.0.6:
+    resolution: {integrity: sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==}
+    engines: {node: '>= 20'}
+    hasBin: true
+
   matcher@3.0.0:
     resolution: {integrity: sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==}
     engines: {node: '>=10'}
@@ -1641,6 +1677,9 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
+  undici-types@7.18.2:
+    resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
+
   undici@7.29.0:
     resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
     engines: {node: '>=20.18.1'}
@@ -1809,14 +1848,14 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260916.1
 
-  '@cloudflare/vitest-pool-workers@0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43)))':
+  '@cloudflare/vitest-pool-workers@0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)))':
     dependencies:
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
       cjs-module-lexer: 1.2.3
       esbuild: 0.28.1
       miniflare: 5.20260815.0-alpha
-      vitest: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43))
+      vitest: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
       wrangler: 4.124.0(@cloudflare/workers-types@5.20260916.1)
       zod: 4.4.3
     transitivePeerDependencies:
@@ -2484,6 +2523,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@24.13.5':
+    dependencies:
+      undici-types: 7.18.2
+
   '@types/whatwg-mimetype@3.0.2': {}
 
   '@vitest/expect@4.1.11':
@@ -2495,13 +2538,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.1
 
-  '@vitest/mocker@4.1.11(vite@6.4.3(@types/node@20.19.43))':
+  '@vitest/mocker@4.1.11(vite@6.4.3(@types/node@24.13.5))':
     dependencies:
       '@vitest/spy': 4.1.11
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 6.4.3(@types/node@20.19.43)
+      vite: 6.4.3(@types/node@24.13.5)
 
   '@vitest/pretty-format@4.1.11':
     dependencies:
@@ -2700,6 +2743,8 @@ snapshots:
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
+
+  marked@17.0.6: {}
 
   matcher@3.0.0:
     dependencies:
@@ -2984,6 +3029,8 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  undici-types@7.18.2: {}
+
   undici@7.29.0: {}
 
   unenv@2.0.0-rc.24:
@@ -3002,10 +3049,22 @@ snapshots:
       '@types/node': 20.19.43
       fsevents: 2.3.3
 
-  vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@20.19.43)):
+  vite@6.4.3(@types/node@24.13.5):
+    dependencies:
+      esbuild: 0.25.12
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
+      postcss: 8.5.28
+      rollup: 4.63.3
+      tinyglobby: 0.2.17
+    optionalDependencies:
+      '@types/node': 24.13.5
+      fsevents: 2.3.3
+
+  vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)):
     dependencies:
       '@vitest/expect': 4.1.11
-      '@vitest/mocker': 4.1.11(vite@6.4.3(@types/node@20.19.43))
+      '@vitest/mocker': 4.1.11(vite@6.4.3(@types/node@24.13.5))
       '@vitest/pretty-format': 4.1.11
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
@@ -3022,7 +3081,7 @@ snapshots:
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.1
-      vite: 6.4.3(@types/node@20.19.43)
+      vite: 6.4.3(@types/node@24.13.5)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.19.43

@@ -3,6 +3,7 @@
 import { error, preflight, json, withCors } from "./http";
 import { hashedManifest, latestManifest, listModels } from "./manifest";
 import { loadStats } from "./stats";
+import { sessionStats } from "./sessions";
 import { createSession, planProxy, rates, servers } from "./split";
 import { ingestLoad } from "./telemetry";
 import type { Env } from "./types";
@@ -28,6 +29,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
       return error(405, "method_not_allowed");
     }
     if (path === "/v1/stats/loads" && method === "GET") return loadStats(env, ctx);
+    if (path === "/v1/stats/sessions" && method === "GET") return sessionStats(env, ctx);
     if (path === "/v1/split/session") {
       if (request.method === "POST") return createSession(request, env);
       return error(405, "method_not_allowed");

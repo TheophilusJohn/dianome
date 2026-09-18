@@ -30,11 +30,11 @@ export const QUERIES = {
 
 type Row = Record<string, unknown>;
 
-const num = (v: unknown): number => { const n = typeof v === "string" ? Number(v) : (v as number); return Number.isFinite(n) ? n : 0; };
-const str = (v: unknown): string => (typeof v === "string" ? v : String(v ?? ""));
-const round = (n: number, d = 3): number => Math.round(n * 10 ** d) / 10 ** d;
+export const num = (v: unknown): number => { const n = typeof v === "string" ? Number(v) : (v as number); return Number.isFinite(n) ? n : 0; };
+export const str = (v: unknown): string => (typeof v === "string" ? v : String(v ?? ""));
+export const round = (n: number, d = 3): number => Math.round(n * 10 ** d) / 10 ** d;
 
-const iso = (d: Date): string => d.toISOString().replace(/\.\d{3}Z$/, "Z");
+export const iso = (d: Date): string => d.toISOString().replace(/\.\d{3}Z$/, "Z");
 
 export function emptyStats(now = new Date()): LoadStats {
   return {
@@ -54,7 +54,7 @@ function isCurrentShape(text: string): boolean {
 
 export const hasRows = (s: LoadStats): boolean => s.by_country.length > 0 || s.by_model_variant.length > 0 || s.by_source.length > 0;
 
-async function runQuery(env: Env, sql: string): Promise<Row[]> {
+export async function runQuery(env: Env, sql: string): Promise<Row[]> {
   const res = await fetch(SQL_API(env.CF_ACCOUNT_ID!), {
     method: "POST",
     headers: { Authorization: `Bearer ${env.CF_ANALYTICS_TOKEN}`, "Content-Type": "text/plain" },

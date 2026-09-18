@@ -15,7 +15,7 @@ import torch
 from .model import LoadedModel, PartialDecoder, Sampler, Sampling, synchronize
 from .protocol import ProtocolError, bytes_to_hidden, bytes_to_ids
 
-MAX_CTX = 4096
+MAX_CTX = 8192  # Phase 7: ~6k-token documents + 256 new tokens (the Worker mints tokens up to the same cap)
 MAX_SESSIONS = 4
 IDLE_TIMEOUT_S = 120.0
 

@@ -37,7 +37,7 @@ dataset = "dianome_sessions"
 # SPLIT_ALLOWED_ORIGINS=http://localhost:5177
 [vars]
 SPLIT_SERVERS = '{"qwen2.5-0.5b-instruct":{"ws":"wss://split.dianome.dev","plan":"https://split.dianome.dev/plan"},"qwen2.5-3b-instruct":{"ws":"wss://gpu.dianome.dev","plan":"https://gpu.dianome.dev/plan"},"qwen2.5-7b-instruct":{"ws":"wss://gpu.dianome.dev","plan":"https://gpu.dianome.dev/plan"}}'
-SPLIT_ALLOWED_ORIGINS = "https://dianome-demo-split.pages.dev"
+SPLIT_ALLOWED_ORIGINS = "https://dianome-demo-split.pages.dev,https://dianome.dev"
 
 [[kv_namespaces]]
 binding = "STATS_CACHE"

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dianome</title>
+</head>
+<body>
+<nav></nav>
+<h1>dianome</h1>
+<p class="sub">Open-weight language models delivered to the browser from a content-addressed CDN and run on WebGPU, on a server, or split between the two at a chosen layer. One <code>run()</code> call picks the mode for this device and network, streams the answer, and reports the speed, the server's share of the cost, and what left the device.</p>
+
+<h2>Live demos</h2>
+<ul class="links">
+  <li><a href="/summarize/">Summariser</a> — paste a document, watch the planner choose local, split or server, and compare all three.</li>
+  <li><a href="https://dianome-demo-split.pages.dev">Split slider</a> — every split point N with live estimates against the measured run.</li>
+  <li><a href="https://dianome-demo-a.pages.dev">Cache demo A</a> / <a href="https://dianome-demo-b.pages.dev">demo B</a> — two sites, one model download (cross-site cache, Chrome only).</li>
+</ul>
+
+<h2>Numbers</h2>
+<ul class="links">
+  <li><a href="/stats/">Stats dashboard</a> — load times and generation sessions reported by the SDK (no prompt content is ever sent).</li>
+  <li><a href="/writeup/">Write-up</a> — what was built, the two positive and the two negative results, with every number linked to its results file.</li>
+</ul>
+
+<h2>Code</h2>
+<ul class="links">
+  <li><a href="https://www.npmjs.com/package/dianome">npm: dianome</a></li>
+  <li><a href="https://github.com/TheophilusJohn/dianome">GitHub: TheophilusJohn/dianome</a></li>
+</ul>
+<script type="module" src="/src/home.ts"></script>
+</body>
+</html>
