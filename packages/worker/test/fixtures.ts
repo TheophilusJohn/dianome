@@ -35,3 +35,8 @@ export const validReportV2 = () => ({
   ...validReport(), schema: 2, source: "mixed", cache_hits: 17,
   bytes_per_second: 38467000, verify_ms: 210, transfer_ms: 0, quota_bytes: 10760000000, max_buffer_size: 4294967292, cache_mode: "per-site",
 });
+
+export const validSession = () => ({
+  schema: 3, model: "qwen2.5-0.5b-instruct", variant: "q4", mode: "split", N: 12, L: 24, prompt_tokens: 40, new_tokens: 64,
+  client_ms: 620.5, server_busy_ms: 710.2, rtt_ms: 3.8, tok_per_s: 41.7, plan_policy: "cost", cache_mode: "per-site", browser: "chrome", webgpu: true,
+});

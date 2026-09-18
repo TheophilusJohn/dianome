@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dianome split demo</title>
+<style>
+  :root { --ink: #1c1c1c; --muted: #666; --line: #ddd; --bg: #fff; --panel: #f6f6f4; --client: #4c78a8; --export: #9ecae9; --net: #f58518; --server: #e45756; --head: #72b7b2; --sample: #b279a2; }
+  body { font: 14px/1.45 system-ui, sans-serif; margin: 0; padding: 16px 20px 40px; max-width: 1100px; color: var(--ink); background: var(--bg); }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 22px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px 16px; }
+  .kv { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; font-variant-numeric: tabular-nums; }
+  .kv dt { color: var(--muted); } .kv dd { margin: 0; text-align: right; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin: 8px 0; }
+  input[type=range] { width: 320px; }
+  label { display: inline-flex; gap: 6px; align-items: center; }
+  select, button, textarea, input { font: inherit; }
+  button { padding: 5px 12px; }
+  .readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; margin-top: 8px; }
+  .big { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .small { font-size: 12px; color: var(--muted); }
+  textarea { width: 100%; box-sizing: border-box; min-height: 64px; }
+  #output { white-space: pre-wrap; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; min-height: 48px; }
+  .bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+  .bar span { display: block; height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-size: 12px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  td, th { border: 1px solid var(--line); padding: 3px 8px; text-align: right; } th:first-child, td:first-child { text-align: left; }
+  pre { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; overflow-x: auto; font-size: 12px; }
+  #status { margin: 8px 0; color: #333; }
+  .warn { color: #a33; }
+  .cand { cursor: pointer; } .cand.sel { background: #e8eef8; } .cand.no { color: var(--muted); }
+</style>
+</head>
+<body>
+<h1>dianome split demo</h1>
+<p class="sub">One model (<code>qwen2.5-0.5b-instruct</code>, q4). Choose N: how many transformer blocks run in this browser before the hidden state goes to the server. <b>What leaves this device at N is the hidden state at boundary N (N = 0: the token ids themselves), and a server can recover input tokens from it at the rate the privacy band shows.</b> Nothing here hides the prompt from the server; local mode sends nothing.</p>
+
+<h2>Planner inputs, measured on this device <button id="refresh">refresh</button> <span id="inputs-status" class="small"></span></h2>
+<div class="grid">
+  <div class="panel"><b>Device</b><dl class="kv" id="dev"></dl></div>
+  <div class="panel"><b>Microbench (this variant)</b><dl class="kv" id="mb"></dl></div>
+  <div class="panel"><b>Network</b><dl class="kv" id="net"></dl></div>
+  <div class="panel"><b>Server /plan and rate</b><dl class="kv" id="srv"></dl></div>
+</div>
+
+<h2>Split point</h2>
+<div class="controls">
+  <label>mode
+    <select id="auto">
+      <option value="manual">manual (slider)</option>
+      <option value="cost">auto: prefer cost</option>
+      <option value="latency">auto: prefer latency</option>
+      <option value="local">auto: prefer local</option>
+      <option value="server">auto: prefer server</option>
+    </select>
+  </label>
+  <label>N <input id="slider" type="range" min="0" max="24" value="24"> <b id="nval">24</b></label>
+  <label><input id="local" type="checkbox" checked> local (N = L plus lm_head + sampling here, no server)</label>
+</div>
+<div id="choice" class="small"></div>
+<div class="readouts">
+  <div class="panel"><div class="small">estimated ms / token (decode)</div><div class="big" id="est-ms">–</div><div class="small" id="est-ms-detail"></div></div>
+  <div class="panel"><div class="small">server share and cost per 1M tokens</div><div class="big" id="est-cost">–</div><div class="small" id="est-cost-detail"></div></div>
+  <div class="panel"><div class="small">privacy band at this boundary</div><div class="big" id="est-priv">–</div><div class="small" id="est-priv-detail"></div></div>
+</div>
+<details><summary class="small">every candidate (click to select)</summary><table id="cands"><thead><tr><th>mode</th><th>N</th><th>feasible</th><th>ms/token</th><th>share</th><th>cost/1M</th><th>linear-500k top-1</th><th>inversion top-1</th><th>GPU MiB</th><th>download MiB</th><th>why</th></tr></thead><tbody></tbody></table></details>
+
+<h2>Run</h2>
+<textarea id="prompt">Explain in two sentences why the sky is blue.</textarea>
+<div class="controls">
+  <button id="run" disabled>run</button>
+  <label>max tokens <input id="maxTokens" type="number" min="1" max="512" value="96" style="width:70px"></label>
+  <label>temperature <input id="temp" type="number" min="0" max="2" step="0.1" value="0" style="width:60px"></label>
+  <span id="status">measuring inputs…</span>
+</div>
+<div id="output"></div>
+
+<h2>Measured</h2>
+<div class="grid">
+  <div class="panel"><dl class="kv" id="meas"></dl></div>
+  <div class="panel"><b>per-step breakdown (medians over decode steps)</b><div class="bar" id="bar"></div>
+    <div class="legend"><span><i style="background:var(--client)"></i>client blocks</span><span><i style="background:var(--export)"></i>export</span><span><i style="background:var(--net)"></i>network (round trip − server busy)</span><span><i style="background:var(--server)"></i>server busy</span><span><i style="background:var(--head)"></i>lm_head</span><span><i style="background:var(--sample)"></i>sampling</span></div>
+    <div class="small" id="bar-detail"></div></div>
+</div>
+<h2>Telemetry sent</h2>
+<pre id="telemetry">(nothing yet)</pre>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

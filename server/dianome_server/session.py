@@ -40,12 +40,13 @@ class Session:
         logits_topk: int = 0,
         clock: Callable[[], float] = time.monotonic,
         exec_lock: Optional[threading.Lock] = None,
+        sid: Optional[str] = None,
     ):
         if not (0 <= N <= lm.L):
             raise ProtocolError("bad_N", f"N must be in 0..{lm.L}, got {N}")
         if not (1 <= max_ctx <= MAX_CTX):
             raise ProtocolError("bad_max_ctx", f"max_ctx must be in 1..{MAX_CTX}, got {max_ctx}")
-        self.id = secrets.token_hex(8)
+        self.id = sid if sid else secrets.token_hex(8)
         self.lm = lm
         self.N = N
         self.max_ctx = max_ctx
@@ -161,14 +162,17 @@ class SessionManager:
         self.exec_lock = threading.Lock()
         self.busy_log: collections.deque[tuple[float, float]] = collections.deque()
 
-    def open(self, model: str, N: int, max_ctx: int, sampling: Optional[dict], logits_topk: int = 0) -> Session:
+    def open(self, model: str, N: int, max_ctx: int, sampling: Optional[dict], logits_topk: int = 0,
+             sid: Optional[str] = None) -> Session:
         if model != self.lm.id:
             raise ProtocolError("wrong_model", f"server has {self.lm.id!r} loaded, not {model!r}")
         if len(self.sessions) >= self.max_sessions:
             raise ProtocolError("too_many_sessions", f"at most {self.max_sessions} concurrent sessions")
+        if sid is not None and sid in self.sessions:
+            raise ProtocolError("sid_in_use", "a session with this token's sid is already open")
         s = Session(
             self.lm, int(N), int(max_ctx), Sampling.from_dict(sampling), logits_topk,
-            clock=self.clock, exec_lock=self.exec_lock,
+            clock=self.clock, exec_lock=self.exec_lock, sid=sid,
         )
         s.busy_log = self.busy_log  # shared log for busy_fraction_60s
         self.sessions[s.id] = s

@@ -51,8 +51,9 @@ async def test_refuses_without_token(server):
         async with connect(url(server)):
             pass
     assert e.value.response.status_code == 401
-    assert (await http_get(server, "/plan", None))[0] == 401
-    assert (await http_get(server, "/plan", "wrong"))[0] == 401
+    # /plan is public load information since Phase 5b (rate-limited, no auth)
+    assert (await http_get(server, "/plan", None))[0] == 200
+    assert (await http_get(server, "/plan", "wrong"))[0] == 200
 
 
 def test_refuses_to_start_without_split_token(lm, monkeypatch):
@@ -65,7 +66,7 @@ async def test_plan_shape(server, lm):
     status, body = await http_get(server, "/plan", TOKEN)
     assert status == 200
     plan = json.loads(body)
-    assert set(plan) == {"model", "L", "d_model", "active_sessions", "busy_fraction_60s"}
+    assert {"model", "L", "d_model", "active_sessions", "busy_fraction_60s"} <= set(plan)
     assert plan["model"] == lm.id and plan["L"] == lm.L and plan["d_model"] == lm.d_model
     assert plan["active_sessions"] == 0 and 0.0 <= plan["busy_fraction_60s"] <= 1.0
     async with SplitClient(url(server), TOKEN) as c:

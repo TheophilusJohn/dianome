@@ -1,10 +1,13 @@
 // dianome runtime: embedding lookup + Qwen2 transformer blocks 0..N-1 on WebGPU with a KV cache, exporting the
-// fp16 hidden state that is the input to block N (the Phase 4 boundary). No lm_head, no sampler.
+// fp16 hidden state that is the input to block N (the Phase 4 boundary). With `lmHead: true` (Phase 5b, N = L)
+// it also runs the final norm + lm_head on the last row and returns f32 logits for the CPU sampler: local mode.
 //
 //   const rt = await Runtime.create(device, manifest, "q4", N, maxCtx);
 //   await rt.loadFrom(dianome.stream(id, { variant: "q4" }));     // uploads groups as they arrive; stops after layer N-1
 //   await rt.prefill(tokens);  const hidden = await rt.exportHidden();   // fp16 [T, d_model]
 //   await rt.decode(token, position);  ...
+//   const rt = await Runtime.create(device, manifest, "q4", L, maxCtx, { lmHead: true });   // local mode
+//   await rt.prefill(tokens);  const logits = await rt.logits();   // f32 [vocab] for the last position
 
 import type { LoadedEntry, LoadedGroup, ModelManifest, VariantName } from "dianome";
 import { forwardBlock, type BlockWeights, type ModelConfig, type Stage, type Workspace, stageOutput } from "./block";
@@ -12,6 +15,7 @@ import { f16ToF32 } from "./f16";
 import { createStorage, readback, uploadWeight, type WeightBuffer } from "./gpu/buffers";
 import { GpuOps, type GpuOpsOptions, type GpuTensor } from "./gpu/ops";
 import { createKv, KvState, type GpuKv } from "./kv";
+import { LmHead, type HeadMatvec } from "./lmhead";
 
 export { acquireDevice, type AcquiredDevice, type GpuInfo } from "./gpu/device";
 export { Tokenizer, tokenizerFromBytes, type TokenizerJson } from "./tokenizer";
@@ -26,6 +30,11 @@ export { q8Encode, q8Decode, q4Encode, q4Decode, q8Bytes, q4Bytes, Q4_GROUP } fr
 export { createKv, KvState, type GpuKv } from "./kv";
 export { loadTokenizer, fetchStoreFile } from "./loadTokenizer";
 export { SplitClient, encodeFrame, decodeFrame, type Message, type TokenMessage } from "./protocol";
+export { LmHead, Sampler, Prng, argmax, topk, type SamplingOptions, type HeadMatvec } from "./lmhead";
+export { renderChat, QWEN_DEFAULT_SYSTEM, IM_START, IM_END, type ChatMessage, type ChatRole, type ChatTemplateOptions } from "./chat";
+export { SplitSession, type SessionMode, type SessionOptions, type StepTiming, type GeneratedToken } from "./session";
+export { plan, feasibleN, serverShare, DEFAULT_GPU_BUDGET, type PlanInput, type Plan, type PlanCandidate, type PlanModel, type PlanDevice, type PlanNetwork, type PlanServer, type PlanPolicy, type PlanPrompt, type PrivacyBand, type PrivacyRow } from "./planner";
+export { microbench, syntheticBlockWeights, type Microbench, type MicrobenchOptions } from "./microbench";
 
 export interface RuntimeOptions {
   /** Emulate fp16 PyTorch rounding points (default true; the fixtures were produced by an fp16 model). */
@@ -36,6 +45,10 @@ export interface RuntimeOptions {
   siluMode?: number;
   /** T = 1 kernel; default "seq" when round16 is on, "lanes" when off (see README). */
   matvec?: "lanes" | "seq";
+  /** Local mode (Phase 5b): also load final_norm + lm_head (tied → the embed bytes) and expose logits(). Needs N = L. */
+  lmHead?: boolean;
+  /** Kernel for the lm_head matvec; default "auto" = the runtime's T = 1 rule. */
+  lmHeadMatvec?: HeadMatvec | "auto";
 }
 
 export interface RuntimeStats {
@@ -54,6 +67,9 @@ export interface RuntimeStats {
   lastPrefillTokens: number;
   lastDecodeMs: number;
   lastExportMs: number;
+  /** Wall-clock ms of the last logits() (final norm + lm_head + readback); 0 without lmHead. */
+  lastLmHeadMs: number;
+  lmHead: boolean;
   timeToFirstBlockMs: number | null;
   loadMs: number | null;
 }
@@ -89,6 +105,12 @@ export class Runtime {
   readonly kvState: KvState;
   readonly blocks: (BlockWeights<WeightBuffer> | null)[];
   private embedTable: EmbedTable | null = null;
+  readonly lmHead: boolean;
+  private readonly lmHeadMatvec: HeadMatvec | "auto";
+  private lmHeadTied = false;
+  private finalNorm: WeightBuffer | null = null;
+  private lmHeadW: WeightBuffer | null = null;
+  private head: LmHead | null = null;
   private readonly exportBuf: GPUBuffer;
   private readonly weightTally = { bytes: 0 };
   private readonly kvTally = { bytes: 0 };
@@ -96,13 +118,22 @@ export class Runtime {
   /** When set, every block's output rows are copied here ([N, maxCtx, d] f32) during forward (gates 4/5). */
   private traceBuf: GPUBuffer | null = null;
   private embedRows: Float32Array = new Float32Array(0);
-  private readonly t = { prefillMs: 0, prefillTokens: 0, decodeMs: 0, exportMs: 0, firstBlock: null as number | null, load: null as number | null };
+  private readonly t = { prefillMs: 0, prefillTokens: 0, decodeMs: 0, exportMs: 0, lmHeadMs: 0, firstBlock: null as number | null, load: null as number | null };
   private loadStart: number | null = null;
 
   private constructor(readonly device: GPUDevice, readonly manifest: ModelManifest, readonly variant: VariantName, readonly N: number, readonly maxCtx: number, opts: RuntimeOptions) {
     this.cfg = configFromManifest(manifest);
     if (!(N >= 1 && N <= this.cfg.layers)) throw new Error(`N must be in 1..${this.cfg.layers}, got ${N}`);
     if (!manifest.variants[variant]) throw new Error(`variant ${variant} not in manifest ${manifest.id}`);
+    this.lmHead = opts.lmHead ?? false;
+    this.lmHeadMatvec = opts.lmHeadMatvec ?? "auto";
+    if (this.lmHead && N !== this.cfg.layers) throw new Error(`lmHead needs N = L (${this.cfg.layers}), got ${N}`);
+    if (this.lmHead) {
+      const lg = manifest.variants[variant]!.groups.find((g) => g.name === "lm_head");
+      const le = lg?.entries.find((e) => e.role === "lm_head.weight");
+      if (!le) throw new Error("manifest has no lm_head.weight entry");
+      this.lmHeadTied = le.tied === true;
+    }
     const ropeOpt = opts.rope !== undefined ? { rope: opts.rope } : {};
     const attnOpt = opts.attnFlags !== undefined ? { attnFlags: opts.attnFlags } : {};
     const tiledOpt = opts.forceTiled !== undefined ? { forceTiled: opts.forceTiled } : {};
@@ -136,6 +167,20 @@ export class Runtime {
       const e = [...group.entries.values()].find((x) => x.role === "embed_tokens.weight");
       if (!e) throw new Error("embed group has no embed_tokens.weight");
       this.setEmbed(e);
+      // Tied lm_head: the same bytes go to the GPU once more as the head's weight (the manifest's lm_head group is empty).
+      if (this.lmHead && this.lmHeadTied && !this.lmHeadW) this.lmHeadW = uploadWeight(this.device, { ...e, name: "lm_head.weight" }, this.weightTally);
+    } else if (group.name === "final_norm") {
+      if (this.lmHead && !this.finalNorm) {
+        const e = [...group.entries.values()].find((x) => x.role === "norm.weight");
+        if (!e) throw new Error("final_norm group has no norm.weight");
+        this.finalNorm = uploadWeight(this.device, e, this.weightTally);
+      }
+    } else if (group.name === "lm_head") {
+      if (this.lmHead && !this.lmHeadW) {
+        const e = [...group.entries.values()].find((x) => x.role === "lm_head.weight");
+        if (!e) throw new Error("lm_head group has no lm_head.weight");
+        this.lmHeadW = uploadWeight(this.device, e, this.weightTally);
+      }
     } else {
       const m = /^layer\.(\d+)$/.exec(group.name);
       if (m) {
@@ -151,7 +196,15 @@ export class Runtime {
     return done;
   }
 
-  get ready(): boolean { return this.embedTable !== null && this.blocks.every((b) => b !== null); }
+  get ready(): boolean {
+    return this.embedTable !== null && this.blocks.every((b) => b !== null) && (!this.lmHead || (this.finalNorm !== null && this.lmHeadW !== null));
+  }
+
+  private getHead(): LmHead {
+    if (!this.lmHead) throw new Error("runtime created without lmHead: true");
+    if (!this.finalNorm || !this.lmHeadW) throw new Error("final_norm / lm_head not loaded");
+    return (this.head ??= new LmHead(this.ops, this.finalNorm, this.lmHeadW, this.lmHeadMatvec));
+  }
 
   /** Consumes a stream (`dianome.stream(id, { variant })`) until embed and layers 0..N-1 have arrived. */
   async loadFrom(stream: AsyncIterable<LoadedGroup>): Promise<void> {
@@ -245,6 +298,25 @@ export class Runtime {
     this.t.decodeMs = now() - t0;
   }
 
+  /** Local mode: final norm + lm_head on the last row of the last forward → f32 logits [vocab]. */
+  async logits(): Promise<Float32Array> {
+    const T = this.lastT;
+    if (T === 0) throw new Error("nothing to score: run prefill or decode first");
+    const head = this.getHead();
+    const t0 = now();
+    this.ops.run(() => head.record(this.ws.x, T), "lm_head");
+    const out = await head.read();
+    this.t.lmHeadMs = now() - t0;
+    return out;
+  }
+
+  /** Test hook (lm_head gate): logits for every row of the last forward, [T, vocab] f32. */
+  debugLogitsAll(): Promise<Float32Array> {
+    const T = this.lastT;
+    if (T === 0) throw new Error("nothing to score: run prefill or decode first");
+    return this.getHead().logitsAll(this.ws.x, T);
+  }
+
   /** The last forward's output rows (the input to block N) as fp16 bits, row-major [T, d_model]. */
   async exportHidden(): Promise<Uint16Array> {
     const T = this.lastT;
@@ -257,7 +329,7 @@ export class Runtime {
   }
 
   stats(): RuntimeStats {
-    const workspaceBytes = this.ops.tally.bytes;
+    const workspaceBytes = this.ops.tally.bytes + (this.head?.tally.bytes ?? 0);
     return {
       N: this.N, maxCtx: this.maxCtx, variant: this.variant, position: this.kvState.length,
       blocksLoaded: this.blocks.filter(Boolean).length,
@@ -265,6 +337,7 @@ export class Runtime {
       weightBytes: this.weightTally.bytes, kvBytes: this.kvTally.bytes, workspaceBytes,
       dispatches: this.ops.counts.dispatches,
       lastPrefillMs: this.t.prefillMs, lastPrefillTokens: this.t.prefillTokens, lastDecodeMs: this.t.decodeMs, lastExportMs: this.t.exportMs,
+      lastLmHeadMs: this.t.lmHeadMs, lmHead: this.lmHead,
       timeToFirstBlockMs: this.t.firstBlock, loadMs: this.t.load,
     };
   }
@@ -306,6 +379,8 @@ export class Runtime {
     for (const kv of this.kvs) { kv.k.destroy(); kv.v.destroy(); }
     this.exportBuf.destroy();
     this.traceBuf?.destroy();
+    if (this.head) this.head.destroy();
+    else { this.finalNorm?.buffer.destroy(); this.lmHeadW?.buffer.destroy(); }
     this.ops.destroy();
   }
 }

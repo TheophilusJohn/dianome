@@ -1,7 +1,19 @@
 export interface Env {
   STORE: R2Bucket;
   TELEMETRY: AnalyticsEngineDataset;
+  /** Schema-3 session reports (Phase 5b), a separate dataset so the load columns keep their meaning. */
+  SESSIONS: AnalyticsEngineDataset;
   STATS_CACHE: KVNamespace;
+  /** HMAC key for split session tokens (secret; the split server holds the same key). */
+  SPLIT_SIGNING_KEY?: string;
+  /** Where sessions connect, e.g. wss://split.dianome.dev */
+  SPLIT_WS_URL?: string;
+  /** The split server's public /plan, e.g. https://split.dianome.dev/plan */
+  SPLIT_PLAN_URL?: string;
+  /** Comma list of Origins allowed to mint session tokens (the demo origin). */
+  SPLIT_ALLOWED_ORIGINS?: string;
+  /** Comma list of model ids sessions may be minted for. */
+  SPLIT_MODELS?: string;
   /** Account that owns the `dianome_loads` dataset (secret). */
   CF_ACCOUNT_ID?: string;
   /** API token with Account Analytics: Read, for the Analytics Engine SQL API (secret). */
@@ -43,6 +55,31 @@ export interface LoadReportV2 extends Omit<LoadReportV1, "schema"> {
 }
 
 export type LoadReport = LoadReportV1 | LoadReportV2;
+
+/** Schema 3 (Phase 5b): one split/local/server generation session. No prompt content, ever. */
+export const SESSION_MODES = ["local", "split", "server"] as const;
+export const PLAN_POLICIES = ["cost", "latency", "local", "server"] as const;
+export type SessionMode = (typeof SESSION_MODES)[number];
+export type PlanPolicy = (typeof PLAN_POLICIES)[number];
+
+export interface SessionReportV3 {
+  schema: 3;
+  model: string;
+  variant: string;
+  mode: SessionMode;
+  N: number;
+  L: number;
+  prompt_tokens: number;
+  new_tokens: number;
+  client_ms: number;
+  server_busy_ms: number;
+  rtt_ms: number;
+  tok_per_s: number;
+  plan_policy: PlanPolicy;
+  cache_mode: CacheMode;
+  browser: Browser;
+  webgpu: boolean;
+}
 
 export interface CountryStats { country: string; loads: number; p50_ms: number; p90_ms: number; cache_hit_rate: number }
 export interface ModelVariantStats { model: string; variant: string; loads: number; p50_ms: number; bytes: number }

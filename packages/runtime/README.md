@@ -2,8 +2,10 @@
 
 WGSL partial-model runtime for the split-inference client half: embedding lookup plus Qwen2 transformer blocks
 `0..N-1` on WebGPU with a KV cache, exporting the fp16 hidden state that is the input to block `N` (the Phase 4
-boundary). No `lm_head`, no sampler. Weights arrive through the `dianome` SDK as per-layer entries and are
-uploaded as they stream in, so block 0 can run before block 23 has downloaded.
+boundary). With `lmHead: true` (N = L) it also runs the final norm + `lm_head` and samples on the CPU: local mode,
+no server. Weights arrive through the `dianome` SDK as per-layer entries and are uploaded as they stream in, so
+block 0 can run before block 23 has downloaded. `SplitSession` drives one generation at a fixed N (local / split /
+server) with per-step timings; `plan()` chooses N from measured inputs; `microbench()` measures this device.
 
 ```ts
 import { Dianome } from "dianome";
@@ -23,6 +25,27 @@ await server.connect(); await server.open("qwen2.5-0.5b-instruct", 8);
 let t = await server.prefill(hidden, T);
 await rt.decode(t.id, T); t = await server.decode(await rt.exportHidden(), T); …
 ```
+
+### Local mode, sessions, planning (Phase 5b)
+
+```ts
+import { Runtime, SplitSession, plan, microbench, renderChat } from "dianome-runtime";
+// or, without any WebGPU code: "dianome-runtime/tokenizer" (Tokenizer, renderChat, loadTokenizer),
+// "dianome-runtime/session" (SplitSession, SplitClient, Sampler), "dianome-runtime/planner" (plan)
+
+const rt = await Runtime.create(device, manifest, "q4", 24, 1024, { lmHead: true });   // N = L + head
+await rt.loadFrom(d.stream("qwen2.5-0.5b-instruct", { variant: "q4" }));                // stops after final_norm
+const s = await SplitSession.open({ mode: "local", N: 24, model: "qwen2.5-0.5b-instruct", maxCtx: 1024, runtime: rt, sampling: { temperature: 0.7, topP: 0.9, seed: 1 }, eosIds: [151645, 151643] });
+for await (const t of s.generate(tok.encode(renderChat([{ role: "user", content: "Hi" }])), 64)) console.log(t.id, t.timing);
+
+const mb = await microbench(device, manifest, "q4");                 // ms/block at T=1 and T=32, lm_head ms, export ms
+const p = plan({ model, device: { ...mb, ... }, network, server, policy: { prefer: "cost" }, prompt });   // pure
+```
+
+`lm_head` is one more matmul over the embed entry (the manifest marks `lm_head.weight` as `tied`, so the embed bytes
+are uploaded once more as a weight; fp16 or q8 depending on the variant) after the `final_norm` RMSNorm, on the last
+row only, followed by a readback of the vocab-sized f32 logits. Sampling follows the server's rules: greedy at
+temperature 0, otherwise softmax(logits / T), nucleus top-p, multinomial from a seeded xoshiro128** PRNG.
 
 ## Precision
 
@@ -53,17 +76,23 @@ src/gpu/device.ts     adapter/device, limits (never a buffer over 1 GiB), featur
 src/kv.ts             per-block fp16 K/V rows for maxCtx positions
 src/cpu.ts            CPU reference backend (the unit tests' oracle)
 src/tokenizer.ts      byte-level BPE from tokenizer.json; src/loadTokenizer.ts fetches it from the store
-src/protocol.ts       DNM1 frames + SplitClient (token as ?token= because browsers cannot set upgrade headers)
+src/protocol.ts       DNM1 frames + SplitClient (token as ?token= because browsers cannot set upgrade headers), ping/rtt
+src/lmhead.ts         LmHead (final norm + tied-embed matmul on the last row) + Sampler / Prng / argmax / topk
+src/session.ts        SplitSession: open(N) → prefill → decode loop in local / split / server mode, per-step timings
+src/planner.ts        plan(): pure planner (feasibility, estimates, server share, cost, privacy band, policies)
+src/microbench.ts     one-time device benchmark on synthetic weights of the variant's kinds and shapes
+src/chat.ts           Qwen2.5 ChatML template (validated against HF apply_chat_template fixtures)
+src/entries/          the tokenizer / planner / session / protocol subpath entries (no WebGPU code)
 src/quant.ts          TS port of ingest's q8/q4 encoders (tests)
 test/*.test.ts        vitest: tokenizer (200 HF cases), CPU ops, quant port, KV state, block wiring on a synthetic model
-test/e2e/             Playwright (Google Chrome): gates 2–7 against fixtures/ and the local store; diag/bench specs
+test/e2e/             Playwright (Google Chrome): gates 2–9 against fixtures/ and the local store; diag/bench specs
 ```
 
 ## Running
 
 ```sh
 pnpm --filter dianome-runtime test                       # vitest
-SPLIT_TOKEN=x pnpm --filter dianome-runtime test:e2e     # gates 2–7 in Chrome; starts the static server and dianome-server serve
+SPLIT_TOKEN=x pnpm --filter dianome-runtime test:e2e     # gates 2–9 in Chrome; starts the static server and dianome-server serve
 pnpm --filter dianome-runtime exec playwright test bench.spec.ts   # tok/s sweep -> results/bench.json
 pnpm --filter runtime-bench dev                          # bench page on 5176 (+ node scripts/serve-store.mjs, ?api=&cdn=)
 ```

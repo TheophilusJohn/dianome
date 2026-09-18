@@ -3,7 +3,7 @@
 // and the timestamp we attach is rounded to the hour.
 
 import { error } from "./http";
-import { BROWSERS, CACHE_MODES, LOAD_SOURCES, type Env, type LoadReport, type LoadReportV1, type LoadReportV2 } from "./types";
+import { BROWSERS, CACHE_MODES, LOAD_SOURCES, PLAN_POLICIES, SESSION_MODES, type Env, type LoadReport, type LoadReportV1, type LoadReportV2, type SessionReportV3 } from "./types";
 
 export const MAX_BODY_BYTES = 4096;
 export const RATE_LIMIT_PER_MINUTE = 600;
@@ -28,9 +28,38 @@ const VARIANT_RE = /^[a-z0-9][a-z0-9._/-]*$/;
 
 type Invalid = { ok: false; reason: string };
 type Valid = { ok: true; report: LoadReport };
+type ValidSession = { ok: true; session: SessionReportV3 };
 
 function isInt(v: unknown, min: number, max: number): v is number {
   return typeof v === "number" && Number.isInteger(v) && v >= min && v <= max;
+}
+function isNum(v: unknown, min: number, max: number): v is number {
+  return typeof v === "number" && Number.isFinite(v) && v >= min && v <= max;
+}
+
+/** Schema 3 (schemas/telemetry.v3.json): every field required, no prompt content. */
+const V3_INTS: Record<"N" | "L" | "prompt_tokens" | "new_tokens", [number, number]> = { N: [0, 1000], L: [1, 1000], prompt_tokens: [0, 1_000_000], new_tokens: [0, 1_000_000] };
+const V3_NUMS: Record<"client_ms" | "server_busy_ms" | "rtt_ms" | "tok_per_s", [number, number]> = { client_ms: [0, 86_400_000], server_busy_ms: [0, 86_400_000], rtt_ms: [0, 86_400_000], tok_per_s: [0, 1_000_000] };
+const V3_FIELDS: Record<keyof SessionReportV3, true> = {
+  schema: true, model: true, variant: true, mode: true, N: true, L: true, prompt_tokens: true, new_tokens: true,
+  client_ms: true, server_busy_ms: true, rtt_ms: true, tok_per_s: true, plan_policy: true, cache_mode: true, browser: true, webgpu: true,
+};
+
+export function validateSessionReport(o: Record<string, unknown>): ValidSession | Invalid {
+  for (const k of Object.keys(o)) if (!(k in V3_FIELDS)) return { ok: false, reason: `unknown field: ${k}` };
+  for (const k of Object.keys(V3_FIELDS)) if (!(k in o)) return { ok: false, reason: `missing field: ${k}` };
+  if (typeof o.model !== "string" || o.model.length > 128 || !MODEL_RE.test(o.model)) return { ok: false, reason: "bad model" };
+  if (typeof o.variant !== "string" || o.variant.length > 128 || !VARIANT_RE.test(o.variant)) return { ok: false, reason: "bad variant" };
+  if (!(SESSION_MODES as readonly unknown[]).includes(o.mode)) return { ok: false, reason: "bad mode" };
+  for (const [k, [min, max]] of Object.entries(V3_INTS)) if (!isInt(o[k], min, max)) return { ok: false, reason: `bad ${k}` };
+  for (const [k, [min, max]] of Object.entries(V3_NUMS)) if (!isNum(o[k], min, max)) return { ok: false, reason: `bad ${k}` };
+  if ((o.N as number) > (o.L as number)) return { ok: false, reason: "bad N" };
+  if ((o.mode === "server" && o.N !== 0) || (o.mode === "local" && o.N !== o.L) || (o.mode === "split" && o.N === 0)) return { ok: false, reason: "mode/N mismatch" };
+  if (!(PLAN_POLICIES as readonly unknown[]).includes(o.plan_policy)) return { ok: false, reason: "bad plan_policy" };
+  if (!(CACHE_MODES as readonly unknown[]).includes(o.cache_mode)) return { ok: false, reason: "bad cache_mode" };
+  if (!(BROWSERS as readonly unknown[]).includes(o.browser)) return { ok: false, reason: "bad browser" };
+  if (typeof o.webgpu !== "boolean") return { ok: false, reason: "bad webgpu" };
+  return { ok: true, session: o as unknown as SessionReportV3 };
 }
 
 /** Mirrors schemas/telemetry.v1.json and v2.json: unknown fields, missing fields, wrong types, bad enums and out-of-range numbers all fail. */
@@ -95,7 +124,8 @@ export async function ingestLoad(request: Request, env: Env): Promise<Response> 
   if (raw === null) return error(413, "payload_too_large", `body must be at most ${MAX_BODY_BYTES} bytes`);
   let parsed: unknown;
   try { parsed = JSON.parse(new TextDecoder().decode(raw)); } catch { return error(400, "bad_json"); }
-  const v = validateLoadReport(parsed);
+  const isV3 = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed) && (parsed as Record<string, unknown>).schema === 3;
+  const v = isV3 ? validateSessionReport(parsed as Record<string, unknown>) : validateLoadReport(parsed);
   if (!v.ok) return error(400, "invalid_report", v.reason);
 
   const cf = (request as Request & { cf?: IncomingRequestCfProperties }).cf;
@@ -104,8 +134,21 @@ export async function ingestLoad(request: Request, env: Env): Promise<Response> 
   if (await overLimit(env, country, colo)) return error(429, "rate_limited");
 
   const hour = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
-  env.TELEMETRY.writeDataPoint(dataPoint(v.report, country, colo, hour));
+  if ("session" in v) env.SESSIONS.writeDataPoint(sessionDataPoint(v.session, country, colo, hour));
+  else env.TELEMETRY.writeDataPoint(dataPoint(v.report, country, colo, hour));
   return new Response(null, { status: 202 });
+}
+
+/**
+ * dianome_sessions: blobs 1 model, 2 variant, 3 mode, 4 plan_policy, 5 cache_mode, 6 browser, 7 country, 8 colo, 9 hour;
+ * doubles 1 N, 2 L, 3 prompt_tokens, 4 new_tokens, 5 client_ms, 6 server_busy_ms, 7 rtt_ms, 8 tok_per_s, 9 webgpu.
+ */
+export function sessionDataPoint(s: SessionReportV3, country: string, colo: string, hour: string): AnalyticsEngineDataPoint {
+  return {
+    blobs: [s.model, s.variant, s.mode, s.plan_policy, s.cache_mode, s.browser, country, colo, hour],
+    doubles: [s.N, s.L, s.prompt_tokens, s.new_tokens, s.client_ms, s.server_busy_ms, s.rtt_ms, s.tok_per_s, s.webgpu ? 1 : 0],
+    indexes: [s.model],
+  };
 }
 
 /**

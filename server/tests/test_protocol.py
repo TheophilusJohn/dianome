@@ -20,6 +20,8 @@ CASES = {
     "stats": ({"tokens": 4, "busy_seconds": 0.01, "gpu_seconds_per_token": 0.0025}, b""),
     "close": ({}, b""),
     "error": ({"code": "bad_N", "message": "nope"}, b""),
+    "ping": ({"t": 12.5}, b""),
+    "pong": ({"t": 12.5}, b""),
 }
 
 

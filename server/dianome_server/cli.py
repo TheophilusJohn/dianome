@@ -32,15 +32,22 @@ def _load(model: str, device: str | None) -> LoadedModel:
 @click.option("--host", default="127.0.0.1", show_default=True)
 @click.option("--port", default=8765, show_default=True)
 @click.option("--device", default=None, help="override cuda/mps/cpu autodetection")
-def serve(model: str, host: str, port: int, device: str | None) -> None:
-    """Run the split-inference WebSocket server (needs SPLIT_TOKEN)."""
+@click.option("--no-microbench", is_flag=True, help="skip the startup microbench (/plan reports null timings)")
+def serve(model: str, host: str, port: int, device: str | None, no_microbench: bool) -> None:
+    """Run the split-inference WebSocket server (needs SPLIT_TOKEN; SPLIT_SIGNING_KEY enables session tokens)."""
+    from .microbench import run_microbench
     from .ws import SplitServer
 
     if not os.environ.get("SPLIT_TOKEN"):
         click.echo("SPLIT_TOKEN is not set; refusing to start", err=True)
         sys.exit(2)
     lm = _load(model, device)
-    asyncio.run(SplitServer(lm).serve_forever(host, port))
+    mb = None
+    if not no_microbench:
+        mb = run_microbench(lm)
+        click.echo(f"microbench (median of {mb.runs}): decode {mb.ms_per_block_decode:.3f} ms/block, "
+                   f"prefill {mb.ms_per_block_prefill:.3f} ms/block at T={mb.prefill_T}, lm_head {mb.lm_head_ms:.2f} ms", err=True)
+    asyncio.run(SplitServer(lm, microbench=mb).serve_forever(host, port))
 
 
 @main.command()

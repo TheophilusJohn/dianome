@@ -1,6 +1,6 @@
 {
   "variant": "q8",
-  "manifest": "store/manifests/qwen2.5-0.5b-instruct/latest.json",
+  "manifest": "../store/manifests/qwen2.5-0.5b-instruct/latest.json",
   "steps": 16,
   "prompt_T": 32,
   "N": {
@@ -59,6 +59,24 @@
       264
     ],
     "24": [
+      752,
+      83951,
+      1526,
+      279,
+      57267,
+      6176,
+      722,
+      13,
+      576,
+      14796,
+      374,
+      264,
+      4727,
+      3110,
+      315,
+      264
+    ],
+    "local": [
       752,
       83951,
       1526,
@@ -149,6 +167,24 @@
       0.7890625,
       7.890625,
       1.015625
+    ],
+    "local": [
+      0.59375,
+      5.46875,
+      0.65625,
+      2.71875,
+      0.875,
+      0.328125,
+      0.3359375,
+      2.078125,
+      1.640625,
+      0.4375,
+      1.015625,
+      0.0625,
+      0.5234375,
+      0.8046875,
+      7.9375,
+      0.96875
     ]
   },
   "runners_up": {
@@ -223,7 +259,25 @@
       17846,
       311,
       279
+    ],
+    "local": [
+      27455,
+      8199,
+      13,
+      13,
+      29273,
+      13638,
+      13638,
+      382,
+      758,
+      33581,
+      27455,
+      19300,
+      6233,
+      17846,
+      311,
+      279
     ]
   },
-  "definition": "blocks 0..N-1 and the embedding use the dequantised variant weights (rounded to fp16); blocks N..L-1, final norm and lm_head are the original fp16 weights"
+  "definition": "blocks 0..N-1 and the embedding use the dequantised variant weights (rounded to fp16); blocks N..L-1, final norm and lm_head are the original fp16 weights. \"local\": all blocks dequantised and lm_head tied to the dequantised embedding (Phase 5b local mode)"
 }

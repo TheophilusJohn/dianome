@@ -4,7 +4,7 @@
 
 export const MAGIC = 0x444e4d31;
 
-export type MessageType = "open" | "opened" | "prefill" | "decode" | "token" | "stats" | "close" | "error";
+export type MessageType = "open" | "opened" | "prefill" | "decode" | "token" | "stats" | "close" | "error" | "ping" | "pong";
 
 export interface Message { type: MessageType; header: Record<string, unknown>; payload: Uint8Array }
 
@@ -99,6 +99,35 @@ export class SplitClient {
     const m = await this.send("decode", { position }, hidden);
     if (m.type !== "token") throw new Error(`expected token, got ${m.type}`);
     return m.header as unknown as TokenMessage;
+  }
+
+  /** int32 token ids [T] (N = 0). */
+  async prefillIds(ids: Int32Array, start = 0): Promise<TokenMessage> {
+    const m = await this.send("prefill", { T: ids.length, positions: [start, start + ids.length] }, ids);
+    if (m.type !== "token") throw new Error(`expected token, got ${m.type}`);
+    return m.header as unknown as TokenMessage;
+  }
+
+  async decodeId(id: number, position: number): Promise<TokenMessage> {
+    const m = await this.send("decode", { position }, new Int32Array([id]));
+    if (m.type !== "token") throw new Error(`expected token, got ${m.type}`);
+    return m.header as unknown as TokenMessage;
+  }
+
+  /** Round-trip time of one ping/pong in ms (allowed before open). */
+  async ping(): Promise<number> {
+    const t0 = performance.now();
+    const m = await this.send("ping", { t: t0 });
+    if (m.type !== "pong") throw new Error(`expected pong, got ${m.type}`);
+    return performance.now() - t0;
+  }
+
+  /** Median of `n` pings. */
+  async rtt(n = 5): Promise<number> {
+    const s: number[] = [];
+    for (let i = 0; i < n; i++) s.push(await this.ping());
+    s.sort((a, b) => a - b);
+    return s[Math.floor(s.length / 2)]!;
   }
 
   async stats(): Promise<Record<string, unknown>> { return (await this.send("stats", {})).header; }

@@ -143,6 +143,24 @@ def write_tokenizer_cases(lm: LoadedModel, out: str, files: dict) -> list[dict]:
     return rows
 
 
+def write_chat_template_cases(lm: LoadedModel, out: str, files: dict) -> list[dict]:
+    """chat_template_cases.json: 50 message lists rendered and tokenised by HF apply_chat_template (Phase 5b)."""
+    from .fixtures_chat import cases
+
+    rows = []
+    for c in cases():
+        text = lm.tokenizer.apply_chat_template(c["messages"], tokenize=False, add_generation_prompt=c["add_generation_prompt"])
+        ids = lm.tokenizer.apply_chat_template(c["messages"], tokenize=True, add_generation_prompt=c["add_generation_prompt"])
+        if hasattr(ids, "input_ids"):
+            ids = ids.input_ids
+        rows.append({**c, "text": text, "ids": list(ids)})
+    path = os.path.join(out, "chat_template_cases.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"count": len(rows), "chat_template": lm.tokenizer.chat_template, "cases": rows}, f, ensure_ascii=False, indent=1)
+    files["chat_template_cases.json"] = {"sha256": sha256_file(path), "count": len(rows)}
+    return rows
+
+
 @torch.no_grad()
 def write_intra(lm: LoadedModel, out: str, ids: torch.Tensor, files: dict, block: int = 0) -> None:
     """intra/*.npy (block 0) or intra_<block>/*.npy: every stage of one block on the fixture prompt,
@@ -363,6 +381,10 @@ def write_variant_reference(lm: LoadedModel, out: str, ids: torch.Tensor, files:
                 mod = ROLE_TO_MODULE.get(e["role"])
                 if mod is not None:
                     layer.get_submodule(mod).weight.copy_(torch.from_numpy(dequantised_entry(store, e)).to(lm.device, torch.float16))
+        # Phase 5b local mode: every block dequantised AND lm_head tied to the dequantised embedding (the
+        # runtime reuses the embed entry's bytes for lm_head, as the manifest marks it `tied`).
+        lm.model.lm_head.weight.copy_(lm.inner.embed_tokens.weight)
+        greedy["local"], margins["local"], runners["local"] = greedy_with_margins(lm, ids, steps)
         h = lm.embed(ids)
         _save(out, f"{variant}/embed.npy", _f16(h), files)
         x = h
@@ -373,7 +395,8 @@ def write_variant_reference(lm: LoadedModel, out: str, ids: torch.Tensor, files:
             _save(out, f"{variant}/block_{i:02d}.npy", _f16(x), files)
         info = {"variant": variant, "manifest": manifest_path, "steps": steps, "prompt_T": int(ids.shape[0]),
                 "N": greedy, "margins": margins, "runners_up": runners, "definition": "blocks 0..N-1 and the embedding use the dequantised variant weights "
-                "(rounded to fp16); blocks N..L-1, final norm and lm_head are the original fp16 weights"}
+                "(rounded to fp16); blocks N..L-1, final norm and lm_head are the original fp16 weights. "
+                "\"local\": all blocks dequantised and lm_head tied to the dequantised embedding (Phase 5b local mode)"}
         path = os.path.join(vdir, "greedy.json")
         with open(path, "w") as f:
             json.dump(info, f, indent=2)
@@ -392,6 +415,7 @@ def write_fixtures_extended(lm: LoadedModel, out: str, *, intra: bool = False, v
     files = manifest["files"]
     ids = torch.tensor(json.load(open(os.path.join(out, "prompt.json")))["token_ids"])
     write_tokenizer_cases(lm, out, files)
+    write_chat_template_cases(lm, out, files)
     manifest["decode"] = write_decode_steps(lm, out, ids, files)
     if intra:
         for b in intra_blocks:

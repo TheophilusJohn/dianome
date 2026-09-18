@@ -121,4 +121,31 @@ test("gate 7: q8 and q4 kernels at unit level, then end to end", async () => {
   for (const r of e2e as { variant: string; N: number; disagreements: number[]; tieTolerance: number }[]) expect(r.disagreements, `${r.variant} N=${r.N} (teacher-forced; mismatches within the tie tolerance ${r.tieTolerance} are listed, not counted)`).toEqual([]);
 });
 
+test("gate 8: lm_head (final norm + tied embed matmul) vs logits.npy, every row", async () => {
+  const out: unknown[] = [];
+  for (const [variant, matvec] of [["fp16", undefined], ["fp16", "lanes"], ["q8", undefined], ["q4", undefined]] as const) {
+    const r = await h("gate8LmHead", variant, matvec ? { lmHeadMatvec: matvec } : {});
+    out.push(r);
+    console.log(`  ${variant} head=${r.headMatvec} relRms ${r.cmp.relRms.toExponential(3)} maxAbs ${r.cmp.maxAbs.toExponential(3)} (ref ${r.cmp.refAtMax} got ${r.cmp.gotAtMax}) argmax mismatches ${JSON.stringify(r.argmaxMismatches)} last-row top2 ${JSON.stringify(r.lastRowTop2)} lm_head ms ${r.lmHeadMs.map((x: number) => x.toFixed(2)).join(" ")}`);
+    if (variant === "fp16") {
+      expect(r.cmp.relRms, `${variant} rel RMS`).toBeLessThan(1e-2);
+      expect(r.argmaxMismatches, `${variant} argmax`).toEqual([]);
+    }
+  }
+  results.gate8 = out;
+});
+
+test("gate 9: local mode (lm_head + sampler in the runtime, no server): 16 greedy tokens == full-model greedy", async () => {
+  const out: unknown[] = [];
+  for (const variant of ["fp16", "q8", "q4"] as const) {
+    const r = await h("gate9Local", variant, 16);
+    out.push(r);
+    const med = (k: "clientMs" | "lmHeadMs" | "sampleMs" | "totalMs") => median(r.steps.slice(1).map((s: Record<string, number>) => s[k]!));
+    console.log(`  ${variant} tokens=${JSON.stringify(r.tokens)} expected=${JSON.stringify(r.expected)} mismatches=${JSON.stringify(r.mismatches)} disagreements=${JSON.stringify(r.disagreements)}  decode medians: client ${med("clientMs").toFixed(2)} lm_head ${med("lmHeadMs").toFixed(2)} sample ${med("sampleMs").toFixed(2)} total ${med("totalMs").toFixed(2)} ms`);
+    if (variant === "fp16") expect(r.mismatches, "fp16 local greedy (exact)").toEqual([]);
+    else expect(r.disagreements, `${variant} local greedy (free-running; a first mismatch within the tie tolerance ${r.tieTolerance} is listed, not counted)`).toEqual([]);
+  }
+  results.gate9 = out;
+});
+
 function median(a: number[]): number { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)] ?? 0; }

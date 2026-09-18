@@ -1,14 +1,36 @@
 {
   "name": "dianome-runtime",
-  "version": "0.1.0",
-  "description": "WGSL partial-model runtime: embedding + transformer blocks 0..N-1 of a Qwen2 model on WebGPU, exporting the input to block N",
+  "version": "0.2.0",
+  "description": "WGSL partial-model runtime for split inference: embedding + Qwen2 blocks 0..N-1 on WebGPU (plus lm_head + sampler for local mode), split session, planner, tokenizer",
   "license": "MIT",
   "type": "module",
-  "private": true,
   "sideEffects": false,
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokenizer": {
+      "types": "./dist/entries/tokenizer.d.ts",
+      "default": "./dist/tokenizer.js"
+    },
+    "./planner": {
+      "types": "./dist/entries/planner.d.ts",
+      "default": "./dist/planner.js"
+    },
+    "./protocol": {
+      "types": "./dist/entries/protocol.d.ts",
+      "default": "./dist/protocol.js"
+    },
+    "./session": {
+      "types": "./dist/entries/session.d.ts",
+      "default": "./dist/session.js"
+    }
   },
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -27,5 +49,17 @@
     "esbuild": "^0.25.0",
     "typescript": "^5.6.0",
     "vitest": "^4.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheophilusJohn/dianome.git",
+    "directory": "packages/runtime"
+  },
+  "homepage": "https://github.com/TheophilusJohn/dianome/tree/main/packages/runtime#readme",
+  "bugs": {
+    "url": "https://github.com/TheophilusJohn/dianome/issues"
+  },
+  "peerDependencies": {
+    "dianome": "^0.2.0"
   }
 }

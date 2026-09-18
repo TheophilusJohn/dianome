@@ -99,9 +99,9 @@ export class GpuOps implements BlockOps<WeightBuffer, GpuTensor, GpuKv> {
     return p;
   }
 
-  private matmulPipeline(kind: WeightBuffer["kind"], vec: boolean): GPUComputePipeline {
+  private matmulPipeline(kind: WeightBuffer["kind"], vec: boolean, vecMode?: "seq" | "lanes"): GPUComputePipeline {
     const w = kind === "fp16" ? weightsF16Src : kind === "q8" ? weightsQ8Src : weightsQ4Src;
-    const mode = this.matvecMode();
+    const mode = vecMode ?? this.matvecMode();
     const main = vec ? (mode === "seq" ? matvecSeqSrc : matvecSrc) : matmulTiledSrc;
     return this.pipeline(`matmul.${kind}.${vec ? "vec." + mode : "tiled"}`, () => matmulHeadSrc + "\n" + w + "\n" + main);
   }
@@ -170,17 +170,24 @@ export class GpuOps implements BlockOps<WeightBuffer, GpuTensor, GpuKv> {
   }
 
   matmul(x: GpuTensor, w: WeightBuffer, bias: WeightBuffer | null, out: GpuTensor, T: number): void {
+    this.matmulWith(x, w, bias, out, T);
+  }
+
+  /** matmul with an explicit kernel: "seq" / "lanes" (T must be 1) or "tiled"; default = the instance rule. */
+  matmulWith(x: GpuTensor, w: WeightBuffer, bias: WeightBuffer | null, out: GpuTensor, T: number, kernel?: "seq" | "lanes" | "tiled"): void {
     const [o, i] = [w.shape[0]!, w.shape[1]!];
     if (x.cols !== i || out.cols !== o) throw new Error(`matmul ${w.name}: shapes x[${x.cols}] W[${o},${i}] out[${out.cols}]`);
     if (i % TILE_K !== 0 || o % TILE_N !== 0) throw new Error(`matmul ${w.name}: in must be a multiple of ${TILE_K} and out of ${TILE_N}`);
-    const vec = T === 1 && !this.forceTiled;
-    const p = this.matmulPipeline(w.kind, vec);
+    const mode = kernel ?? (T === 1 && !this.forceTiled ? this.matvecMode() : "tiled");
+    if (mode !== "tiled" && T !== 1) throw new Error(`matmul ${w.name}: ${mode} kernel needs T = 1, got ${T}`);
+    const vec = mode !== "tiled";
+    const p = this.matmulPipeline(w.kind, vec, mode === "tiled" ? undefined : mode);
     const entries: (GPUBindingResource | null)[] = [{ buffer: this.dummyBias }, { buffer: x.buffer }, { buffer: out.buffer }, partBinding(w, "weights"), bias ? partBinding(bias, "weights") : { buffer: this.dummyBias }];
     if (w.kind !== "fp16") entries.push(partBinding(w, "scales"));
     if (w.kind === "q4") entries.push(partBinding(w, "zeros"));
-    const s = this.siteU(`matmul.${vec ? "v" : "t"}:${idOf(x.buffer)}:${idOf(w.buffer)}:${bias ? idOf(bias.buffer) : 0}:${idOf(out.buffer)}`, p, entries as GPUBindingResource[], 16);
+    const s = this.siteU(`matmul.${mode}:${idOf(x.buffer)}:${idOf(w.buffer)}:${bias ? idOf(bias.buffer) : 0}:${idOf(out.buffer)}`, p, entries as GPUBindingResource[], 16);
     this.u32[0] = T; this.u32[1] = i; this.u32[2] = o; this.u32[3] = (bias ? 1 : 0) | (this.round16 ? 2 : 0);
-    if (vec) this.dispatch(p, s, 4, this.matvecMode() === "seq" ? Math.ceil(o / 64) : Math.ceil(o / 4), 1);
+    if (vec) this.dispatch(p, s, 4, mode === "seq" ? Math.ceil(o / 64) : Math.ceil(o / 4), 1);
     else this.dispatch(p, s, 4, o / TILE_N, Math.ceil(T / TILE_M));
   }
 

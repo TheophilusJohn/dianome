@@ -37,8 +37,19 @@ const model = await d.load("qwen2.5-0.5b-instruct", { variant: "q4", onProgress:
 model.entry("model.layers.7.self_attn.q_proj.weight").parts?.scales;
 ```
 
+```ts
+// Phase 5b: generate. run() chooses, per device and network, local (whole model in the browser), split at a
+// planner-chosen N (blocks 0..N-1 here, the rest on the split server), or server (token ids sent).
+const r = await d.run("qwen2.5-0.5b-instruct", { messages: [{ role: "user", content: "Why is the sky blue?" }], policy: { prefer: "cost" }, onToken: (t) => process.stdout.write(t) });
+r.mode; r.N; r.plan.candidates;   // every candidate's estimated ms/token, server share and cost, privacy band
+```
+
 The full API, the cross-site opt-in flow, the quota rules and the adapters for Transformers.js and WebLLM are in
-[`packages/sdk/README.md`](packages/sdk/README.md).
+[`packages/sdk/README.md`](packages/sdk/README.md); the WebGPU runtime, the split session and the planner in
+[`packages/runtime/README.md`](packages/runtime/README.md); the split server in [`server/README.md`](server/README.md).
+What leaves the device at a split point N is the hidden state at boundary N, and a server can recover input tokens
+from it at the rate measured in `docs/phase-4-notes.md` (the privacy band); split inference does not hide the prompt
+from the server, and local mode sends nothing.
 
 ## Links
 
@@ -50,7 +61,11 @@ The full API, the cross-site opt-in flow, the quota rules and the adapters for T
   - [`docs/briefs/`](docs/briefs) — the brief each phase was built from (storage partitioning, ingest, edge, SDK)
   - [`docs/spikes/`](docs/spikes) — Phase 0 storage-partitioning spike, with its 2026-09-17 correction
   - [`docs/phase-1-notes.md`](docs/phase-1-notes.md), [`docs/phase-2-notes.md`](docs/phase-2-notes.md),
-    [`docs/phase-3-notes.md`](docs/phase-3-notes.md) — measured numbers only, each with the command or page that produced it
+    [`docs/phase-3-notes.md`](docs/phase-3-notes.md), [`docs/phase-4-notes.md`](docs/phase-4-notes.md),
+    [`docs/phase-5a-notes.md`](docs/phase-5a-notes.md), [`docs/phase-5b-notes.md`](docs/phase-5b-notes.md) — measured
+    numbers only, each with the command or page that produced it
+- Split demo (slider over N, live estimates and measurements): `dianome-demo-split.pages.dev` once deployed;
+  locally `pnpm --filter split-demo dev` (see `apps/split-demo/vite.config.ts` for the `?api=&cdn=&split=` overrides)
 
 ## Browser support
 

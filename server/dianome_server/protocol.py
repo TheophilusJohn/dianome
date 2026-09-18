@@ -12,6 +12,8 @@ fp16 `[T, d_model]` hidden states, or int32 `[T]` token ids when N = 0.
 | decode  | c→s | {position}                                          | fp16 [1, d_model] or int32 [1]   |
 | token   | s→c | {id, position, busy_ms, done, topk_ids?}            | optional fp16 [k] top-k logits   |
 | stats   | c→s / s→c | {} / {tokens, busy_seconds, gpu_seconds_per_token} | —                          |
+| ping    | c→s | {t?}  (RTT probe; allowed before open)              | —                                |
+| pong    | s→c | {t?}  (echoes the ping header)                      | —                                |
 | close   | any | {}                                                  | —                                |
 | error   | s→c | {code, message}                                     | —                                |
 """
@@ -28,7 +30,7 @@ import orjson
 MAGIC = 0x444E4D31  # "DNM1" read big-endian; sent as little-endian u32
 _HEAD = struct.Struct("<II")
 
-TYPES = ("open", "opened", "prefill", "decode", "token", "stats", "close", "error")
+TYPES = ("open", "opened", "prefill", "decode", "token", "stats", "close", "error", "ping", "pong")
 REQUIRED: dict[str, tuple[str, ...]] = {
     "open": ("model", "N", "max_ctx"),
     "opened": ("session", "L", "d_model", "boundary"),
@@ -36,6 +38,8 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     "decode": ("position",),
     "token": ("id", "position", "busy_ms", "done"),
     "stats": (),
+    "ping": (),
+    "pong": (),
     "close": (),
     "error": ("code", "message"),
 }

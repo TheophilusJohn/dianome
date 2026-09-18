@@ -14,6 +14,9 @@ import { SplitClient } from "../../../src/protocol";
 import { q4Bytes, q4Decode, q4Encode, q8Bytes, q8Decode, q8Encode } from "../../../src/quant";
 import { ropeTable, type RopeTable } from "../../../src/rope";
 import { Runtime, configFromManifest, type RuntimeOptions } from "../../../src/index";
+import { SplitSession } from "../../../src/session";
+import { argmax, topk } from "../../../src/lmhead";
+import { microbench as runMicrobench, type MicrobenchOptions } from "../../../src/microbench";
 import { forwardBlock, STAGES, type ModelConfig, type Stage } from "../../../src/block";
 
 const MODEL = "qwen2.5-0.5b-instruct";
@@ -447,6 +450,57 @@ export async function gate6(N: number, variant: VariantName, wsUrl: string, toke
   return { N, variant, tokens, expected: expected.slice(0, steps), margins: margins.slice(0, steps), runnersUp: runnersUp.slice(0, steps), mismatches, disagreements, tieTolerance: TIE_TOLERANCE, serverBusyMs: busy, exportMs };
 }
 
+// -- gate 8: lm_head vs logits.npy; gate 9: local greedy (Phase 5b) --------------------------------
+
+export interface Gate8 { variant: string; N: number; cmp: Cmp; argmaxMismatches: { row: number; got: number; ref: number }[]; lastRowTop2: { id: number; logit: number }[]; lmHeadMs: number[]; headMatvec: string }
+
+/** Every row's logits from the runtime's final norm + lm_head vs `logits.npy` (fp16 reference). */
+export async function gate8LmHead(variant: VariantName = "fp16", opts: RuntimeOptions = {}): Promise<Gate8> {
+  const p = await json<Prompt>("/fixtures/prompt.json");
+  const ref = await npy("logits.npy");
+  const rt = await runtime(variant, 24, { maxCtx: 128, lmHead: true, ...opts });
+  rt.reset();
+  await rt.prefill(p.token_ids);
+  const got = await rt.debugLogitsAll();
+  const V = rt.cfg.d === ref.shape[1] ? ref.shape[1]! : ref.shape[1]!;
+  const mism: Gate8["argmaxMismatches"] = [];
+  for (let r = 0; r < p.T; r++) {
+    const g = argmax(got.subarray(r * V, (r + 1) * V)), e = argmax(ref.data.subarray(r * V, (r + 1) * V));
+    if (g !== e) mism.push({ row: r, got: g, ref: e });
+  }
+  // the production path (last row only, matvec) timed 5x
+  const ms: number[] = [];
+  let last: Float32Array = new Float32Array(0);
+  for (let i = 0; i < 5; i++) { last = await rt.logits(); ms.push(rt.stats().lastLmHeadMs); }
+  return { variant, N: 24, cmp: cmp(got, ref.data), argmaxMismatches: mism, lastRowTop2: topk(last, 2), lmHeadMs: ms, headMatvec: opts.lmHeadMatvec ?? rt.ops.matvecMode() };
+}
+
+export interface Gate9 extends Omit<Gate6, "serverBusyMs" | "exportMs"> { steps: { clientMs: number; lmHeadMs: number; sampleMs: number; totalMs: number }[] }
+
+/** Free-running greedy generation in local mode (no server) vs the full-model greedy tokens. */
+export async function gate9Local(variant: VariantName = "fp16", steps = 16, opts: RuntimeOptions = {}): Promise<Gate9> {
+  const p = await json<Prompt>("/fixtures/prompt.json");
+  let expected: number[], margins: number[], runnersUp: number[];
+  if (variant === "fp16") { const g = await json<Greedy & { margins: number[]; runners_up: number[] }>("/fixtures/greedy.json"); expected = g.tokens; margins = g.margins; runnersUp = g.runners_up; }
+  else { const g = await json<{ N: Record<string, number[]>; margins: Record<string, number[]>; runners_up: Record<string, number[]> }>(`/fixtures/${variant}/greedy.json`); expected = g.N.local!; margins = g.margins.local!; runnersUp = g.runners_up.local!; }
+  const rt = await runtime(variant, 24, { maxCtx: 128, lmHead: true, ...opts });
+  const session = await SplitSession.open({ mode: "local", N: 24, model: MODEL, maxCtx: 128, runtime: rt, sampling: { temperature: 0 }, eosIds: [] });
+  const tokens: number[] = [];
+  const st: Gate9["steps"] = [];
+  for await (const t of session.generate(p.token_ids, steps)) { tokens.push(t.id); st.push({ clientMs: t.timing.clientMs, lmHeadMs: t.timing.lmHeadMs, sampleMs: t.timing.sampleMs, totalMs: t.timing.totalMs }); }
+  session.close();
+  // Free-running: after the first divergence the sequences differ anyway; report the first mismatch and the rest.
+  const mismatches = tokens.map((t, i) => ({ step: i, got: t, expected: expected[i]!, margin: margins[i]!, runnerUp: runnersUp[i]! })).filter((m) => m.got !== m.expected);
+  const first = mismatches[0];
+  const disagreements = first && (first.margin > TIE_TOLERANCE || first.got !== first.runnerUp) ? [first.step] : [];
+  return { N: 24, variant, tokens, expected: expected.slice(0, steps), margins: margins.slice(0, steps), runnersUp: runnersUp.slice(0, steps), mismatches, disagreements, tieTolerance: TIE_TOLERANCE, steps: st };
+}
+
+export async function microbench(variant: VariantName, opts: MicrobenchOptions = {}) {
+  const { device } = await gpu();
+  return runMicrobench(device, await manifest(), variant, opts);
+}
+
 // -- info / bench helpers -------------------------------------------------------------------------
 
 export async function info(): Promise<unknown> { return (await gpu()).info; }
@@ -472,5 +526,5 @@ export async function bench(variant: VariantName, N: number, decodeSteps = 32, m
 }
 
 declare global { interface Window { harness: typeof harness } }
-const harness = { info, loads, ropeCheck, gate2Unit, gate2Embed, gate3, gate4, gate4Isolated, stagesFor, gate5a, gate5b, gate6, gate7Unit, bench, f16ToF32 };
+const harness = { info, loads, ropeCheck, gate2Unit, gate2Embed, gate3, gate4, gate4Isolated, stagesFor, gate5a, gate5b, gate6, gate7Unit, gate8LmHead, gate9Local, microbench, bench, f16ToF32 };
 window.harness = harness;

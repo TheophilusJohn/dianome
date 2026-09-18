@@ -13,6 +13,7 @@ import { fetchManifest, isModelManifest, type FetchLike, type Manifest, type Var
 import { planFiles, planVariant, type LoadPlan } from "./plan";
 import { buildReport, median, postReport } from "./telemetry";
 import type { CacheStatus, CrossSiteResult, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
+import type { RunOptions, RunResult } from "./run";
 
 export type { LoadedEntry, EntryParts } from "./assemble";
 export type { CacheMode, ChunkSource, ChunkStore, ChunkStoreStatus } from "./cache/types";
@@ -21,7 +22,8 @@ export { DianomeError, ChunkError, ManifestError, AbortedError } from "./errors"
 export type { DianomeErrorCode } from "./errors";
 export type { Config, Entry, File, FilesManifest, Group, Manifest, ModelManifest, Part, Segment, Storage, Variant, VariantName } from "./manifest";
 export { validateManifest, isModelManifest, isFilesManifest } from "./manifest";
-export type { LoadReport, LoadSource } from "./telemetry";
+export type { LoadReport, LoadSource, SessionReport } from "./telemetry";
+export type { RunOptions, RunResult, Plan, PlanCandidate, PlanInput, PlanPolicy, ChatMessage, StepTiming, SamplingOptions } from "./run";
 export type { CacheStatus, CrossSiteProgress, CrossSiteResult, CrossSiteState, DianomeOptions, LoadSummary, LoadedGroup, LoadedModel, Progress, StreamOptions } from "./types";
 
 export const DEFAULT_API = "https://api.dianome.dev";
@@ -231,6 +233,23 @@ export class Dianome {
     for (const sha of g.needs) if (plan.lastUse.get(sha) === index) chunks.delete(sha);
     return { name: g.name, index, bytes: g.bytes, tied: g.tied, entries };
   }
+
+  /**
+   * Generate tokens for a prompt, choosing per device and network whether to run the whole model here (local),
+   * split it at a planner-chosen N, or send tokens to the server. Implemented in the `dianome/run` entry, loaded
+   * on first use so this entry stays small; it imports `dianome-runtime` only when the plan needs the browser side.
+   */
+  run(id: string, opts: RunOptions = {}): Promise<RunResult> {
+    return import("./run.js").then((m) => m.run(this, id, opts));
+  }
+
+  /** The plan run() would make (inputs measured on this device and network, every candidate estimated), without loading or generating. */
+  planRun(id: string, opts: RunOptions = {}): Promise<import("./run.js").Plan> {
+    return import("./run.js").then((m) => m.planOnly(this, id, opts));
+  }
+
+  /** @internal The effective chunk store (run() asks it which groups are cached). */
+  chunkStore(): Promise<ChunkStore | null> { return this.store(); }
 
   /** Everything, with progress. */
   async load(id: string, opts: StreamOptions = {}): Promise<LoadedModel> {

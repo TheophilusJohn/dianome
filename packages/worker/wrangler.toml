@@ -22,6 +22,21 @@ remote = true
 binding = "TELEMETRY"
 dataset = "dianome_loads"
 
+# Phase 5b: schema-3 session reports (mode, N, timings; never prompt content).
+[[analytics_engine_datasets]]
+binding = "SESSIONS"
+dataset = "dianome_sessions"
+
+# Phase 5b split endpoints (POST /v1/split/session, GET /v1/split/rates, GET /v1/split/plan).
+# The split server runs on Theo's Mac behind cloudflared at split.dianome.dev; the demo origin is the only one
+# allowed to mint session tokens. Override locally in .dev.vars (e.g. SPLIT_WS_URL=ws://127.0.0.1:8765,
+# SPLIT_PLAN_URL=http://127.0.0.1:8765/plan, SPLIT_ALLOWED_ORIGINS=http://localhost:5177).
+[vars]
+SPLIT_WS_URL = "wss://split.dianome.dev"
+SPLIT_PLAN_URL = "https://split.dianome.dev/plan"
+SPLIT_ALLOWED_ORIGINS = "https://dianome-demo-split.pages.dev"
+SPLIT_MODELS = "qwen2.5-0.5b-instruct"
+
 [[kv_namespaces]]
 binding = "STATS_CACHE"
 id = "7c4f6c0ba5e44b0a82496b3639c90262"
@@ -29,4 +44,5 @@ id = "7c4f6c0ba5e44b0a82496b3639c90262"
 # Secrets (wrangler secret put …; local values in .dev.vars, gitignored):
 #   CF_ACCOUNT_ID      account that owns the dianome_loads dataset
 #   CF_ANALYTICS_TOKEN API token with Account Analytics: Read (Analytics Engine SQL API)
+#   SPLIT_SIGNING_KEY  HMAC key for split session tokens; the split server gets the same value in its env
 # GIT_SHA is passed with --var by the dev/deploy scripts (see package.json).

@@ -43,11 +43,21 @@ SPLIT_TOKEN=... .venv/bin/dianome-server serve   [--model qwen2.5-0.5b-instruct]
 .venv/bin/dianome-server linear-probe [--train-tokens 500000] [--seed 1] [--max-epochs 3] [--notes ../docs/phase-4-notes.md]
 ```
 
-`serve` refuses to start without `SPLIT_TOKEN`. Every request, the WebSocket
-upgrade and the plain-HTTP `GET /plan`, must carry
-`Authorization: Bearer <SPLIT_TOKEN>`. Limits: one model per process,
-`max_ctx ≤ 4096`, at most 4 concurrent sessions, idle sessions closed after
-120 s. `GET /plan` returns `{model, L, d_model, active_sessions, busy_fraction_60s}`.
+`serve` refuses to start without `SPLIT_TOKEN`. A WebSocket upgrade carries either
+the static bearer (`Authorization: Bearer <SPLIT_TOKEN>`, or `?token=<SPLIT_TOKEN>`
+because browsers cannot set upgrade headers) or, since Phase 5b, a short-lived HMAC
+session token minted by the Worker (`?token=`; verified with `SPLIT_SIGNING_KEY`
+from the environment, see `dianome_server/auth.py`): `base64url(payload).base64url(HMAC-SHA256(key, payload))`
+with `payload = {sid, model, exp, max_ctx, origin}`. Expired tokens and bad
+signatures are refused at the upgrade; the `Origin` header, when present, must
+equal the token's `origin`; a session opened with a token is bound to its `sid`
+(the same `sid` cannot be open twice) and capped at its `max_ctx`. Limits: one
+model per process, `max_ctx ≤ 4096`, at most 4 concurrent sessions, idle sessions
+closed after 120 s. `GET /plan` is public load information (no auth, 120
+requests per minute per client address): `{model, L, d_model, active_sessions,
+busy_fraction_60s, ms_per_block_decode, ms_per_block_prefill, lm_head_ms,
+microbench, device}`, the timings from a startup microbench (median of 5;
+`--no-microbench` skips it). `ping` → `pong` is allowed before `open` (RTT).
 Nothing here exposes a port beyond localhost or runs a tunnel.
 
 A small client for the real socket lives in `tests/ws_client.py`:
@@ -70,6 +80,7 @@ row-major fp16 `[T, d_model]`, or int32 `[T]` token ids when `N = 0`.
 | `decode` | c→s | `{position}` | fp16 `[1, d_model]` or int32 `[1]` |
 | `token` | s→c | `{id, position, busy_ms, done, topk_ids?}` | fp16 `[k]` top-k logits if `logits_topk` was set |
 | `stats` | c→s / s→c | `{}` / `{tokens, busy_seconds, gpu_seconds_per_token}` | — |
+| `ping` / `pong` | c→s / s→c | `{t?}` (echoed; allowed before `open`) | — |
 | `close` | either | `{}` | — |
 | `error` | s→c | `{code, message}` | — |
 

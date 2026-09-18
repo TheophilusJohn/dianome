@@ -1,15 +1,33 @@
 {
   "name": "dianome",
-  "version": "0.1.0",
-  "description": "Progressive, verified, cached model weight loading from cdn.dianome.dev",
+  "version": "0.2.0",
+  "description": "Progressive, verified, cached model weight loading from cdn.dianome.dev, and run(): local / split / server generation chosen per device and network",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "data",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./transformersjs": { "types": "./dist/adapters/transformersjs.d.ts", "default": "./dist/transformersjs.js" },
-    "./webllm": { "types": "./dist/adapters/webllm.d.ts", "default": "./dist/webllm.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./transformersjs": {
+      "types": "./dist/adapters/transformersjs.d.ts",
+      "default": "./dist/transformersjs.js"
+    },
+    "./webllm": {
+      "types": "./dist/adapters/webllm.d.ts",
+      "default": "./dist/webllm.js"
+    },
+    "./run": {
+      "types": "./dist/run.d.ts",
+      "default": "./dist/run.js"
+    }
   },
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -21,15 +39,36 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "ci": "pnpm typecheck && pnpm test && pnpm build && pnpm size",
-    "prepack": "pnpm build && pnpm size"
+    "prepack": "pnpm build && pnpm size",
+    "gen:band": "node scripts/gen-privacy-band.mjs",
+    "test:e2e:split": "playwright test -c playwright.split.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
+    "@webgpu/types": "^0.1.72",
     "ajv": "^8.17.1",
     "esbuild": "^0.25.0",
     "fake-indexeddb": "^6.0.0",
     "happy-dom": "^18.0.0",
     "typescript": "^5.6.0",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.0",
+    "dianome-runtime": "workspace:*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheophilusJohn/dianome.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://github.com/TheophilusJohn/dianome/tree/main/packages/sdk#readme",
+  "bugs": {
+    "url": "https://github.com/TheophilusJohn/dianome/issues"
+  },
+  "peerDependencies": {
+    "dianome-runtime": "^0.2.0"
+  },
+  "peerDependenciesMeta": {
+    "dianome-runtime": {
+      "optional": true
+    }
   }
 }

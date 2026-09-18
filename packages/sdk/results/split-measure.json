@@ -1,0 +1,3346 @@
+{
+  "inputs": {
+    "model": {
+      "id": "qwen2.5-0.5b-instruct",
+      "variant": "q4",
+      "L": 24,
+      "dModel": 896,
+      "blockBytes": [
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560,
+        7810560
+      ],
+      "embedBytes": 136438528,
+      "lmHeadGpuBytes": 136440320,
+      "lmHeadDownloadBytes": 1792,
+      "kvBytesPerBlock": 524288,
+      "workspaceBytes": 84672512,
+      "maxEntryBytes": 136438528,
+      "serverCostFloor": 0.224,
+      "privacy": {
+        "model": "qwen2.5-0.5b-instruct",
+        "coverage500k": 0.9728,
+        "rows": [
+          {
+            "boundary": 0,
+            "linear500k_top1": 0.9727,
+            "linear500k_top5": 0.9728,
+            "linear_top1": 0.8162,
+            "linear_top5": 0.8202,
+            "inversion_top1": 0.8188,
+            "inversion_top5": 0.8202,
+            "nn_top1": 1
+          },
+          {
+            "boundary": 1,
+            "linear500k_top1": 0.9694,
+            "linear500k_top5": 0.9714,
+            "linear_top1": 0.8133,
+            "linear_top5": 0.8188,
+            "inversion_top1": 0.8002,
+            "inversion_top5": 0.8144,
+            "nn_top1": 0.0045
+          },
+          {
+            "boundary": 2,
+            "linear500k_top1": 0.9645,
+            "linear500k_top5": 0.9705,
+            "linear_top1": 0.8014,
+            "linear_top5": 0.8153,
+            "inversion_top1": 0.7813,
+            "inversion_top5": 0.811,
+            "nn_top1": 0.0007
+          },
+          {
+            "boundary": 3,
+            "linear500k_top1": 0.9563,
+            "linear500k_top5": 0.9669,
+            "linear_top1": 0.7835,
+            "linear_top5": 0.8069,
+            "inversion_top1": 0.7604,
+            "inversion_top5": 0.7971,
+            "nn_top1": 0.0003
+          },
+          {
+            "boundary": 4,
+            "linear500k_top1": 0.9443,
+            "linear500k_top5": 0.9602,
+            "linear_top1": 0.7673,
+            "linear_top5": 0.8,
+            "inversion_top1": 0.7433,
+            "inversion_top5": 0.7882,
+            "nn_top1": 0.0002
+          },
+          {
+            "boundary": 5,
+            "linear500k_top1": 0.9345,
+            "linear500k_top5": 0.9546,
+            "linear_top1": 0.7604,
+            "linear_top5": 0.795,
+            "inversion_top1": 0.7394,
+            "inversion_top5": 0.7879,
+            "nn_top1": 0.0002
+          },
+          {
+            "boundary": 6,
+            "linear500k_top1": 0.9175,
+            "linear500k_top5": 0.9467,
+            "linear_top1": 0.7309,
+            "linear_top5": 0.7832,
+            "inversion_top1": 0.7216,
+            "inversion_top5": 0.7738,
+            "nn_top1": 0.0003
+          },
+          {
+            "boundary": 7,
+            "linear500k_top1": 0.9071,
+            "linear500k_top5": 0.9409,
+            "linear_top1": 0.7215,
+            "linear_top5": 0.7708,
+            "inversion_top1": 0.7158,
+            "inversion_top5": 0.7633,
+            "nn_top1": 0
+          },
+          {
+            "boundary": 8,
+            "linear500k_top1": 0.899,
+            "linear500k_top5": 0.9324,
+            "linear_top1": 0.7054,
+            "linear_top5": 0.7562,
+            "inversion_top1": 0.7075,
+            "inversion_top5": 0.7595,
+            "nn_top1": 0.0001
+          },
+          {
+            "boundary": 9,
+            "linear500k_top1": 0.887,
+            "linear500k_top5": 0.9271,
+            "linear_top1": 0.6891,
+            "linear_top5": 0.7438,
+            "inversion_top1": 0.7036,
+            "inversion_top5": 0.7523,
+            "nn_top1": 0
+          },
+          {
+            "boundary": 10,
+            "linear500k_top1": 0.8779,
+            "linear500k_top5": 0.919,
+            "linear_top1": 0.6765,
+            "linear_top5": 0.7362,
+            "inversion_top1": 0.6973,
+            "inversion_top5": 0.7502,
+            "nn_top1": 0.0001
+          },
+          {
+            "boundary": 11,
+            "linear500k_top1": 0.8789,
+            "linear500k_top5": 0.9188,
+            "linear_top1": 0.6673,
+            "linear_top5": 0.728,
+            "inversion_top1": 0.6983,
+            "inversion_top5": 0.7491,
+            "nn_top1": 0
+          },
+          {
+            "boundary": 12,
+            "linear500k_top1": 0.8706,
+            "linear500k_top5": 0.9126,
+            "linear_top1": 0.6616,
+            "linear_top5": 0.7234,
+            "inversion_top1": 0.6958,
+            "inversion_top5": 0.7472,
+            "nn_top1": 0.0001
+          },
+          {
+            "boundary": 13,
+            "linear500k_top1": 0.8699,
+            "linear500k_top5": 0.9147,
+            "linear_top1": 0.6566,
+            "linear_top5": 0.7203,
+            "inversion_top1": 0.6932,
+            "inversion_top5": 0.7453,
+            "nn_top1": 0.0001
+          },
+          {
+            "boundary": 14,
+            "linear500k_top1": 0.866,
+            "linear500k_top5": 0.9117,
+            "linear_top1": 0.6576,
+            "linear_top5": 0.7245,
+            "inversion_top1": 0.6963,
+            "inversion_top5": 0.7476,
+            "nn_top1": 0
+          },
+          {
+            "boundary": 15,
+            "linear500k_top1": 0.8724,
+            "linear500k_top5": 0.9173,
+            "linear_top1": 0.6616,
+            "linear_top5": 0.7288,
+            "inversion_top1": 0.6901,
+            "inversion_top5": 0.7464,
+            "nn_top1": 0
+          },
+          {
+            "boundary": 16,
+            "linear500k_top1": 0.8754,
+            "linear500k_top5": 0.9204,
+            "linear_top1": 0.6672,
+            "linear_top5": 0.7316,
+            "inversion_top1": 0.6911,
+            "inversion_top5": 0.7484,
+            "nn_top1": 0.0002
+          },
+          {
+            "boundary": 17,
+            "linear500k_top1": 0.8823,
+            "linear500k_top5": 0.9253,
+            "linear_top1": 0.6885,
+            "linear_top5": 0.7493,
+            "inversion_top1": 0.6896,
+            "inversion_top5": 0.7517,
+            "nn_top1": 0.0001
+          },
+          {
+            "boundary": 18,
+            "linear500k_top1": 0.8715,
+            "linear500k_top5": 0.9227,
+            "linear_top1": 0.6819,
+            "linear_top5": 0.7472,
+            "inversion_top1": 0.6882,
+            "inversion_top5": 0.749,
+            "nn_top1": 0
+          },
+          {
+            "boundary": 19,
+            "linear500k_top1": 0.8712,
+            "linear500k_top5": 0.9204,
+            "linear_top1": 0.6763,
+            "linear_top5": 0.7447,
+            "inversion_top1": 0.685,
+            "inversion_top5": 0.7471,
+            "nn_top1": 0.0001
+          },
+          {
+            "boundary": 20,
+            "linear500k_top1": 0.8687,
+            "linear500k_top5": 0.9209,
+            "linear_top1": 0.6673,
+            "linear_top5": 0.7388,
+            "inversion_top1": 0.6797,
+            "inversion_top5": 0.7463,
+            "nn_top1": 0.0004
+          },
+          {
+            "boundary": 21,
+            "linear500k_top1": 0.8588,
+            "linear500k_top5": 0.9178,
+            "linear_top1": 0.6513,
+            "linear_top5": 0.7331,
+            "inversion_top1": 0.6636,
+            "inversion_top5": 0.7443,
+            "nn_top1": 0.0005
+          },
+          {
+            "boundary": 22,
+            "linear500k_top1": 0.8409,
+            "linear500k_top5": 0.9076,
+            "linear_top1": 0.6262,
+            "linear_top5": 0.7153,
+            "inversion_top1": 0.6432,
+            "inversion_top5": 0.7251,
+            "nn_top1": 0.0005
+          },
+          {
+            "boundary": 23,
+            "linear500k_top1": 0.8263,
+            "linear500k_top5": 0.898,
+            "linear_top1": 0.6117,
+            "linear_top5": 0.707,
+            "inversion_top1": 0.6156,
+            "inversion_top5": 0.7107,
+            "nn_top1": 0.0008
+          },
+          {
+            "boundary": 24,
+            "linear500k_top1": 0.7881,
+            "linear500k_top5": 0.8682,
+            "linear_top1": 0.5744,
+            "linear_top5": 0.6783,
+            "inversion_top1": 0.5607,
+            "inversion_top5": 0.6609,
+            "nn_top1": 0.0014
+          }
+        ]
+      }
+    },
+    "device": {
+      "webgpu": true,
+      "maxBufferSize": 4294967292,
+      "gpuBudgetBytes": 1610612736,
+      "quotaBytes": 3221225472,
+      "msPerBlockT1": 0.7124999761581421,
+      "msPerBlockT32": 1.7999999523162842,
+      "lmHeadMs": 2.5,
+      "exportMs": 0.3000001907348633,
+      "cachedBlocks": 0,
+      "embedCached": false
+    },
+    "network": {
+      "bytesPerSecond": 141498178.7512914,
+      "rttMs": 0.19999980926513672,
+      "serverReachable": true
+    },
+    "server": {
+      "L": 24,
+      "busyFraction60s": 0,
+      "msPerBlockDecode": 0.653567723929882,
+      "msPerBlockPrefill": 0.9471232770010829,
+      "lmHeadMs": 3.3784573897719383,
+      "device": "mps"
+    },
+    "policy": {
+      "prefer": "cost"
+    },
+    "prompt": {
+      "promptTokens": 32,
+      "maxNewTokens": 32
+    },
+    "rate": {
+      "gpu": "FILL ME (e.g. NVIDIA A100 80GB)",
+      "usdPerHour": null,
+      "source": "FILL ME (URL of the price page)",
+      "retrieved": "YYYY-MM-DD"
+    }
+  },
+  "plans": {
+    "cost": {
+      "mode": "local",
+      "N": 24,
+      "reasons": [
+        "policy prefers cost: local (server share 0)"
+      ],
+      "estimate": 19.89999942779541,
+      "candidates": [
+        {
+          "mode": "server",
+          "N": 0,
+          "feasible": true,
+          "msPerToken": 19.264082573354244,
+          "serverShare": 1,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 0,
+            "linear500kTop1": 0.9727,
+            "inversionTop1": 0.8188,
+            "linearTop1": 0.8162
+          },
+          "gpuBytes": 0,
+          "downloadBytes": 0,
+          "breakdown": {
+            "clientMs": 0,
+            "exportMs": 0,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 15.68562537431717,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 26.309415847063065,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 1,
+          "feasible": true,
+          "msPerToken": 19.623015016317368,
+          "serverShare": 0.9676666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 1,
+            "linear500kTop1": 0.9694,
+            "inversionTop1": 0.8002,
+            "linearTop1": 0.8133
+          },
+          "gpuBytes": 93007360,
+          "downloadBytes": 144249088,
+          "breakdown": {
+            "clientMs": 0.7124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 15.032057650387287,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 27.46229271311313,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 2,
+          "feasible": true,
+          "msPerToken": 19.681947268545628,
+          "serverShare": 0.9353333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 2,
+            "linear500kTop1": 0.9645,
+            "inversionTop1": 0.7813,
+            "linearTop1": 0.8014
+          },
+          "gpuBytes": 101342208,
+          "downloadBytes": 152059648,
+          "breakdown": {
+            "clientMs": 1.4249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 14.378489926457405,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 28.31516938842833,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 3,
+          "feasible": true,
+          "msPerToken": 19.740879520773888,
+          "serverShare": 0.903,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 3,
+            "linear500kTop1": 0.9563,
+            "inversionTop1": 0.7604,
+            "linearTop1": 0.7835
+          },
+          "gpuBytes": 109677056,
+          "downloadBytes": 159870208,
+          "breakdown": {
+            "clientMs": 2.1374999284744263,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 13.724922202527523,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 29.16804606374353,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 4,
+          "feasible": true,
+          "msPerToken": 19.799811773002148,
+          "serverShare": 0.8706666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 4,
+            "linear500kTop1": 0.9443,
+            "inversionTop1": 0.7433,
+            "linearTop1": 0.7673
+          },
+          "gpuBytes": 118011904,
+          "downloadBytes": 167680768,
+          "breakdown": {
+            "clientMs": 2.8499999046325684,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 13.071354478597641,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.020922739058733,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 5,
+          "feasible": true,
+          "msPerToken": 19.858744025230408,
+          "serverShare": 0.8383333333333334,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 5,
+            "linear500kTop1": 0.9345,
+            "inversionTop1": 0.7394,
+            "linearTop1": 0.7604
+          },
+          "gpuBytes": 126346752,
+          "downloadBytes": 175491328,
+          "breakdown": {
+            "clientMs": 3.5624998807907104,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 12.417786754667759,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.873799414373934,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 6,
+          "feasible": true,
+          "msPerToken": 19.917676277458668,
+          "serverShare": 0.806,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 6,
+            "linear500kTop1": 0.9175,
+            "inversionTop1": 0.7216,
+            "linearTop1": 0.7309
+          },
+          "gpuBytes": 134681600,
+          "downloadBytes": 183301888,
+          "breakdown": {
+            "clientMs": 4.2749998569488525,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 11.764219030737877,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 31.726676089689136,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 7,
+          "feasible": true,
+          "msPerToken": 19.976608529686928,
+          "serverShare": 0.7736666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 7,
+            "linear500kTop1": 0.9071,
+            "inversionTop1": 0.7158,
+            "linearTop1": 0.7215
+          },
+          "gpuBytes": 143016448,
+          "downloadBytes": 191112448,
+          "breakdown": {
+            "clientMs": 4.987499833106995,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 11.110651306807995,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 32.57955276500434,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 8,
+          "feasible": true,
+          "msPerToken": 20.035540781915188,
+          "serverShare": 0.7413333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 8,
+            "linear500kTop1": 0.899,
+            "inversionTop1": 0.7075,
+            "linearTop1": 0.7054
+          },
+          "gpuBytes": 151351296,
+          "downloadBytes": 198923008,
+          "breakdown": {
+            "clientMs": 5.699999809265137,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 10.457083582878113,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 33.43242944031954,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 9,
+          "feasible": true,
+          "msPerToken": 20.094473034143448,
+          "serverShare": 0.709,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 9,
+            "linear500kTop1": 0.887,
+            "inversionTop1": 0.7036,
+            "linearTop1": 0.6891
+          },
+          "gpuBytes": 159686144,
+          "downloadBytes": 206733568,
+          "breakdown": {
+            "clientMs": 6.412499785423279,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 9.80351585894823,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 34.28530611563474,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 10,
+          "feasible": true,
+          "msPerToken": 20.153405286371708,
+          "serverShare": 0.6766666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 10,
+            "linear500kTop1": 0.8779,
+            "inversionTop1": 0.6973,
+            "linearTop1": 0.6765
+          },
+          "gpuBytes": 168020992,
+          "downloadBytes": 214544128,
+          "breakdown": {
+            "clientMs": 7.124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 9.149948135018349,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.13818279094994,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 11,
+          "feasible": true,
+          "msPerToken": 20.212337538599968,
+          "serverShare": 0.6443333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 11,
+            "linear500kTop1": 0.8789,
+            "inversionTop1": 0.6983,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 176355840,
+          "downloadBytes": 222354688,
+          "breakdown": {
+            "clientMs": 7.837499737739563,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 8.496380411088467,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.99105946626514,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 12,
+          "feasible": true,
+          "msPerToken": 20.271269790828228,
+          "serverShare": 0.612,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 12,
+            "linear500kTop1": 0.8706,
+            "inversionTop1": 0.6958,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 184690688,
+          "downloadBytes": 230165248,
+          "breakdown": {
+            "clientMs": 8.549999713897705,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 7.842812687158585,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 36.84393614158034,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 13,
+          "feasible": true,
+          "msPerToken": 20.330202043056488,
+          "serverShare": 0.5796666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 13,
+            "linear500kTop1": 0.8699,
+            "inversionTop1": 0.6932,
+            "linearTop1": 0.6566
+          },
+          "gpuBytes": 193025536,
+          "downloadBytes": 237975808,
+          "breakdown": {
+            "clientMs": 9.262499690055847,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 7.1892449632287025,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 37.696812816895545,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 14,
+          "feasible": true,
+          "msPerToken": 20.389134295284748,
+          "serverShare": 0.5473333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 14,
+            "linear500kTop1": 0.866,
+            "inversionTop1": 0.6963,
+            "linearTop1": 0.6576
+          },
+          "gpuBytes": 201360384,
+          "downloadBytes": 245786368,
+          "breakdown": {
+            "clientMs": 9.97499966621399,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 6.5356772392988205,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 38.549689492210746,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 15,
+          "feasible": true,
+          "msPerToken": 20.448066547513008,
+          "serverShare": 0.515,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 15,
+            "linear500kTop1": 0.8724,
+            "inversionTop1": 0.6901,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 209695232,
+          "downloadBytes": 253596928,
+          "breakdown": {
+            "clientMs": 10.687499642372131,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 5.8821095153689384,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 39.40256616752595,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 16,
+          "feasible": true,
+          "msPerToken": 20.506998799741268,
+          "serverShare": 0.4826666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 16,
+            "linear500kTop1": 0.8754,
+            "inversionTop1": 0.6911,
+            "linearTop1": 0.6672
+          },
+          "gpuBytes": 218030080,
+          "downloadBytes": 261407488,
+          "breakdown": {
+            "clientMs": 11.399999618530273,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 5.228541791439056,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 40.25544284284115,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 17,
+          "feasible": true,
+          "msPerToken": 20.565931051969528,
+          "serverShare": 0.45033333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 17,
+            "linear500kTop1": 0.8823,
+            "inversionTop1": 0.6896,
+            "linearTop1": 0.6885
+          },
+          "gpuBytes": 226364928,
+          "downloadBytes": 269218048,
+          "breakdown": {
+            "clientMs": 12.112499594688416,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 4.574974067509174,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.10831951815635,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 18,
+          "feasible": true,
+          "msPerToken": 20.62486330419779,
+          "serverShare": 0.418,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 18,
+            "linear500kTop1": 0.8715,
+            "inversionTop1": 0.6882,
+            "linearTop1": 0.6819
+          },
+          "gpuBytes": 234699776,
+          "downloadBytes": 277028608,
+          "breakdown": {
+            "clientMs": 12.824999570846558,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 3.9214063435792923,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.96119619347155,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 19,
+          "feasible": true,
+          "msPerToken": 20.68379555642605,
+          "serverShare": 0.38566666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 19,
+            "linear500kTop1": 0.8712,
+            "inversionTop1": 0.685,
+            "linearTop1": 0.6763
+          },
+          "gpuBytes": 243034624,
+          "downloadBytes": 284839168,
+          "breakdown": {
+            "clientMs": 13.5374995470047,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 3.2678386196494102,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 42.81407286878675,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 20,
+          "feasible": true,
+          "msPerToken": 20.74272780865431,
+          "serverShare": 0.35333333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 20,
+            "linear500kTop1": 0.8687,
+            "inversionTop1": 0.6797,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 251369472,
+          "downloadBytes": 292649728,
+          "breakdown": {
+            "clientMs": 14.249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 2.614270895719528,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 43.66694954410195,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 21,
+          "feasible": true,
+          "msPerToken": 20.80166006088257,
+          "serverShare": 0.321,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 21,
+            "linear500kTop1": 0.8588,
+            "inversionTop1": 0.6636,
+            "linearTop1": 0.6513
+          },
+          "gpuBytes": 259704320,
+          "downloadBytes": 300460288,
+          "breakdown": {
+            "clientMs": 14.962499499320984,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 1.9607031717896461,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 44.519826219417155,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 22,
+          "feasible": true,
+          "msPerToken": 20.86059231311083,
+          "serverShare": 0.2886666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 22,
+            "linear500kTop1": 0.8409,
+            "inversionTop1": 0.6432,
+            "linearTop1": 0.6262
+          },
+          "gpuBytes": 268039168,
+          "downloadBytes": 308270848,
+          "breakdown": {
+            "clientMs": 15.674999475479126,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 1.307135447859764,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 45.372702894732356,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 23,
+          "feasible": true,
+          "msPerToken": 20.91952456533909,
+          "serverShare": 0.25633333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 23,
+            "linear500kTop1": 0.8263,
+            "inversionTop1": 0.6156,
+            "linearTop1": 0.6117
+          },
+          "gpuBytes": 276374016,
+          "downloadBytes": 316081408,
+          "breakdown": {
+            "clientMs": 16.387499451637268,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 0.653567723929882,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 46.22557957004756,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 20.97845681756735,
+          "serverShare": 0.224,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 24,
+            "linear500kTop1": 0.7881,
+            "inversionTop1": 0.5607,
+            "linearTop1": 0.5744
+          },
+          "gpuBytes": 284708864,
+          "downloadBytes": 323891968,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 0,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 47.07845624536276,
+          "reasons": []
+        },
+        {
+          "mode": "local",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 19.89999942779541,
+          "serverShare": 0,
+          "costPer1M": null,
+          "privacy": null,
+          "gpuBytes": 421149184,
+          "downloadBytes": 323893760,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0,
+            "rttMs": 0,
+            "serverMs": 0,
+            "lmHeadMs": 2.5,
+            "samplingMs": 0.3
+          },
+          "prefillMs": 45.69999885559082,
+          "reasons": []
+        }
+      ]
+    },
+    "latency": {
+      "mode": "server",
+      "N": 0,
+      "reasons": [
+        "policy prefers latency: argmin ms/token = server N=0 (19.3 ms)"
+      ],
+      "estimate": 19.264082573354244,
+      "candidates": [
+        {
+          "mode": "server",
+          "N": 0,
+          "feasible": true,
+          "msPerToken": 19.264082573354244,
+          "serverShare": 1,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 0,
+            "linear500kTop1": 0.9727,
+            "inversionTop1": 0.8188,
+            "linearTop1": 0.8162
+          },
+          "gpuBytes": 0,
+          "downloadBytes": 0,
+          "breakdown": {
+            "clientMs": 0,
+            "exportMs": 0,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 15.68562537431717,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 26.309415847063065,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 1,
+          "feasible": true,
+          "msPerToken": 19.623015016317368,
+          "serverShare": 0.9676666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 1,
+            "linear500kTop1": 0.9694,
+            "inversionTop1": 0.8002,
+            "linearTop1": 0.8133
+          },
+          "gpuBytes": 93007360,
+          "downloadBytes": 144249088,
+          "breakdown": {
+            "clientMs": 0.7124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 15.032057650387287,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 27.46229271311313,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 2,
+          "feasible": true,
+          "msPerToken": 19.681947268545628,
+          "serverShare": 0.9353333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 2,
+            "linear500kTop1": 0.9645,
+            "inversionTop1": 0.7813,
+            "linearTop1": 0.8014
+          },
+          "gpuBytes": 101342208,
+          "downloadBytes": 152059648,
+          "breakdown": {
+            "clientMs": 1.4249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 14.378489926457405,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 28.31516938842833,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 3,
+          "feasible": true,
+          "msPerToken": 19.740879520773888,
+          "serverShare": 0.903,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 3,
+            "linear500kTop1": 0.9563,
+            "inversionTop1": 0.7604,
+            "linearTop1": 0.7835
+          },
+          "gpuBytes": 109677056,
+          "downloadBytes": 159870208,
+          "breakdown": {
+            "clientMs": 2.1374999284744263,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 13.724922202527523,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 29.16804606374353,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 4,
+          "feasible": true,
+          "msPerToken": 19.799811773002148,
+          "serverShare": 0.8706666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 4,
+            "linear500kTop1": 0.9443,
+            "inversionTop1": 0.7433,
+            "linearTop1": 0.7673
+          },
+          "gpuBytes": 118011904,
+          "downloadBytes": 167680768,
+          "breakdown": {
+            "clientMs": 2.8499999046325684,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 13.071354478597641,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.020922739058733,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 5,
+          "feasible": true,
+          "msPerToken": 19.858744025230408,
+          "serverShare": 0.8383333333333334,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 5,
+            "linear500kTop1": 0.9345,
+            "inversionTop1": 0.7394,
+            "linearTop1": 0.7604
+          },
+          "gpuBytes": 126346752,
+          "downloadBytes": 175491328,
+          "breakdown": {
+            "clientMs": 3.5624998807907104,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 12.417786754667759,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.873799414373934,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 6,
+          "feasible": true,
+          "msPerToken": 19.917676277458668,
+          "serverShare": 0.806,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 6,
+            "linear500kTop1": 0.9175,
+            "inversionTop1": 0.7216,
+            "linearTop1": 0.7309
+          },
+          "gpuBytes": 134681600,
+          "downloadBytes": 183301888,
+          "breakdown": {
+            "clientMs": 4.2749998569488525,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 11.764219030737877,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 31.726676089689136,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 7,
+          "feasible": true,
+          "msPerToken": 19.976608529686928,
+          "serverShare": 0.7736666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 7,
+            "linear500kTop1": 0.9071,
+            "inversionTop1": 0.7158,
+            "linearTop1": 0.7215
+          },
+          "gpuBytes": 143016448,
+          "downloadBytes": 191112448,
+          "breakdown": {
+            "clientMs": 4.987499833106995,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 11.110651306807995,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 32.57955276500434,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 8,
+          "feasible": true,
+          "msPerToken": 20.035540781915188,
+          "serverShare": 0.7413333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 8,
+            "linear500kTop1": 0.899,
+            "inversionTop1": 0.7075,
+            "linearTop1": 0.7054
+          },
+          "gpuBytes": 151351296,
+          "downloadBytes": 198923008,
+          "breakdown": {
+            "clientMs": 5.699999809265137,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 10.457083582878113,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 33.43242944031954,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 9,
+          "feasible": true,
+          "msPerToken": 20.094473034143448,
+          "serverShare": 0.709,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 9,
+            "linear500kTop1": 0.887,
+            "inversionTop1": 0.7036,
+            "linearTop1": 0.6891
+          },
+          "gpuBytes": 159686144,
+          "downloadBytes": 206733568,
+          "breakdown": {
+            "clientMs": 6.412499785423279,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 9.80351585894823,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 34.28530611563474,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 10,
+          "feasible": true,
+          "msPerToken": 20.153405286371708,
+          "serverShare": 0.6766666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 10,
+            "linear500kTop1": 0.8779,
+            "inversionTop1": 0.6973,
+            "linearTop1": 0.6765
+          },
+          "gpuBytes": 168020992,
+          "downloadBytes": 214544128,
+          "breakdown": {
+            "clientMs": 7.124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 9.149948135018349,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.13818279094994,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 11,
+          "feasible": true,
+          "msPerToken": 20.212337538599968,
+          "serverShare": 0.6443333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 11,
+            "linear500kTop1": 0.8789,
+            "inversionTop1": 0.6983,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 176355840,
+          "downloadBytes": 222354688,
+          "breakdown": {
+            "clientMs": 7.837499737739563,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 8.496380411088467,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.99105946626514,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 12,
+          "feasible": true,
+          "msPerToken": 20.271269790828228,
+          "serverShare": 0.612,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 12,
+            "linear500kTop1": 0.8706,
+            "inversionTop1": 0.6958,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 184690688,
+          "downloadBytes": 230165248,
+          "breakdown": {
+            "clientMs": 8.549999713897705,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 7.842812687158585,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 36.84393614158034,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 13,
+          "feasible": true,
+          "msPerToken": 20.330202043056488,
+          "serverShare": 0.5796666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 13,
+            "linear500kTop1": 0.8699,
+            "inversionTop1": 0.6932,
+            "linearTop1": 0.6566
+          },
+          "gpuBytes": 193025536,
+          "downloadBytes": 237975808,
+          "breakdown": {
+            "clientMs": 9.262499690055847,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 7.1892449632287025,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 37.696812816895545,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 14,
+          "feasible": true,
+          "msPerToken": 20.389134295284748,
+          "serverShare": 0.5473333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 14,
+            "linear500kTop1": 0.866,
+            "inversionTop1": 0.6963,
+            "linearTop1": 0.6576
+          },
+          "gpuBytes": 201360384,
+          "downloadBytes": 245786368,
+          "breakdown": {
+            "clientMs": 9.97499966621399,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 6.5356772392988205,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 38.549689492210746,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 15,
+          "feasible": true,
+          "msPerToken": 20.448066547513008,
+          "serverShare": 0.515,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 15,
+            "linear500kTop1": 0.8724,
+            "inversionTop1": 0.6901,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 209695232,
+          "downloadBytes": 253596928,
+          "breakdown": {
+            "clientMs": 10.687499642372131,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 5.8821095153689384,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 39.40256616752595,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 16,
+          "feasible": true,
+          "msPerToken": 20.506998799741268,
+          "serverShare": 0.4826666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 16,
+            "linear500kTop1": 0.8754,
+            "inversionTop1": 0.6911,
+            "linearTop1": 0.6672
+          },
+          "gpuBytes": 218030080,
+          "downloadBytes": 261407488,
+          "breakdown": {
+            "clientMs": 11.399999618530273,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 5.228541791439056,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 40.25544284284115,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 17,
+          "feasible": true,
+          "msPerToken": 20.565931051969528,
+          "serverShare": 0.45033333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 17,
+            "linear500kTop1": 0.8823,
+            "inversionTop1": 0.6896,
+            "linearTop1": 0.6885
+          },
+          "gpuBytes": 226364928,
+          "downloadBytes": 269218048,
+          "breakdown": {
+            "clientMs": 12.112499594688416,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 4.574974067509174,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.10831951815635,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 18,
+          "feasible": true,
+          "msPerToken": 20.62486330419779,
+          "serverShare": 0.418,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 18,
+            "linear500kTop1": 0.8715,
+            "inversionTop1": 0.6882,
+            "linearTop1": 0.6819
+          },
+          "gpuBytes": 234699776,
+          "downloadBytes": 277028608,
+          "breakdown": {
+            "clientMs": 12.824999570846558,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 3.9214063435792923,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.96119619347155,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 19,
+          "feasible": true,
+          "msPerToken": 20.68379555642605,
+          "serverShare": 0.38566666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 19,
+            "linear500kTop1": 0.8712,
+            "inversionTop1": 0.685,
+            "linearTop1": 0.6763
+          },
+          "gpuBytes": 243034624,
+          "downloadBytes": 284839168,
+          "breakdown": {
+            "clientMs": 13.5374995470047,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 3.2678386196494102,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 42.81407286878675,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 20,
+          "feasible": true,
+          "msPerToken": 20.74272780865431,
+          "serverShare": 0.35333333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 20,
+            "linear500kTop1": 0.8687,
+            "inversionTop1": 0.6797,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 251369472,
+          "downloadBytes": 292649728,
+          "breakdown": {
+            "clientMs": 14.249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 2.614270895719528,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 43.66694954410195,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 21,
+          "feasible": true,
+          "msPerToken": 20.80166006088257,
+          "serverShare": 0.321,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 21,
+            "linear500kTop1": 0.8588,
+            "inversionTop1": 0.6636,
+            "linearTop1": 0.6513
+          },
+          "gpuBytes": 259704320,
+          "downloadBytes": 300460288,
+          "breakdown": {
+            "clientMs": 14.962499499320984,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 1.9607031717896461,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 44.519826219417155,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 22,
+          "feasible": true,
+          "msPerToken": 20.86059231311083,
+          "serverShare": 0.2886666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 22,
+            "linear500kTop1": 0.8409,
+            "inversionTop1": 0.6432,
+            "linearTop1": 0.6262
+          },
+          "gpuBytes": 268039168,
+          "downloadBytes": 308270848,
+          "breakdown": {
+            "clientMs": 15.674999475479126,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 1.307135447859764,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 45.372702894732356,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 23,
+          "feasible": true,
+          "msPerToken": 20.91952456533909,
+          "serverShare": 0.25633333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 23,
+            "linear500kTop1": 0.8263,
+            "inversionTop1": 0.6156,
+            "linearTop1": 0.6117
+          },
+          "gpuBytes": 276374016,
+          "downloadBytes": 316081408,
+          "breakdown": {
+            "clientMs": 16.387499451637268,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 0.653567723929882,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 46.22557957004756,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 20.97845681756735,
+          "serverShare": 0.224,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 24,
+            "linear500kTop1": 0.7881,
+            "inversionTop1": 0.5607,
+            "linearTop1": 0.5744
+          },
+          "gpuBytes": 284708864,
+          "downloadBytes": 323891968,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 0,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 47.07845624536276,
+          "reasons": []
+        },
+        {
+          "mode": "local",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 19.89999942779541,
+          "serverShare": 0,
+          "costPer1M": null,
+          "privacy": null,
+          "gpuBytes": 421149184,
+          "downloadBytes": 323893760,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0,
+            "rttMs": 0,
+            "serverMs": 0,
+            "lmHeadMs": 2.5,
+            "samplingMs": 0.3
+          },
+          "prefillMs": 45.69999885559082,
+          "reasons": []
+        }
+      ]
+    },
+    "local": {
+      "mode": "local",
+      "N": 24,
+      "reasons": [
+        "policy prefers local and local is feasible"
+      ],
+      "estimate": 19.89999942779541,
+      "candidates": [
+        {
+          "mode": "server",
+          "N": 0,
+          "feasible": true,
+          "msPerToken": 19.264082573354244,
+          "serverShare": 1,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 0,
+            "linear500kTop1": 0.9727,
+            "inversionTop1": 0.8188,
+            "linearTop1": 0.8162
+          },
+          "gpuBytes": 0,
+          "downloadBytes": 0,
+          "breakdown": {
+            "clientMs": 0,
+            "exportMs": 0,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 15.68562537431717,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 26.309415847063065,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 1,
+          "feasible": true,
+          "msPerToken": 19.623015016317368,
+          "serverShare": 0.9676666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 1,
+            "linear500kTop1": 0.9694,
+            "inversionTop1": 0.8002,
+            "linearTop1": 0.8133
+          },
+          "gpuBytes": 93007360,
+          "downloadBytes": 144249088,
+          "breakdown": {
+            "clientMs": 0.7124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 15.032057650387287,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 27.46229271311313,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 2,
+          "feasible": true,
+          "msPerToken": 19.681947268545628,
+          "serverShare": 0.9353333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 2,
+            "linear500kTop1": 0.9645,
+            "inversionTop1": 0.7813,
+            "linearTop1": 0.8014
+          },
+          "gpuBytes": 101342208,
+          "downloadBytes": 152059648,
+          "breakdown": {
+            "clientMs": 1.4249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 14.378489926457405,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 28.31516938842833,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 3,
+          "feasible": true,
+          "msPerToken": 19.740879520773888,
+          "serverShare": 0.903,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 3,
+            "linear500kTop1": 0.9563,
+            "inversionTop1": 0.7604,
+            "linearTop1": 0.7835
+          },
+          "gpuBytes": 109677056,
+          "downloadBytes": 159870208,
+          "breakdown": {
+            "clientMs": 2.1374999284744263,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 13.724922202527523,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 29.16804606374353,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 4,
+          "feasible": true,
+          "msPerToken": 19.799811773002148,
+          "serverShare": 0.8706666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 4,
+            "linear500kTop1": 0.9443,
+            "inversionTop1": 0.7433,
+            "linearTop1": 0.7673
+          },
+          "gpuBytes": 118011904,
+          "downloadBytes": 167680768,
+          "breakdown": {
+            "clientMs": 2.8499999046325684,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 13.071354478597641,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.020922739058733,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 5,
+          "feasible": true,
+          "msPerToken": 19.858744025230408,
+          "serverShare": 0.8383333333333334,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 5,
+            "linear500kTop1": 0.9345,
+            "inversionTop1": 0.7394,
+            "linearTop1": 0.7604
+          },
+          "gpuBytes": 126346752,
+          "downloadBytes": 175491328,
+          "breakdown": {
+            "clientMs": 3.5624998807907104,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 12.417786754667759,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.873799414373934,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 6,
+          "feasible": true,
+          "msPerToken": 19.917676277458668,
+          "serverShare": 0.806,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 6,
+            "linear500kTop1": 0.9175,
+            "inversionTop1": 0.7216,
+            "linearTop1": 0.7309
+          },
+          "gpuBytes": 134681600,
+          "downloadBytes": 183301888,
+          "breakdown": {
+            "clientMs": 4.2749998569488525,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 11.764219030737877,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 31.726676089689136,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 7,
+          "feasible": true,
+          "msPerToken": 19.976608529686928,
+          "serverShare": 0.7736666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 7,
+            "linear500kTop1": 0.9071,
+            "inversionTop1": 0.7158,
+            "linearTop1": 0.7215
+          },
+          "gpuBytes": 143016448,
+          "downloadBytes": 191112448,
+          "breakdown": {
+            "clientMs": 4.987499833106995,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 11.110651306807995,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 32.57955276500434,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 8,
+          "feasible": true,
+          "msPerToken": 20.035540781915188,
+          "serverShare": 0.7413333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 8,
+            "linear500kTop1": 0.899,
+            "inversionTop1": 0.7075,
+            "linearTop1": 0.7054
+          },
+          "gpuBytes": 151351296,
+          "downloadBytes": 198923008,
+          "breakdown": {
+            "clientMs": 5.699999809265137,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 10.457083582878113,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 33.43242944031954,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 9,
+          "feasible": true,
+          "msPerToken": 20.094473034143448,
+          "serverShare": 0.709,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 9,
+            "linear500kTop1": 0.887,
+            "inversionTop1": 0.7036,
+            "linearTop1": 0.6891
+          },
+          "gpuBytes": 159686144,
+          "downloadBytes": 206733568,
+          "breakdown": {
+            "clientMs": 6.412499785423279,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 9.80351585894823,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 34.28530611563474,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 10,
+          "feasible": true,
+          "msPerToken": 20.153405286371708,
+          "serverShare": 0.6766666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 10,
+            "linear500kTop1": 0.8779,
+            "inversionTop1": 0.6973,
+            "linearTop1": 0.6765
+          },
+          "gpuBytes": 168020992,
+          "downloadBytes": 214544128,
+          "breakdown": {
+            "clientMs": 7.124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 9.149948135018349,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.13818279094994,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 11,
+          "feasible": true,
+          "msPerToken": 20.212337538599968,
+          "serverShare": 0.6443333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 11,
+            "linear500kTop1": 0.8789,
+            "inversionTop1": 0.6983,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 176355840,
+          "downloadBytes": 222354688,
+          "breakdown": {
+            "clientMs": 7.837499737739563,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 8.496380411088467,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.99105946626514,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 12,
+          "feasible": true,
+          "msPerToken": 20.271269790828228,
+          "serverShare": 0.612,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 12,
+            "linear500kTop1": 0.8706,
+            "inversionTop1": 0.6958,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 184690688,
+          "downloadBytes": 230165248,
+          "breakdown": {
+            "clientMs": 8.549999713897705,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 7.842812687158585,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 36.84393614158034,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 13,
+          "feasible": true,
+          "msPerToken": 20.330202043056488,
+          "serverShare": 0.5796666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 13,
+            "linear500kTop1": 0.8699,
+            "inversionTop1": 0.6932,
+            "linearTop1": 0.6566
+          },
+          "gpuBytes": 193025536,
+          "downloadBytes": 237975808,
+          "breakdown": {
+            "clientMs": 9.262499690055847,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 7.1892449632287025,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 37.696812816895545,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 14,
+          "feasible": true,
+          "msPerToken": 20.389134295284748,
+          "serverShare": 0.5473333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 14,
+            "linear500kTop1": 0.866,
+            "inversionTop1": 0.6963,
+            "linearTop1": 0.6576
+          },
+          "gpuBytes": 201360384,
+          "downloadBytes": 245786368,
+          "breakdown": {
+            "clientMs": 9.97499966621399,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 6.5356772392988205,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 38.549689492210746,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 15,
+          "feasible": true,
+          "msPerToken": 20.448066547513008,
+          "serverShare": 0.515,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 15,
+            "linear500kTop1": 0.8724,
+            "inversionTop1": 0.6901,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 209695232,
+          "downloadBytes": 253596928,
+          "breakdown": {
+            "clientMs": 10.687499642372131,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 5.8821095153689384,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 39.40256616752595,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 16,
+          "feasible": true,
+          "msPerToken": 20.506998799741268,
+          "serverShare": 0.4826666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 16,
+            "linear500kTop1": 0.8754,
+            "inversionTop1": 0.6911,
+            "linearTop1": 0.6672
+          },
+          "gpuBytes": 218030080,
+          "downloadBytes": 261407488,
+          "breakdown": {
+            "clientMs": 11.399999618530273,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 5.228541791439056,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 40.25544284284115,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 17,
+          "feasible": true,
+          "msPerToken": 20.565931051969528,
+          "serverShare": 0.45033333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 17,
+            "linear500kTop1": 0.8823,
+            "inversionTop1": 0.6896,
+            "linearTop1": 0.6885
+          },
+          "gpuBytes": 226364928,
+          "downloadBytes": 269218048,
+          "breakdown": {
+            "clientMs": 12.112499594688416,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 4.574974067509174,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.10831951815635,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 18,
+          "feasible": true,
+          "msPerToken": 20.62486330419779,
+          "serverShare": 0.418,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 18,
+            "linear500kTop1": 0.8715,
+            "inversionTop1": 0.6882,
+            "linearTop1": 0.6819
+          },
+          "gpuBytes": 234699776,
+          "downloadBytes": 277028608,
+          "breakdown": {
+            "clientMs": 12.824999570846558,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 3.9214063435792923,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.96119619347155,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 19,
+          "feasible": true,
+          "msPerToken": 20.68379555642605,
+          "serverShare": 0.38566666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 19,
+            "linear500kTop1": 0.8712,
+            "inversionTop1": 0.685,
+            "linearTop1": 0.6763
+          },
+          "gpuBytes": 243034624,
+          "downloadBytes": 284839168,
+          "breakdown": {
+            "clientMs": 13.5374995470047,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 3.2678386196494102,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 42.81407286878675,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 20,
+          "feasible": true,
+          "msPerToken": 20.74272780865431,
+          "serverShare": 0.35333333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 20,
+            "linear500kTop1": 0.8687,
+            "inversionTop1": 0.6797,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 251369472,
+          "downloadBytes": 292649728,
+          "breakdown": {
+            "clientMs": 14.249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 2.614270895719528,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 43.66694954410195,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 21,
+          "feasible": true,
+          "msPerToken": 20.80166006088257,
+          "serverShare": 0.321,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 21,
+            "linear500kTop1": 0.8588,
+            "inversionTop1": 0.6636,
+            "linearTop1": 0.6513
+          },
+          "gpuBytes": 259704320,
+          "downloadBytes": 300460288,
+          "breakdown": {
+            "clientMs": 14.962499499320984,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 1.9607031717896461,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 44.519826219417155,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 22,
+          "feasible": true,
+          "msPerToken": 20.86059231311083,
+          "serverShare": 0.2886666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 22,
+            "linear500kTop1": 0.8409,
+            "inversionTop1": 0.6432,
+            "linearTop1": 0.6262
+          },
+          "gpuBytes": 268039168,
+          "downloadBytes": 308270848,
+          "breakdown": {
+            "clientMs": 15.674999475479126,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 1.307135447859764,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 45.372702894732356,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 23,
+          "feasible": true,
+          "msPerToken": 20.91952456533909,
+          "serverShare": 0.25633333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 23,
+            "linear500kTop1": 0.8263,
+            "inversionTop1": 0.6156,
+            "linearTop1": 0.6117
+          },
+          "gpuBytes": 276374016,
+          "downloadBytes": 316081408,
+          "breakdown": {
+            "clientMs": 16.387499451637268,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 0.653567723929882,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 46.22557957004756,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 20.97845681756735,
+          "serverShare": 0.224,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 24,
+            "linear500kTop1": 0.7881,
+            "inversionTop1": 0.5607,
+            "linearTop1": 0.5744
+          },
+          "gpuBytes": 284708864,
+          "downloadBytes": 323891968,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.19999980926513672,
+            "serverMs": 0,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 47.07845624536276,
+          "reasons": []
+        },
+        {
+          "mode": "local",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 19.89999942779541,
+          "serverShare": 0,
+          "costPer1M": null,
+          "privacy": null,
+          "gpuBytes": 421149184,
+          "downloadBytes": 323893760,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0,
+            "rttMs": 0,
+            "serverMs": 0,
+            "lmHeadMs": 2.5,
+            "samplingMs": 0.3
+          },
+          "prefillMs": 45.69999885559082,
+          "reasons": []
+        }
+      ]
+    },
+    "server": {
+      "mode": "server",
+      "N": 0,
+      "reasons": [
+        "policy prefers the server: N = 0"
+      ],
+      "estimate": 19.164083145558834,
+      "candidates": [
+        {
+          "mode": "server",
+          "N": 0,
+          "feasible": true,
+          "msPerToken": 19.164083145558834,
+          "serverShare": 1,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 0,
+            "linear500kTop1": 0.9727,
+            "inversionTop1": 0.8188,
+            "linearTop1": 0.8162
+          },
+          "gpuBytes": 0,
+          "downloadBytes": 0,
+          "breakdown": {
+            "clientMs": 0,
+            "exportMs": 0,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 15.68562537431717,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 26.209416419267654,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 1,
+          "feasible": true,
+          "msPerToken": 19.523015588521957,
+          "serverShare": 0.9676666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 1,
+            "linear500kTop1": 0.9694,
+            "inversionTop1": 0.8002,
+            "linearTop1": 0.8133
+          },
+          "gpuBytes": 93007360,
+          "downloadBytes": 144249088,
+          "breakdown": {
+            "clientMs": 0.7124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 15.032057650387287,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 27.36229328531772,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 2,
+          "feasible": true,
+          "msPerToken": 19.581947840750217,
+          "serverShare": 0.9353333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 2,
+            "linear500kTop1": 0.9645,
+            "inversionTop1": 0.7813,
+            "linearTop1": 0.8014
+          },
+          "gpuBytes": 101342208,
+          "downloadBytes": 152059648,
+          "breakdown": {
+            "clientMs": 1.4249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 14.378489926457405,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 28.21516996063292,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 3,
+          "feasible": true,
+          "msPerToken": 19.640880092978477,
+          "serverShare": 0.903,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 3,
+            "linear500kTop1": 0.9563,
+            "inversionTop1": 0.7604,
+            "linearTop1": 0.7835
+          },
+          "gpuBytes": 109677056,
+          "downloadBytes": 159870208,
+          "breakdown": {
+            "clientMs": 2.1374999284744263,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 13.724922202527523,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 29.06804663594812,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 4,
+          "feasible": true,
+          "msPerToken": 19.699812345206738,
+          "serverShare": 0.8706666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 4,
+            "linear500kTop1": 0.9443,
+            "inversionTop1": 0.7433,
+            "linearTop1": 0.7673
+          },
+          "gpuBytes": 118011904,
+          "downloadBytes": 167680768,
+          "breakdown": {
+            "clientMs": 2.8499999046325684,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 13.071354478597641,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 29.920923311263323,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 5,
+          "feasible": true,
+          "msPerToken": 19.758744597434998,
+          "serverShare": 0.8383333333333334,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 5,
+            "linear500kTop1": 0.9345,
+            "inversionTop1": 0.7394,
+            "linearTop1": 0.7604
+          },
+          "gpuBytes": 126346752,
+          "downloadBytes": 175491328,
+          "breakdown": {
+            "clientMs": 3.5624998807907104,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 12.417786754667759,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 30.773799986578524,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 6,
+          "feasible": true,
+          "msPerToken": 19.817676849663258,
+          "serverShare": 0.806,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 6,
+            "linear500kTop1": 0.9175,
+            "inversionTop1": 0.7216,
+            "linearTop1": 0.7309
+          },
+          "gpuBytes": 134681600,
+          "downloadBytes": 183301888,
+          "breakdown": {
+            "clientMs": 4.2749998569488525,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 11.764219030737877,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 31.626676661893725,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 7,
+          "feasible": true,
+          "msPerToken": 19.876609101891518,
+          "serverShare": 0.7736666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 7,
+            "linear500kTop1": 0.9071,
+            "inversionTop1": 0.7158,
+            "linearTop1": 0.7215
+          },
+          "gpuBytes": 143016448,
+          "downloadBytes": 191112448,
+          "breakdown": {
+            "clientMs": 4.987499833106995,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 11.110651306807995,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 32.47955333720893,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 8,
+          "feasible": true,
+          "msPerToken": 19.935541354119778,
+          "serverShare": 0.7413333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 8,
+            "linear500kTop1": 0.899,
+            "inversionTop1": 0.7075,
+            "linearTop1": 0.7054
+          },
+          "gpuBytes": 151351296,
+          "downloadBytes": 198923008,
+          "breakdown": {
+            "clientMs": 5.699999809265137,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 10.457083582878113,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 33.33243001252413,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 9,
+          "feasible": true,
+          "msPerToken": 19.994473606348038,
+          "serverShare": 0.709,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 9,
+            "linear500kTop1": 0.887,
+            "inversionTop1": 0.7036,
+            "linearTop1": 0.6891
+          },
+          "gpuBytes": 159686144,
+          "downloadBytes": 206733568,
+          "breakdown": {
+            "clientMs": 6.412499785423279,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 9.80351585894823,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 34.18530668783933,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 10,
+          "feasible": true,
+          "msPerToken": 20.053405858576298,
+          "serverShare": 0.6766666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 10,
+            "linear500kTop1": 0.8779,
+            "inversionTop1": 0.6973,
+            "linearTop1": 0.6765
+          },
+          "gpuBytes": 168020992,
+          "downloadBytes": 214544128,
+          "breakdown": {
+            "clientMs": 7.124999761581421,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 9.149948135018349,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.03818336315453,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 11,
+          "feasible": true,
+          "msPerToken": 20.112338110804558,
+          "serverShare": 0.6443333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 11,
+            "linear500kTop1": 0.8789,
+            "inversionTop1": 0.6983,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 176355840,
+          "downloadBytes": 222354688,
+          "breakdown": {
+            "clientMs": 7.837499737739563,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 8.496380411088467,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 35.89106003846973,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 12,
+          "feasible": true,
+          "msPerToken": 20.171270363032818,
+          "serverShare": 0.612,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 12,
+            "linear500kTop1": 0.8706,
+            "inversionTop1": 0.6958,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 184690688,
+          "downloadBytes": 230165248,
+          "breakdown": {
+            "clientMs": 8.549999713897705,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 7.842812687158585,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 36.74393671378493,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 13,
+          "feasible": true,
+          "msPerToken": 20.230202615261078,
+          "serverShare": 0.5796666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 13,
+            "linear500kTop1": 0.8699,
+            "inversionTop1": 0.6932,
+            "linearTop1": 0.6566
+          },
+          "gpuBytes": 193025536,
+          "downloadBytes": 237975808,
+          "breakdown": {
+            "clientMs": 9.262499690055847,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 7.1892449632287025,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 37.596813389100134,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 14,
+          "feasible": true,
+          "msPerToken": 20.289134867489338,
+          "serverShare": 0.5473333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 14,
+            "linear500kTop1": 0.866,
+            "inversionTop1": 0.6963,
+            "linearTop1": 0.6576
+          },
+          "gpuBytes": 201360384,
+          "downloadBytes": 245786368,
+          "breakdown": {
+            "clientMs": 9.97499966621399,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 6.5356772392988205,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 38.449690064415336,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 15,
+          "feasible": true,
+          "msPerToken": 20.348067119717598,
+          "serverShare": 0.515,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 15,
+            "linear500kTop1": 0.8724,
+            "inversionTop1": 0.6901,
+            "linearTop1": 0.6616
+          },
+          "gpuBytes": 209695232,
+          "downloadBytes": 253596928,
+          "breakdown": {
+            "clientMs": 10.687499642372131,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 5.8821095153689384,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 39.30256673973054,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 16,
+          "feasible": true,
+          "msPerToken": 20.406999371945858,
+          "serverShare": 0.4826666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 16,
+            "linear500kTop1": 0.8754,
+            "inversionTop1": 0.6911,
+            "linearTop1": 0.6672
+          },
+          "gpuBytes": 218030080,
+          "downloadBytes": 261407488,
+          "breakdown": {
+            "clientMs": 11.399999618530273,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 5.228541791439056,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 40.15544341504574,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 17,
+          "feasible": true,
+          "msPerToken": 20.465931624174118,
+          "serverShare": 0.45033333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 17,
+            "linear500kTop1": 0.8823,
+            "inversionTop1": 0.6896,
+            "linearTop1": 0.6885
+          },
+          "gpuBytes": 226364928,
+          "downloadBytes": 269218048,
+          "breakdown": {
+            "clientMs": 12.112499594688416,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 4.574974067509174,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.00832009036094,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 18,
+          "feasible": true,
+          "msPerToken": 20.524863876402378,
+          "serverShare": 0.418,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 18,
+            "linear500kTop1": 0.8715,
+            "inversionTop1": 0.6882,
+            "linearTop1": 0.6819
+          },
+          "gpuBytes": 234699776,
+          "downloadBytes": 277028608,
+          "breakdown": {
+            "clientMs": 12.824999570846558,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 3.9214063435792923,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 41.86119676567614,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 19,
+          "feasible": true,
+          "msPerToken": 20.583796128630638,
+          "serverShare": 0.38566666666666666,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 19,
+            "linear500kTop1": 0.8712,
+            "inversionTop1": 0.685,
+            "linearTop1": 0.6763
+          },
+          "gpuBytes": 243034624,
+          "downloadBytes": 284839168,
+          "breakdown": {
+            "clientMs": 13.5374995470047,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 3.2678386196494102,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 42.71407344099134,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 20,
+          "feasible": true,
+          "msPerToken": 20.642728380858898,
+          "serverShare": 0.35333333333333333,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 20,
+            "linear500kTop1": 0.8687,
+            "inversionTop1": 0.6797,
+            "linearTop1": 0.6673
+          },
+          "gpuBytes": 251369472,
+          "downloadBytes": 292649728,
+          "breakdown": {
+            "clientMs": 14.249999523162842,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 2.614270895719528,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 43.56695011630654,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 21,
+          "feasible": true,
+          "msPerToken": 20.701660633087158,
+          "serverShare": 0.321,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 21,
+            "linear500kTop1": 0.8588,
+            "inversionTop1": 0.6636,
+            "linearTop1": 0.6513
+          },
+          "gpuBytes": 259704320,
+          "downloadBytes": 300460288,
+          "breakdown": {
+            "clientMs": 14.962499499320984,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 1.9607031717896461,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 44.419826791621745,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 22,
+          "feasible": true,
+          "msPerToken": 20.76059288531542,
+          "serverShare": 0.2886666666666667,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 22,
+            "linear500kTop1": 0.8409,
+            "inversionTop1": 0.6432,
+            "linearTop1": 0.6262
+          },
+          "gpuBytes": 268039168,
+          "downloadBytes": 308270848,
+          "breakdown": {
+            "clientMs": 15.674999475479126,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 1.307135447859764,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 45.272703466936946,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 23,
+          "feasible": true,
+          "msPerToken": 20.81952513754368,
+          "serverShare": 0.25633333333333336,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 23,
+            "linear500kTop1": 0.8263,
+            "inversionTop1": 0.6156,
+            "linearTop1": 0.6117
+          },
+          "gpuBytes": 276374016,
+          "downloadBytes": 316081408,
+          "breakdown": {
+            "clientMs": 16.387499451637268,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 0.653567723929882,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 46.12558014225215,
+          "reasons": []
+        },
+        {
+          "mode": "split",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 20.87845738977194,
+          "serverShare": 0.224,
+          "costPer1M": null,
+          "privacy": {
+            "boundary": 24,
+            "linear500kTop1": 0.7881,
+            "inversionTop1": 0.5607,
+            "linearTop1": 0.5744
+          },
+          "gpuBytes": 284708864,
+          "downloadBytes": 323891968,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0.3000001907348633,
+            "rttMs": 0.10000038146972656,
+            "serverMs": 0,
+            "lmHeadMs": 3.3784573897719383,
+            "samplingMs": 0
+          },
+          "prefillMs": 46.97845681756735,
+          "reasons": []
+        },
+        {
+          "mode": "local",
+          "N": 24,
+          "feasible": true,
+          "msPerToken": 19.89999942779541,
+          "serverShare": 0,
+          "costPer1M": null,
+          "privacy": null,
+          "gpuBytes": 421149184,
+          "downloadBytes": 323893760,
+          "breakdown": {
+            "clientMs": 17.09999942779541,
+            "exportMs": 0,
+            "rttMs": 0,
+            "serverMs": 0,
+            "lmHeadMs": 2.5,
+            "samplingMs": 0.3
+          },
+          "prefillMs": 45.69999885559082,
+          "reasons": []
+        }
+      ]
+    }
+  },
+  "sweep": [
+    {
+      "sel": 0,
+      "N": 0,
+      "mode": "server",
+      "estimate": 19.164083145558834,
+      "breakdownEstimate": {
+        "clientMs": 0,
+        "exportMs": 0,
+        "rttMs": 0.10000038146972656,
+        "serverMs": 15.68562537431717,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 26.209416419267654,
+      "measured": 18.90000057220459,
+      "measuredRuns": [
+        19.199999809265137,
+        18.800000190734863,
+        18.90000057220459
+      ],
+      "prefillMeasured": 36.10000038146973,
+      "loadMs": null,
+      "serverBusyMs": 612.4721225351095,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 0,
+        "exportMs": 0,
+        "roundTripMs": 18.90000057220459,
+        "serverBusyMs": 18.555250018835068,
+        "networkMs": 0.3447505533695221,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 18.90000057220459
+      }
+    },
+    {
+      "sel": 4,
+      "N": 4,
+      "mode": "split",
+      "estimate": 19.699812345206738,
+      "breakdownEstimate": {
+        "clientMs": 2.8499999046325684,
+        "exportMs": 0.3000001907348633,
+        "rttMs": 0.10000038146972656,
+        "serverMs": 13.071354478597641,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 29.920923311263323,
+      "measured": 20,
+      "measuredRuns": [
+        21.100000381469727,
+        20,
+        20
+      ],
+      "prefillMeasured": 41,
+      "loadMs": 794.8000001907349,
+      "serverBusyMs": 536.1040011048317,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 2.90000057220459,
+        "exportMs": 0.3000001907348633,
+        "roundTripMs": 16.600000381469727,
+        "serverBusyMs": 16.324833035469055,
+        "networkMs": 0.2751673460006714,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 20
+      }
+    },
+    {
+      "sel": 8,
+      "N": 8,
+      "mode": "split",
+      "estimate": 19.935541354119778,
+      "breakdownEstimate": {
+        "clientMs": 5.699999809265137,
+        "exportMs": 0.3000001907348633,
+        "rttMs": 0.10000038146972656,
+        "serverMs": 10.457083582878113,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 33.33243001252413,
+      "measured": 20.59999942779541,
+      "measuredRuns": [
+        21.199999809265137,
+        20.09999942779541,
+        20.59999942779541
+      ],
+      "prefillMeasured": 43.89999961853027,
+      "loadMs": 1051.1999998092651,
+      "serverBusyMs": 466.6106700897217,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 5.5,
+        "exportMs": 0.39999961853027344,
+        "roundTripMs": 14.59999942779541,
+        "serverBusyMs": 14.101708307862282,
+        "networkMs": 0.49829111993312836,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 20.59999942779541
+      }
+    },
+    {
+      "sel": 12,
+      "N": 12,
+      "mode": "split",
+      "estimate": 20.171270363032818,
+      "breakdownEstimate": {
+        "clientMs": 8.549999713897705,
+        "exportMs": 0.3000001907348633,
+        "rttMs": 0.10000038146972656,
+        "serverMs": 7.842812687158585,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 36.74393671378493,
+      "measured": 19.899999618530273,
+      "measuredRuns": [
+        20.899999618530273,
+        19.800000190734863,
+        19.899999618530273
+      ],
+      "prefillMeasured": 47.90000057220459,
+      "loadMs": 1067.0999994277954,
+      "serverBusyMs": 362.7037927508354,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 8,
+        "exportMs": 0.3000001907348633,
+        "roundTripMs": 11.09999942779541,
+        "serverBusyMs": 10.811207816004753,
+        "networkMs": 0.28879161179065704,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 19.899999618530273
+      }
+    },
+    {
+      "sel": 16,
+      "N": 16,
+      "mode": "split",
+      "estimate": 20.506999753415585,
+      "breakdownEstimate": {
+        "clientMs": 11.399999618530273,
+        "exportMs": 0.3000001907348633,
+        "rttMs": 0.20000076293945312,
+        "serverMs": 5.228541791439056,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 40.255443796515465,
+      "measured": 20.199999809265137,
+      "measuredRuns": [
+        21.09999942779541,
+        20.199999809265137,
+        20.199999809265137
+      ],
+      "prefillMeasured": 52.20000076293945,
+      "loadMs": 1335.8000001907349,
+      "serverBusyMs": 289.8878352716565,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 10.5,
+        "exportMs": 0.6999998092651367,
+        "roundTripMs": 8.899999618530273,
+        "serverBusyMs": 8.591708727180958,
+        "networkMs": 0.30829089134931564,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 20.199999809265137
+      }
+    },
+    {
+      "sel": 20,
+      "N": 20,
+      "mode": "split",
+      "estimate": 20.642728380858898,
+      "breakdownEstimate": {
+        "clientMs": 14.249999523162842,
+        "exportMs": 0.3000001907348633,
+        "rttMs": 0.10000038146972656,
+        "serverMs": 2.614270895719528,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 43.56695011630654,
+      "measured": 20.300000190734863,
+      "measuredRuns": [
+        21.299999237060547,
+        20.100000381469727,
+        20.300000190734863
+      ],
+      "prefillMeasured": 56.80000019073486,
+      "loadMs": 1680.6000003814697,
+      "serverBusyMs": 213.68917170912027,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 13.100000381469727,
+        "exportMs": 0.39999961853027344,
+        "roundTripMs": 6.5,
+        "serverBusyMs": 6.207084283232689,
+        "networkMs": 0.2929157167673111,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 20.300000190734863
+      }
+    },
+    {
+      "sel": 24,
+      "N": 24,
+      "mode": "split",
+      "estimate": 20.87845738977194,
+      "breakdownEstimate": {
+        "clientMs": 17.09999942779541,
+        "exportMs": 0.3000001907348633,
+        "rttMs": 0.10000038146972656,
+        "serverMs": 0,
+        "lmHeadMs": 3.3784573897719383,
+        "samplingMs": 0
+      },
+      "prefillEstimate": 46.97845681756735,
+      "measured": 20.5,
+      "measuredRuns": [
+        21,
+        20.5,
+        20.5
+      ],
+      "prefillMeasured": 58.19999980926514,
+      "loadMs": 1845,
+      "serverBusyMs": 131.95196073502302,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 15.5,
+        "exportMs": 0.8000001907348633,
+        "roundTripMs": 4,
+        "serverBusyMs": 3.6687497049570084,
+        "networkMs": 0.33125029504299164,
+        "lmHeadMs": 0,
+        "sampleMs": 0,
+        "totalMs": 20.5
+      }
+    },
+    {
+      "sel": "local",
+      "N": 24,
+      "mode": "local",
+      "estimate": 19.89999942779541,
+      "breakdownEstimate": {
+        "clientMs": 17.09999942779541,
+        "exportMs": 0,
+        "rttMs": 0,
+        "serverMs": 0,
+        "lmHeadMs": 2.5,
+        "samplingMs": 0.3
+      },
+      "prefillEstimate": 45.69999885559082,
+      "measured": 18.300000190734863,
+      "measuredRuns": [
+        18.600000381469727,
+        18.300000190734863,
+        18.199999809265137
+      ],
+      "prefillMeasured": 47.19999980926514,
+      "loadMs": 1833.8999996185303,
+      "serverBusyMs": 0,
+      "tokens": 32,
+      "breakdownMeasured": {
+        "clientMs": 15.5,
+        "exportMs": 0,
+        "roundTripMs": 0,
+        "serverBusyMs": 0,
+        "networkMs": 0,
+        "lmHeadMs": 2.5,
+        "sampleMs": 0.10000038146972656,
+        "totalMs": 18.300000190734863
+      }
+    }
+  ],
+  "updated": "2026-09-18T01:06:29.041Z"
+}

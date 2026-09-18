@@ -79,8 +79,43 @@ export function buildReport(i: ReportInput): LoadReport {
   return r;
 }
 
+/** Session report v3 (schemas/telemetry.v3.json): one run() call. Never carries prompt or output content. */
+export interface SessionReport {
+  schema: 3;
+  model: string;
+  variant: string;
+  mode: "local" | "split" | "server";
+  N: number;
+  L: number;
+  prompt_tokens: number;
+  new_tokens: number;
+  client_ms: number;
+  server_busy_ms: number;
+  rtt_ms: number;
+  tok_per_s: number;
+  plan_policy: "cost" | "latency" | "local" | "server";
+  cache_mode: CacheMode;
+  browser: Browser;
+  webgpu: boolean;
+}
+
+export interface SessionReportInput {
+  model: string; variant: string; mode: SessionReport["mode"]; N: number; L: number; promptTokens: number; newTokens: number;
+  clientMs: number; serverBusyMs: number; rttMs: number; tokPerS: number; planPolicy: SessionReport["plan_policy"]; cacheMode: CacheMode; device: DeviceInfo;
+}
+
+const ms1 = (n: number): number => Math.max(0, Math.round(n * 10) / 10);
+
+export function buildSessionReport(i: SessionReportInput): SessionReport {
+  return {
+    schema: 3, model: i.model, variant: i.variant, mode: i.mode, N: int(i.N), L: int(i.L), prompt_tokens: int(i.promptTokens), new_tokens: int(i.newTokens),
+    client_ms: ms1(i.clientMs), server_busy_ms: ms1(i.serverBusyMs), rtt_ms: ms1(i.rttMs), tok_per_s: ms1(i.tokPerS),
+    plan_policy: i.planPolicy, cache_mode: i.cacheMode, browser: i.device.browser, webgpu: i.device.webgpu,
+  };
+}
+
 /** POSTs the report; resolves to the HTTP status, or null when the request itself failed. Never throws. */
-export async function postReport(api: string, report: LoadReport, f: FetchLike = (u, i) => fetch(u, i)): Promise<number | null> {
+export async function postReport(api: string, report: LoadReport | SessionReport, f: FetchLike = (u, i) => fetch(u, i)): Promise<number | null> {
   try {
     const res = await f(`${api.replace(/\/+$/, "")}/v1/telemetry/load`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(report), keepalive: true,

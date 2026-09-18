@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dianome.dev/schemas/telemetry.v3.json",
+  "title": "Dianome session report v3",
+  "description": "One split/local/server generation session posted by run() to POST /v1/telemetry/load (the Worker accepts schemas 1-3; schema 3 goes to the dianome_sessions dataset). Every field is required. It never carries prompt or output content. The Worker adds country, colo and an hour-rounded timestamp; it never stores the IP address or user agent string.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "model", "variant", "mode", "N", "L", "prompt_tokens", "new_tokens", "client_ms", "server_busy_ms", "rtt_ms", "tok_per_s", "plan_policy", "cache_mode", "browser", "webgpu"],
+  "properties": {
+    "schema": { "const": 3 },
+    "model": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$", "maxLength": 128 },
+    "variant": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._/-]*$", "maxLength": 128 },
+    "mode": { "enum": ["local", "split", "server"], "description": "local: N = L and lm_head + sampling on the client; split: 1 <= N <= L with the server finishing; server: N = 0" },
+    "N": { "type": "integer", "minimum": 0, "maximum": 1000, "description": "Blocks run on the client (the split point)" },
+    "L": { "type": "integer", "minimum": 1, "maximum": 1000 },
+    "prompt_tokens": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "new_tokens": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "client_ms": { "type": "number", "minimum": 0, "maximum": 86400000, "description": "Sum of runtime prefill/decode/export/lm_head/sampling ms over the session" },
+    "server_busy_ms": { "type": "number", "minimum": 0, "maximum": 86400000, "description": "Sum of the server's busy_ms over the session (0 in local mode)" },
+    "rtt_ms": { "type": "number", "minimum": 0, "maximum": 86400000, "description": "WebSocket ping median measured before the session (0 in local mode)" },
+    "tok_per_s": { "type": "number", "minimum": 0, "maximum": 1000000, "description": "new_tokens / decode wall seconds (steps after the first)" },
+    "plan_policy": { "enum": ["cost", "latency", "local", "server"] },
+    "cache_mode": { "enum": ["per-site", "cross-site", "none"] },
+    "browser": { "enum": ["chrome", "firefox", "safari", "other"] },
+    "webgpu": { "type": "boolean" }
+  }
+}

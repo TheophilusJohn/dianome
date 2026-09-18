@@ -2,8 +2,9 @@ import { createExecutionContext, env, waitOnExecutionContext } from "cloudflare:
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import worker from "../src/index";
 import { STATS_CACHE_KEY } from "../src/stats";
-import { dataPoint } from "../src/telemetry";
-import { MODEL_ID, seedManifest, validReport, validReportV2 } from "./fixtures";
+import { dataPoint, sessionDataPoint } from "../src/telemetry";
+import { PLAN_CACHE_MS, SESSION_TTL_SECONDS, canonicalPayload, mintToken, resetPlanCache, verifyToken } from "../src/split";
+import { MODEL_ID, seedManifest, validReport, validReportV2, validSession } from "./fixtures";
 
 const BASE = "https://api.dianome.dev";
 
@@ -164,6 +165,122 @@ describe("telemetry", () => {
   it("rejects non-JSON content types and GET", async () => {
     expect((await call("/v1/telemetry/load", { method: "POST", headers: { "Content-Type": "text/plain" }, body: "{}" })).status).toBe(415);
     expect((await call("/v1/telemetry/load")).status).toBe(405);
+  });
+});
+
+describe("telemetry v3 (session reports)", () => {
+  it("accepts a valid session report with 202", async () => {
+    expect((await post(validSession())).status).toBe(202);
+    expect((await post({ ...validSession(), mode: "local", N: 24, server_busy_ms: 0, rtt_ms: 0 })).status).toBe(202);
+    expect((await post({ ...validSession(), mode: "server", N: 0, client_ms: 0 })).status).toBe(202);
+  });
+  it("rejects unknown fields, missing fields, bad enums, mode/N mismatches and prompt content", async () => {
+    const r = await post({ ...validSession(), prompt: "secret" });
+    expect(r.status).toBe(400);
+    expect(await r.json()).toMatchObject({ detail: "unknown field: prompt" });
+    const { tok_per_s: _t, ...missing } = validSession();
+    expect((await post(missing)).status).toBe(400);
+    expect((await post({ ...validSession(), mode: "hybrid" })).status).toBe(400);
+    expect((await post({ ...validSession(), plan_policy: "cheap" })).status).toBe(400);
+    expect((await post({ ...validSession(), mode: "server", N: 3 })).status).toBe(400);
+    expect((await post({ ...validSession(), mode: "local", N: 12 })).status).toBe(400);
+    expect((await post({ ...validSession(), N: 30 })).status).toBe(400);
+    expect((await post({ ...validSession(), client_ms: -1 })).status).toBe(400);
+    expect((await post({ ...validSession(), tok_per_s: "fast" })).status).toBe(400);
+  });
+  it("maps schema 3 onto the sessions dataset columns", () => {
+    const p = sessionDataPoint(validSession() as never, "US", "ATL", "h");
+    expect(p.blobs).toEqual(["qwen2.5-0.5b-instruct", "q4", "split", "cost", "per-site", "chrome", "US", "ATL", "h"]);
+    expect(p.doubles).toEqual([12, 24, 40, 64, 620.5, 710.2, 3.8, 41.7, 1]);
+    expect(p.indexes).toEqual(["qwen2.5-0.5b-instruct"]);
+  });
+});
+
+describe("split: session tokens", () => {
+  const ORIGIN = "http://localhost:5177";
+  const session = (body: unknown = {}, headers: Record<string, string> = { Origin: ORIGIN }, envOverride = {}) =>
+    call("/v1/split/session", { method: "POST", headers: { "Content-Type": "application/json", ...headers }, body: JSON.stringify(body) }, envOverride);
+
+  it("mints a token that verifies, with the payload fields and a 1 h expiry", async () => {
+    const res = await session({ max_ctx: 512 });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+    const body = await res.json() as { url: string; token: string; expires_at: string; sid: string; model: string; max_ctx: number };
+    expect(body.url).toBe("ws://127.0.0.1:8765");
+    expect(body.model).toBe("qwen2.5-0.5b-instruct");
+    expect(body.max_ctx).toBe(512);
+    const exp = Date.parse(body.expires_at) / 1000;
+    expect(exp - Date.now() / 1000).toBeGreaterThan(SESSION_TTL_SECONDS - 5);
+    const payload = await verifyToken(body.token, "test-signing-key");
+    expect(payload).toMatchObject({ sid: body.sid, model: "qwen2.5-0.5b-instruct", max_ctx: 512, origin: ORIGIN });
+    expect(payload!.exp).toBe(Math.floor(exp));
+    // the payload half is canonical JSON (sorted keys, no whitespace), the same bytes the Python server signs
+    const raw = atob(body.token.split(".")[0]!.replace(/-/g, "+").replace(/_/g, "/"));
+    expect(raw).toBe(canonicalPayload(payload!));
+    expect(raw.startsWith('{"exp":')).toBe(true);
+  });
+  it("round trip: mint → verify; expiry and a bad key are refused", async () => {
+    const now = 1_800_000_000;
+    const t = await mintToken("k", { sid: "s", model: "m", exp: now + 60, max_ctx: 64, origin: "https://a" });
+    expect(await verifyToken(t, "k", now)).toEqual({ sid: "s", model: "m", exp: now + 60, max_ctx: 64, origin: "https://a" });
+    expect(await verifyToken(t, "k", now + 61)).toBeNull();
+    expect(await verifyToken(t, "other", now)).toBeNull();
+    expect(await verifyToken(t.slice(0, -2) + "zz", "k", now)).toBeNull();
+    expect(await verifyToken("garbage", "k", now)).toBeNull();
+    expect(await verifyToken("a.b.c", "k", now)).toBeNull();
+  });
+  it("refuses a missing or foreign Origin, an unknown model, a bad max_ctx, and non-POST", async () => {
+    expect((await session({}, {})).status).toBe(403);
+    expect((await session({}, { Origin: "https://evil.example" })).status).toBe(403);
+    expect((await session({ model: "other-model" })).status).toBe(400);
+    expect((await session({ max_ctx: 0 })).status).toBe(400);
+    expect((await session({ max_ctx: "big" })).status).toBe(400);
+    expect((await session({ max_ctx: 99999 })).status).toBe(200);
+    expect(((await (await session({ max_ctx: 99999 })).json()) as { max_ctx: number }).max_ctx).toBe(4096);
+    expect((await call("/v1/split/session")).status).toBe(405);
+  });
+  it("503 when the signing key is not configured", async () => {
+    expect((await session({}, { Origin: ORIGIN }, { SPLIT_SIGNING_KEY: undefined })).status).toBe(503);
+  });
+});
+
+describe("split: rates and plan proxy", () => {
+  afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); resetPlanCache(); });
+
+  it("serves rates.json fields and says whether a rate is available", async () => {
+    const res = await call("/v1/split/rates");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Cache-Control")).toBe("public, max-age=300");
+    const body = await res.json() as Record<string, unknown>;
+    expect(Object.keys(body).sort()).toEqual(["gpu", "rate_available", "retrieved", "source", "usd_per_hour"]);
+    expect(body.rate_available).toBe(typeof body.usd_per_hour === "number");
+  });
+  it("proxies the server's /plan and caches it for 5 s", async () => {
+    vi.useFakeTimers({ now: 1_800_000_000_000, toFake: ["Date"] });
+    const plan = { model: "qwen2.5-0.5b-instruct", L: 24, d_model: 896, active_sessions: 0, busy_fraction_60s: 0.01, ms_per_block_decode: 0.63, ms_per_block_prefill: 0.9, lm_head_ms: 3.0 };
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify(plan), { status: 200, headers: { "Content-Type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+    const a = await call("/v1/split/plan");
+    expect(a.status).toBe(200);
+    expect(await a.json()).toEqual(plan);
+    expect(a.headers.get("Cache-Control")).toBe("public, max-age=5");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect((fetchMock.mock.calls[0] as unknown[])[0]).toBe("http://127.0.0.1:8765/plan");
+    vi.setSystemTime(1_800_000_000_000 + PLAN_CACHE_MS - 1);
+    expect(await (await call("/v1/split/plan")).json()).toEqual(plan);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    vi.setSystemTime(1_800_000_000_000 + PLAN_CACHE_MS + 1);
+    await call("/v1/split/plan");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("503 with reachable: false when the server is down, and that is cached too", async () => {
+    const fetchMock = vi.fn(async () => { throw new TypeError("connect ECONNREFUSED"); });
+    vi.stubGlobal("fetch", fetchMock);
+    const res = await call("/v1/split/plan");
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ error: "server_unreachable", reachable: false });
+    await call("/v1/split/plan");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 

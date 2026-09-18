@@ -1,0 +1,202 @@
+{
+  "info": {
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "webgpu": true
+  },
+  "fp16Gates": {
+    "server": {
+      "mode": "server",
+      "N": 0,
+      "tokens": [
+        752,
+        83951,
+        1526,
+        279,
+        57267,
+        6176,
+        13638,
+        13,
+        576,
+        33581,
+        374,
+        264,
+        6233,
+        1992,
+        11,
+        448
+      ],
+      "tokPerS": 51.885160946692935,
+      "serverBusyMs": 341.57653991132975
+    },
+    "split": {
+      "mode": "split",
+      "N": 24,
+      "tokens": [
+        752,
+        83951,
+        1526,
+        279,
+        57267,
+        6176,
+        13638,
+        13,
+        576,
+        33581,
+        374,
+        264,
+        6233,
+        1992,
+        11,
+        448
+      ],
+      "tokPerS": 42.86939130138147,
+      "serverBusyMs": 202.74666976183653,
+      "reasons": [
+        "policy prefers cost: max feasible N = 24 (server share 0.22)"
+      ],
+      "loadMs": 6416.299999237061
+    },
+    "local": {
+      "mode": "local",
+      "N": 24,
+      "tokens": [
+        752,
+        83951,
+        1526,
+        279,
+        57267,
+        6176,
+        13638,
+        13,
+        576,
+        33581,
+        374,
+        264,
+        6233,
+        1992,
+        11,
+        448
+      ],
+      "tokPerS": 44.70938897168406,
+      "reasons": [
+        "policy prefers local and local is feasible"
+      ],
+      "loadMs": 6277.5
+    }
+  },
+  "policies": {
+    "cost": {
+      "mode": "local",
+      "N": 24,
+      "tokens": 18,
+      "text": "Sure, here are three colors:\n\n1. Red\n2. Blue\n3. Green",
+      "tokPerS": 46.51162790697674,
+      "reasons": [
+        "policy prefers cost: local (server share 0)"
+      ],
+      "estimate": 18.600000190734864,
+      "rtt": 0.19999980926513672,
+      "report": {
+        "schema": 3,
+        "model": "qwen2.5-0.5b-instruct",
+        "variant": "q4",
+        "mode": "local",
+        "N": 24,
+        "L": 24,
+        "prompt_tokens": 33,
+        "new_tokens": 18,
+        "client_ms": 568.1,
+        "server_busy_ms": 0,
+        "rtt_ms": 0.2,
+        "tok_per_s": 46.5,
+        "plan_policy": "cost",
+        "cache_mode": "none",
+        "browser": "chrome",
+        "webgpu": true
+      },
+      "status": 202,
+      "serverBusyMs": 0
+    },
+    "latency": {
+      "mode": "local",
+      "N": 24,
+      "tokens": 18,
+      "text": "Sure, here are three colors:\n\n1. Red\n2. Blue\n3. Green",
+      "tokPerS": 56.02240893032858,
+      "reasons": [
+        "policy prefers latency: argmin ms/token = local N=24 (18.6 ms)"
+      ],
+      "estimate": 18.600000190734864,
+      "rtt": 0.19999980926513672,
+      "report": {
+        "schema": 3,
+        "model": "qwen2.5-0.5b-instruct",
+        "variant": "q4",
+        "mode": "local",
+        "N": 24,
+        "L": 24,
+        "prompt_tokens": 33,
+        "new_tokens": 18,
+        "client_ms": 383.9,
+        "server_busy_ms": 0,
+        "rtt_ms": 0.2,
+        "tok_per_s": 56,
+        "plan_policy": "latency",
+        "cache_mode": "none",
+        "browser": "chrome",
+        "webgpu": true
+      },
+      "status": 202,
+      "serverBusyMs": 0
+    }
+  },
+  "telemetryPosted": [
+    {
+      "at": "2026-09-18T01:10:22.906Z",
+      "status": 202,
+      "body": {
+        "schema": 3,
+        "model": "qwen2.5-0.5b-instruct",
+        "variant": "q4",
+        "mode": "local",
+        "N": 24,
+        "L": 24,
+        "prompt_tokens": 33,
+        "new_tokens": 18,
+        "client_ms": 568.1,
+        "server_busy_ms": 0,
+        "rtt_ms": 0.2,
+        "tok_per_s": 46.5,
+        "plan_policy": "cost",
+        "cache_mode": "none",
+        "browser": "chrome",
+        "webgpu": true
+      },
+      "response": ""
+    },
+    {
+      "at": "2026-09-18T01:10:23.325Z",
+      "status": 202,
+      "body": {
+        "schema": 3,
+        "model": "qwen2.5-0.5b-instruct",
+        "variant": "q4",
+        "mode": "local",
+        "N": 24,
+        "L": 24,
+        "prompt_tokens": 33,
+        "new_tokens": 18,
+        "client_ms": 383.9,
+        "server_busy_ms": 0,
+        "rtt_ms": 0.2,
+        "tok_per_s": 56,
+        "plan_policy": "latency",
+        "cache_mode": "none",
+        "browser": "chrome",
+        "webgpu": true
+      },
+      "response": ""
+    }
+  ],
+  "updated": "2026-09-18T01:10:23.352Z"
+}

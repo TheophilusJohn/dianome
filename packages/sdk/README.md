@@ -28,6 +28,18 @@ for await (const group of d.stream("qwen2.5-0.5b-instruct", { variant: "q4" })) 
 const model = await d.load("qwen2.5-0.5b-instruct", { variant: "q4", onProgress: (p) => console.log(p.bytesDone / p.bytesTotal, p.source) });
 model.entry("model.layers.7.self_attn.q_proj.weight").parts?.scales;
 model.summary;                                 // bytes, ms, source, cacheHits, cacheMode, the report sent
+
+// Generate: local (whole model here), split at a planner-chosen N, or server, chosen per device and network.
+const r = await d.run("qwen2.5-0.5b-instruct", {
+  messages: [{ role: "user", content: "Why is the sky blue?" }],   // or prompt: "…" (sent as-is)
+  variant: "q4", policy: { prefer: "cost" }, maxTokens: 128, sampling: { temperature: 0 },
+  onToken: (text) => process.stdout.write(text), onPlan: (p) => console.log(p.mode, p.N, p.reasons),
+});
+r.text; r.tokens; r.mode; r.N; r.plan.candidates; r.timings; r.serverBusyMs; r.costEstimate; r.privacy;
+const plan = await d.planRun("qwen2.5-0.5b-instruct", { variant: "q4", policy: { prefer: "latency" } });   // plan only
+
+// run() lives in the `dianome/run` entry (loaded on first use) and needs the optional peer `dianome-runtime`;
+// it imports that package's WebGPU entry only when the plan puts blocks on this device.
 ```
 
 `Entry.bytes` is a view into a chunk buffer whenever the entry fits in one chunk (no copy); an entry that spans
