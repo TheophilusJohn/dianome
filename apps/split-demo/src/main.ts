@@ -7,13 +7,19 @@ import type { Plan, PlanCandidate, RunOptions, RunResult } from "dianome";
 const params = new URLSearchParams(location.search);
 const api = params.get("api") ?? undefined, cdn = params.get("cdn") ?? undefined;
 const splitUrl = params.get("split"), splitToken = params.get("token");
-const MODEL = "qwen2.5-0.5b-instruct";
 const VARIANT = "q4" as const;
 const d = new Dianome({ ...(api ? { api } : {}), ...(cdn ? { cdn } : {}) });
 const split = splitUrl && splitToken ? { url: splitUrl, token: splitToken } : undefined;
+// Phase 7: the model comes from ?model=, else the Worker's server map default (GET /v1/split/servers), else 0.5B.
+let MODEL = params.get("model") ?? "qwen2.5-0.5b-instruct";
+
+/** Driver hook (scripts/measure-remote.mjs): the last plan and run, and whether the inputs are measured. */
+interface DemoHook { model: string; ready: boolean; plan: Plan | null; last: Record<string, unknown> | null; error: string | null }
+declare global { interface Window { __dianome: DemoHook } }
+window.__dianome = { model: MODEL, ready: false, plan: null, last: null, error: null };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-const slider = $<HTMLInputElement>("slider"), nval = $("nval"), localBox = $<HTMLInputElement>("local"), auto = $<HTMLSelectElement>("auto");
+const slider = $<HTMLInputElement>("slider"), nval = $("nval"), localBox = $<HTMLInputElement>("local"), auto = $<HTMLSelectElement>("auto"), modelSel = $<HTMLSelectElement>("model");
 const status = $("status"), runBtn = $<HTMLButtonElement>("run");
 const f = (n: number | null | undefined, digits = 1): string => (n === null || n === undefined || !Number.isFinite(n) ? "–" : n.toFixed(digits));
 const mib = (b: number) => (b / 2 ** 20).toFixed(0);
@@ -26,9 +32,24 @@ function baseOpts(): RunOptions {
   return { variant: VARIANT, ...(split ? { split } : {}), policy: { prefer: auto.value === "manual" ? "cost" : (auto.value as "cost" | "latency" | "local" | "server") } };
 }
 
+async function fillModels(): Promise<void> {
+  let models: { model: string; ws: string }[] = [], def: string | null = null;
+  try {
+    const r = await fetch(`${d.api}/v1/split/servers`, { cache: "no-store" });
+    if (r.ok) { const j = (await r.json()) as { default: string; models: { model: string; ws: string }[] }; models = j.models; def = j.default; }
+  } catch { /* the select keeps the current model only */ }
+  if (!params.get("model") && def) { MODEL = def; window.__dianome.model = MODEL; }
+  const ids = models.map((m) => m.model);
+  if (!ids.includes(MODEL)) ids.unshift(MODEL);
+  modelSel.replaceChildren(...ids.map((id) => { const o = document.createElement("option"); o.value = id; o.textContent = `${id}${models.find((m) => m.model === id) ? ` (${models.find((m) => m.model === id)!.ws})` : ""}`; return o; }));
+  modelSel.value = MODEL;
+  modelSel.onchange = () => { const u = new URL(location.href); u.searchParams.set("model", modelSel.value); location.href = u.toString(); };
+}
+
 async function refreshInputs(): Promise<void> {
   $("inputs-status").textContent = "measuring…";
   runBtn.disabled = true;
+  window.__dianome.ready = false;
   try {
     plan = await d.planRun(MODEL, { ...baseOpts(), prompt: $<HTMLTextAreaElement>("prompt").value, maxTokens: Number($<HTMLInputElement>("maxTokens").value) });
     L = plan.inputs.model.L;
@@ -61,9 +82,11 @@ async function refreshInputs(): Promise<void> {
     renderCandidates();
     runBtn.disabled = false;
     status.textContent = "ready";
+    window.__dianome.plan = plan; window.__dianome.error = null; window.__dianome.ready = true;
   } catch (e) {
     $("inputs-status").textContent = `error: ${(e as Error).message}`;
     status.textContent = `error: ${(e as Error).message}`;
+    window.__dianome.error = (e as Error).message; window.__dianome.ready = true;
   }
 }
 
@@ -105,8 +128,8 @@ function renderCandidates(): void {
 
 slider.oninput = () => { auto.value = "manual"; renderSelection(); renderCandidates(); };
 localBox.onchange = () => { auto.value = "manual"; renderSelection(); renderCandidates(); };
-auto.onchange = () => { void refreshInputs(); };
-$("refresh").onclick = () => { void refreshInputs(); };
+auto.onchange = () => { void fillModels().then(refreshInputs); };
+$("refresh").onclick = () => { void fillModels().then(refreshInputs); };
 
 runBtn.onclick = async () => {
   const c = selected();
@@ -148,8 +171,17 @@ runBtn.onclick = async () => {
     $("bar-detail").textContent = parts.map(([k, v]) => `${k} ${f(v, 2)}`).join(" · ") + ` ms (sum ${f(total, 2)}; measured step median ${f(measured, 2)})`;
     $("telemetry").textContent = r.telemetry.report ? `${JSON.stringify(r.telemetry.report, null, 2)}\n→ POST ${d.api}/v1/telemetry/load: ${r.telemetry.status ?? "failed"}` : "telemetry off";
     status.textContent = "done";
+    window.__dianome.last = {
+      model: MODEL, variant: VARIANT, mode: r.mode, N: r.N, L: r.plan.inputs.model.L, tokens: r.tokens.length, promptTokens: r.promptTokens, tokPerS: r.tokPerS,
+      measuredMsPerToken: measured, estimatedMsPerToken: est, prefillMs: r.timings[0]?.totalMs ?? null, prefillEstMs: r.plan.estimate.prefillMs,
+      breakdown: Object.fromEntries(parts.map(([k, v]) => [k, v])), roundTripMs: med("roundTripMs"),
+      rttMs: r.plan.inputs.network.rttMs, serverBusyMs: r.serverBusyMs, serverShare: r.costEstimate.serverShare, costPer1M: r.costEstimate.costPer1M,
+      load: r.load, cacheMode: r.telemetry.report?.cache_mode ?? null, telemetryStatus: r.telemetry.status, reasons: r.plan.reasons, privacy: r.privacy,
+      wallMs: performance.now() - t0, at: new Date().toISOString(),
+    };
   } catch (e) {
     status.textContent = `error: ${(e as Error).message}`;
+    window.__dianome.last = { error: (e as Error).message, at: new Date().toISOString() };
     console.error(e);
   } finally {
     runBtn.disabled = false;
@@ -158,4 +190,4 @@ runBtn.onclick = async () => {
 
 function median(a: number[]): number { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)]! : 0; }
 
-void refreshInputs();
+void fillModels().then(refreshInputs);

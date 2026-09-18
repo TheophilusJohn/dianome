@@ -38,7 +38,7 @@
 </head>
 <body>
 <h1>dianome split demo</h1>
-<p class="sub">One model (<code>qwen2.5-0.5b-instruct</code>, q4). Choose N: how many transformer blocks run in this browser before the hidden state goes to the server. <b>What leaves this device at N is the hidden state at boundary N (N = 0: the token ids themselves), and a server can recover input tokens from it at the rate the privacy band shows.</b> Nothing here hides the prompt from the server; local mode sends nothing.</p>
+<p class="sub">One model at a time (q4; the selector lists the Worker's server map). Choose N: how many transformer blocks run in this browser before the hidden state goes to the server. <b>What leaves this device at N is the hidden state at boundary N (N = 0: the token ids themselves), and a server can recover input tokens from it at the rate the privacy band shows.</b> Nothing here hides the prompt from the server; local mode sends nothing.</p>
 
 <h2>Planner inputs, measured on this device <button id="refresh">refresh</button> <span id="inputs-status" class="small"></span></h2>
 <div class="grid">
@@ -50,6 +50,7 @@
 
 <h2>Split point</h2>
 <div class="controls">
+  <label>model <select id="model"></select></label>
   <label>mode
     <select id="auto">
       <option value="manual">manual (slider)</option>
