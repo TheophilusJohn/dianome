@@ -1,0 +1,22 @@
+{
+  "source": "first deployed run of the split demo (dianome-demo-split.pages.dev) against wss://split.dianome.dev via cloudflared on Theo's Mac; numbers as shown by the page's Measured panel, recorded by Theo",
+  "recorded": "2026-09-18",
+  "mode": "split",
+  "N": 12,
+  "L": 24,
+  "variant": "q4",
+  "promptTokens": 40,
+  "newTokens": 46,
+  "tokPerS": 8.8,
+  "measuredMsPerToken": 96.8,
+  "estimatedMsPerToken": 76.4,
+  "ratio": 1.27,
+  "breakdown": { "clientMs": 11.8, "exportMs": 1.1, "networkMs": 58.1, "serverBusyMs": 23.1 },
+  "rttMs": 57.6,
+  "prefillMeasuredMs": 658.5,
+  "prefillEstimatedMs": 101,
+  "serverBusyTotalMs": 1403.4,
+  "serverShare": 0.61,
+  "load": { "mib": 220, "seconds": 10.8, "cached": false },
+  "confound": "client and server share one GPU on this machine (the browser and dianome-server both on the Mac behind the tunnel), so server busy_ms and the prefill are inflated by contention and the measured/estimated ratio is not representative; the standalone L4 run in Phase 7 removes it"
+}
