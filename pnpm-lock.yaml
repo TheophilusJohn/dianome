@@ -25,16 +25,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.0.0
-        version: 6.4.3(@types/node@20.19.43)
-
-  apps/load-dashboard:
-    devDependencies:
-      typescript:
-        specifier: ^5.6.0
-        version: 5.9.3
-      vite:
-        specifier: ^6.0.0
-        version: 6.4.3(@types/node@20.19.43)
+        version: 6.4.3(@types/node@24.13.5)
 
   apps/load-test:
     devDependencies:
@@ -43,7 +34,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.0.0
-        version: 6.4.3(@types/node@20.19.43)
+        version: 6.4.3(@types/node@24.13.5)
 
   apps/manifest-browser:
     devDependencies:
@@ -52,7 +43,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.0.0
-        version: 6.4.3(@types/node@20.19.43)
+        version: 6.4.3(@types/node@24.13.5)
 
   apps/runtime-bench:
     dependencies:
@@ -71,7 +62,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.0.0
-        version: 6.4.3(@types/node@20.19.43)
+        version: 6.4.3(@types/node@24.13.5)
 
   apps/site:
     dependencies:
@@ -118,7 +109,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.0.0
-        version: 6.4.3(@types/node@20.19.43)
+        version: 6.4.3(@types/node@24.13.5)
 
   packages/cache-frame:
     devDependencies:
@@ -149,7 +140,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
+        version: 4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
 
   packages/sdk:
     devDependencies:
@@ -179,13 +170,13 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
+        version: 4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
 
   packages/worker:
     devDependencies:
       '@cloudflare/vitest-pool-workers':
         specifier: ^0.22.0
-        version: 0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)))
+        version: 0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)))
       '@cloudflare/workers-types':
         specifier: ^5.20260916.1
         version: 5.20260916.1
@@ -194,10 +185,10 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
+        version: 4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
       wrangler:
         specifier: ^4.133.0
-        version: 4.133.0(@cloudflare/workers-types@5.20260916.1)(@types/node@20.19.43)
+        version: 4.133.0(@cloudflare/workers-types@5.20260916.1)(@types/node@24.13.5)
 
 packages:
 
@@ -1848,14 +1839,14 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260916.1
 
-  '@cloudflare/vitest-pool-workers@0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)))':
+  '@cloudflare/vitest-pool-workers@0.22.0(@cloudflare/workers-types@5.20260916.1)(@vitest/runner@4.1.11)(@vitest/snapshot@4.1.11)(vitest@4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)))':
     dependencies:
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
       cjs-module-lexer: 1.2.3
       esbuild: 0.28.1
       miniflare: 5.20260815.0-alpha
-      vitest: 4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
+      vitest: 4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5))
       wrangler: 4.124.0(@cloudflare/workers-types@5.20260916.1)
       zod: 4.4.3
     transitivePeerDependencies:
@@ -2762,10 +2753,10 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  miniflare@5.20260916.0-alpha(@types/node@20.19.43):
+  miniflare@5.20260916.0-alpha(@types/node@24.13.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
-      sharp: 0.35.4(@types/node@20.19.43)
+      sharp: 0.35.4(@types/node@24.13.5)
       undici: 7.29.0
       workerd: 1.20260916.1
       ws: 8.21.0
@@ -2956,7 +2947,7 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.2
       '@img/sharp-win32-x64': 0.35.2
 
-  sharp@0.35.4(@types/node@20.19.43):
+  sharp@0.35.4(@types/node@24.13.5):
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
@@ -2987,7 +2978,7 @@ snapshots:
       '@img/sharp-win32-arm64': 0.35.4
       '@img/sharp-win32-ia32': 0.35.4
       '@img/sharp-win32-x64': 0.35.4
-      '@types/node': 20.19.43
+      '@types/node': 24.13.5
 
   siginfo@2.0.0: {}
 
@@ -3037,18 +3028,6 @@ snapshots:
     dependencies:
       pathe: 2.0.3
 
-  vite@6.4.3(@types/node@20.19.43):
-    dependencies:
-      esbuild: 0.25.12
-      fdir: 6.5.0(picomatch@4.0.7)
-      picomatch: 4.0.7
-      postcss: 8.5.28
-      rollup: 4.63.3
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 20.19.43
-      fsevents: 2.3.3
-
   vite@6.4.3(@types/node@24.13.5):
     dependencies:
       esbuild: 0.25.12
@@ -3061,7 +3040,7 @@ snapshots:
       '@types/node': 24.13.5
       fsevents: 2.3.3
 
-  vitest@4.1.11(@types/node@20.19.43)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)):
+  vitest@4.1.11(@types/node@24.13.5)(happy-dom@18.0.1)(vite@6.4.3(@types/node@24.13.5)):
     dependencies:
       '@vitest/expect': 4.1.11
       '@vitest/mocker': 4.1.11(vite@6.4.3(@types/node@24.13.5))
@@ -3084,7 +3063,7 @@ snapshots:
       vite: 6.4.3(@types/node@24.13.5)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 20.19.43
+      '@types/node': 24.13.5
       happy-dom: 18.0.1
     transitivePeerDependencies:
       - msw
@@ -3129,13 +3108,13 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  wrangler@4.133.0(@cloudflare/workers-types@5.20260916.1)(@types/node@20.19.43):
+  wrangler@4.133.0(@cloudflare/workers-types@5.20260916.1)(@types/node@24.13.5):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260916.1)
       blake3-wasm: 2.1.5
       esbuild: 0.28.1
-      miniflare: 5.20260916.0-alpha(@types/node@20.19.43)
+      miniflare: 5.20260916.0-alpha(@types/node@24.13.5)
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
       workerd: 1.20260916.1

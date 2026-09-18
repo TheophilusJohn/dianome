@@ -6,7 +6,7 @@
   "description": "dianome.dev: home, /summarize (Phase 7 vertical demo), /stats (load + session dashboards), /writeup",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "node ../../scripts/writeup-check.mjs && tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test"
