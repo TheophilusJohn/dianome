@@ -146,14 +146,17 @@ export async function measureBandwidth(d: Dianome, manifest: ModelManifest, vari
   if (d.lastSummary && d.lastSummary.source === "network" && d.lastSummary.bytesPerSecond > 0) return d.lastSummary.bytesPerSecond;
   const sha = manifest.variants[variant]?.groups[0]?.chunks[0];
   if (!sha) return null;
+  // Throughput, not latency: the clock starts at the first byte, so the TLS handshake and the round trip to the edge
+  // (≈ RTT, which on a remote link dwarfs a 1 MiB read) are excluded, and the whole chunk (up to 8 MiB) is timed.
   try {
-    const t0 = now();
     const res = await fetch(`${d.cdn}/chunks/${sha}`, { cache: "no-store", ...(signal ? { signal } : {}) });
     if (!res.ok || !res.body) return null;
     const reader = res.body.getReader();
+    const first = await reader.read();
+    if (first.done) return null;
+    const t0 = now();
     let bytes = 0;
-    while (bytes < 1 << 20) { const { done, value } = await reader.read(); if (done) break; bytes += value.byteLength; }
-    await reader.cancel().catch(() => {});
+    for (;;) { const { done, value } = await reader.read(); if (done) break; bytes += value.byteLength; }
     const ms = now() - t0;
     return ms > 0 && bytes > 0 ? bytes / (ms / 1000) : null;
   } catch { return null; }
@@ -231,7 +234,7 @@ export async function prepare(d: Dianome, id: string, opts: RunOptions = {}): Pr
       const key = `${st.device.info.vendor}/${st.device.info.architecture}/${st.device.info.device}:${id}:${variant}`;
       mb = opts.microbench === "fresh" ? null : await cachedMicrobench(key);
       if (!mb) { mb = await rtMod.microbench(st.device.device, manifest, variant); storeMicrobench(key, mb); }
-    } catch { mb = null; }
+    } catch (e) { mb = null; console.warn(`dianome: WebGPU microbench failed, planning without the browser side: ${(e as Error).message ?? e}`); }
   }
 
   // server: plan, rates, session token, connect + rtt
