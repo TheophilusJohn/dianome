@@ -132,3 +132,31 @@ def test_dedup_stats(tmp_path, tiny_model):
     assert "embed" in names
     embed = next(g for g in d["shared_groups"] if g[0] == "embed")
     assert set(embed[1]) == {"q8", "q4"}
+
+
+def test_quantised_only_manifest_validates_and_fp16_is_optional(tmp_path, tiny_model):
+    """Phase 7: 3B/7B are packed as q8+q4 only; the schema needs at least one variant, not fp16."""
+    store, m = build(tmp_path, tiny_model, ("q8", "q4"))
+    mf.validate(m)
+    assert list(m["variants"]) == ["q8", "q4"]
+    assert m["variants"]["q4"]["groups"][-1]["tied"] is True
+    empty = json.loads(json.dumps(m))
+    empty["variants"] = {}
+    with pytest.raises(jsonschema.ValidationError):
+        mf.validate(empty)
+
+
+def test_inspect_summary_sizes_match_manifest(tmp_path, tiny_model):
+    from dianome_ingest.cli import inspect_summary
+
+    store, m = build(tmp_path, tiny_model, ("q8", "q4"))
+    s = inspect_summary(m)
+    assert s["id"] == "tiny" and s["manifest_sha256"] == mf.manifest_hash(m)
+    assert s["unique_chunks"] == len(m["chunks"]) and s["unique_bytes"] == sum(c["bytes"] for c in m["chunks"].values())
+    assert set(s["variants"]) == {"q8", "q4"}
+    for v in ("q8", "q4"):
+        assert s["variants"][v]["bytes"] == m["variants"][v]["bytes"]
+        assert s["variants"][v]["chunks_listed"] == sum(len(g["chunks"]) for g in m["variants"][v]["groups"])
+    assert s["tokenizer"] == {"files": 2, "bytes": sum(f["bytes"] for f in m["tokenizer"]["files"])}
+    variant_chunks = {c for v in m["variants"].values() for g in v["groups"] for c in g["chunks"]}
+    assert s["dedup"]["unique_chunks"] == len(variant_chunks)  # tokenizer chunks are not part of the dedup stats

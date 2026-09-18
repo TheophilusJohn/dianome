@@ -6,14 +6,14 @@ export interface Env {
   STATS_CACHE: KVNamespace;
   /** HMAC key for split session tokens (secret; the split server holds the same key). */
   SPLIT_SIGNING_KEY?: string;
-  /** Where sessions connect, e.g. wss://split.dianome.dev */
-  SPLIT_WS_URL?: string;
-  /** The split server's public /plan, e.g. https://split.dianome.dev/plan */
-  SPLIT_PLAN_URL?: string;
+  /**
+   * JSON map model id -> { ws, plan }: where sessions for that model connect and that server's public /plan
+   * (Phase 7; replaces SPLIT_WS_URL / SPLIT_PLAN_URL / SPLIT_MODELS). The first entry is the default model.
+   * e.g. {"qwen2.5-0.5b-instruct":{"ws":"wss://split.dianome.dev","plan":"https://split.dianome.dev/plan"}}
+   */
+  SPLIT_SERVERS?: string;
   /** Comma list of Origins allowed to mint session tokens (the demo origin). */
   SPLIT_ALLOWED_ORIGINS?: string;
-  /** Comma list of model ids sessions may be minted for. */
-  SPLIT_MODELS?: string;
   /** Account that owns the `dianome_loads` dataset (secret). */
   CF_ACCOUNT_ID?: string;
   /** API token with Account Analytics: Read, for the Analytics Engine SQL API (secret). */

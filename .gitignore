@@ -26,3 +26,6 @@ server/probes/data-train500k/
 packages/runtime/results-*.log
 packages/runtime/test-results/
 .split-key
+.env.pod
+server/probes/data-l4/
+server/**/results/l4/logs/

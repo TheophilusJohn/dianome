@@ -33,6 +33,14 @@ COLUMNS = ["N", "prompt_tokens", "gen_tokens", "busy_seconds", "gpu_seconds_per_
            "prefill_seconds", "decode_seconds_per_token", "runs", "device"]
 
 
+def split_grid(L: int, steps: int = 6) -> list[int]:
+    """Phase 4's N grid scaled to L: N in {0, L/6, L/3, L/2, 2L/3, 5L/6, L}, rounded half up, deduplicated.
+
+    L=24 -> [0, 4, 8, 12, 16, 20, 24]; L=36 -> [0, 6, 12, 18, 24, 30, 36]; L=28 -> [0, 5, 9, 14, 19, 23, 28].
+    """
+    return sorted({int(L * k / steps + 0.5) for k in range(steps + 1)})
+
+
 def load_rates(path: Optional[str]) -> dict:
     with open(path or os.path.join(HERE, "rates.json")) as f:
         r = json.load(f)

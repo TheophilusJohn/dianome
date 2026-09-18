@@ -111,8 +111,9 @@ export type ManifestBase = {
   chunks: Record<string, {
     bytes: number;
   }>;
+  /** At least one of fp16/q8/q4. fp16 was required until Phase 7, where 3B/7B are packed and uploaded as q8+q4 only (the split server loads fp16 from the HF cache). */
   variants?: {
-    fp16: Variant;
+    fp16?: Variant;
     q8?: Variant;
     q4?: Variant;
   };

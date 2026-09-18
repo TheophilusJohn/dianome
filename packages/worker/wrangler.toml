@@ -27,15 +27,17 @@ dataset = "dianome_loads"
 binding = "SESSIONS"
 dataset = "dianome_sessions"
 
-# Phase 5b split endpoints (POST /v1/split/session, GET /v1/split/rates, GET /v1/split/plan).
-# The split server runs on Theo's Mac behind cloudflared at split.dianome.dev; the demo origin is the only one
-# allowed to mint session tokens. Override locally in .dev.vars (e.g. SPLIT_WS_URL=ws://127.0.0.1:8765,
-# SPLIT_PLAN_URL=http://127.0.0.1:8765/plan, SPLIT_ALLOWED_ORIGINS=http://localhost:5177).
+# Split endpoints (GET /v1/split/servers, POST /v1/split/session[?model=], GET /v1/split/rates, GET /v1/split/plan[?model=]).
+# SPLIT_SERVERS maps a model id to the server that runs it: 0.5B on Theo's Mac behind cloudflared at split.dianome.dev;
+# 3B and 7B on the Phase 7 L4 pod at gpu.dianome.dev. The pod serves ONE model at a time (scripts/pod/serve.sh --model),
+# so the A2 sequence is 7B -> swap -> 3B, and scripts/measure-remote.mjs checks that /plan reports the expected model
+# before measuring. The first entry is the default model. The demo origin is the only one allowed to mint session
+# tokens. Override locally in .dev.vars, e.g.
+# SPLIT_SERVERS={"qwen2.5-0.5b-instruct":{"ws":"ws://127.0.0.1:8765","plan":"http://127.0.0.1:8765/plan"}}
+# SPLIT_ALLOWED_ORIGINS=http://localhost:5177
 [vars]
-SPLIT_WS_URL = "wss://split.dianome.dev"
-SPLIT_PLAN_URL = "https://split.dianome.dev/plan"
+SPLIT_SERVERS = '{"qwen2.5-0.5b-instruct":{"ws":"wss://split.dianome.dev","plan":"https://split.dianome.dev/plan"},"qwen2.5-3b-instruct":{"ws":"wss://gpu.dianome.dev","plan":"https://gpu.dianome.dev/plan"},"qwen2.5-7b-instruct":{"ws":"wss://gpu.dianome.dev","plan":"https://gpu.dianome.dev/plan"}}'
 SPLIT_ALLOWED_ORIGINS = "https://dianome-demo-split.pages.dev"
-SPLIT_MODELS = "qwen2.5-0.5b-instruct"
 
 [[kv_namespaces]]
 binding = "STATS_CACHE"

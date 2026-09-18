@@ -55,3 +55,12 @@ def test_report_table_and_notes(tmp_path):
     update_notes(str(notes), band_section(results))  # idempotent
     text = notes.read_text()
     assert text.count("<!-- probes:start -->") == 1 and "| boundary |" in text
+
+
+def test_split_grid_matches_the_brief():
+    from bench.cost import split_grid
+
+    assert split_grid(24) == [0, 4, 8, 12, 16, 20, 24]
+    assert split_grid(36) == [0, 6, 12, 18, 24, 30, 36]
+    assert split_grid(28) == [0, 5, 9, 14, 19, 23, 28]
+    assert split_grid(1) == [0, 1]

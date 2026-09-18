@@ -236,7 +236,7 @@ export async function prepare(d: Dianome, id: string, opts: RunOptions = {}): Pr
 
   // server: plan, rates, session token, connect + rtt
   const [serverPlan, rates, cached, bandwidth] = await Promise.all([
-    getJson<ServerPlanJson>(`${d.api}/v1/split/plan`, signal),
+    getJson<ServerPlanJson>(`${d.api}/v1/split/plan?model=${encodeURIComponent(id)}`, signal),
     getJson<RatesJson>(`${d.api}/v1/split/rates`, signal),
     cachedGroups(d, manifest, variant),
     measureBandwidth(d, manifest, variant, signal),

@@ -4,6 +4,7 @@ import Ajv2020 from "ajv/dist/2020";
 import { describe, expect, it } from "vitest";
 import { ManifestError } from "../src/errors";
 import { fetchManifest, validateManifest } from "../src/manifest";
+import type { ModelManifest } from "../src/manifest.gen";
 import { synthFiles, synthModel } from "./fixtures/synth";
 import { FakeFetch } from "./helpers/fakeFetch";
 
@@ -53,7 +54,7 @@ describe("validateManifest", () => {
     ["model manifest with files", (m) => { m.files = []; }],
     ["config missing", (m) => { delete m.config; }],
     ["runtime enum", (m) => { delete m.variants; delete m.config; delete m.tokenizer; delete m.family; m.runtime = "torch"; m.files = []; }],
-    ["variants missing fp16", (m) => { delete m.variants.fp16; }],
+    ["variants empty", (m) => { m.variants = {}; }],
   ];
   for (const [name, mutate] of mutations) {
     it(`rejects: ${name}`, async () => {
@@ -63,6 +64,14 @@ describe("validateManifest", () => {
       expect(() => validateManifest(m)).toThrow(ManifestError);
     });
   }
+
+  it("accepts a model manifest without fp16 (Phase 7: 3B/7B are q8 + q4 only)", async () => {
+    const m = clone((await synthModel()).manifest) as any;
+    delete m.variants.fp16;
+    expect(bySchema(m), "ajv should accept too").toBe(true);
+    const parsed = validateManifest(m) as ModelManifest;
+    expect(Object.keys(parsed.variants)).toEqual(["q4"]); // the synthetic model packs fp16 + q4
+  });
 
   it("rejects cross-reference errors the schema cannot express", async () => {
     const base = (await synthModel()).manifest;

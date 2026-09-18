@@ -26,11 +26,13 @@ import transformers
 from transformers import AutoTokenizer, Qwen2ForCausalLM
 from transformers.cache_utils import DynamicCache
 
-# id -> (HF repo, pinned revision or None). The 0.5B revision matches Phase 1's ingest.
+# id -> (HF repo, pinned revision). The 0.5B revision matches Phase 1's ingest; 3B and 7B were pinned to the
+# `main` sha on 2026-09-17 for Phase 7 (the pod's ingest uses the same revisions, see scripts/pod/run-all.sh).
 MODELS: dict[str, tuple[str, Optional[str]]] = {
     "qwen2.5-0.5b-instruct": ("Qwen/Qwen2.5-0.5B-Instruct", "7ae557604adf67be50417f59c2c2f167def9a775"),
     "qwen2.5-1.5b-instruct": ("Qwen/Qwen2.5-1.5B-Instruct", None),
-    "qwen2.5-3b-instruct": ("Qwen/Qwen2.5-3B-Instruct", None),
+    "qwen2.5-3b-instruct": ("Qwen/Qwen2.5-3B-Instruct", "aa8e72537993ba99e69dfaafa59ed015b17504d1"),
+    "qwen2.5-7b-instruct": ("Qwen/Qwen2.5-7B-Instruct", "a09a35458c702b33eeacc393d103063234e8bc28"),
 }
 
 

@@ -1,4 +1,4 @@
-"""dianome-server serve|bench|probes|fixtures"""
+"""dianome-server serve|bench|collect|probes|linear-probe|fixtures"""
 
 from __future__ import annotations
 
@@ -77,20 +77,53 @@ def fixtures(model: str, out: str, device: str | None, intra: bool, variants: tu
 
 @main.command()
 @click.option("--model", default="qwen2.5-0.5b-instruct", show_default=True)
-@click.option("--splits", default="0,4,8,12,16,20,24", show_default=True)
+@click.option("--splits", default="0,4,8,12,16,20,24", show_default=True,
+              help="comma list of N, or 'auto' for Phase 4's grid scaled to the model's L (bench.cost.split_grid)")
 @click.option("--gen-tokens", default=128, show_default=True)
 @click.option("--runs", default=3, show_default=True)
 @click.option("--prompts", default=None, help="prompts.json (default: bench/prompts.json next to the package)")
 @click.option("--rates", default=None, help="rates.json (default: bench/rates.json)")
 @click.option("--out-dir", default=None, help="results dir (default: bench/results)")
+@click.option("--require-rate", is_flag=True, help="refuse to run while rates.json has usd_per_hour null (the GPU day)")
 @click.option("--device", default=None)
-def bench(model, splits, gen_tokens, runs, prompts, rates, out_dir, device) -> None:
+def bench(model, splits, gen_tokens, runs, prompts, rates, out_dir, require_rate, device) -> None:
     """Cost harness: GPU-seconds per token as a function of the split point."""
-    from bench.cost import run_bench
+    from bench.cost import load_rates, run_bench, split_grid
 
+    if require_rate and load_rates(rates).get("usd_per_hour") is None:
+        click.echo("bench/rates.json has usd_per_hour null; --require-rate refuses to run (fill the L4 rate first)", err=True)
+        sys.exit(2)
     lm = _load(model, device)
-    run_bench(lm, [int(s) for s in splits.split(",")], gen_tokens=gen_tokens, runs=runs,
-              prompts_path=prompts, rates_path=rates, out_dir=out_dir)
+    ns = split_grid(lm.L) if splits.strip() == "auto" else [int(s) for s in splits.split(",")]
+    run_bench(lm, ns, gen_tokens=gen_tokens, runs=runs, prompts_path=prompts, rates_path=rates, out_dir=out_dir)
+
+
+@main.command()
+@click.option("--model", default="qwen2.5-0.5b-instruct", show_default=True)
+@click.option("--tokens", default=50_000, show_default=True, help="held-out tokens to collect (WikiText-103 test split)")
+@click.option("--data-dir", default=None, help="activation store to write (default: probes/data)")
+@click.option("--device", default=None)
+def collect(model, tokens, data_dir, device) -> None:
+    """Collect the held-out activations only (the first step of `probes`), for a later `linear-probe`.
+
+    The document split (80/20 by document, seed 0) is the same for every model that shares the Qwen2.5 tokenizer,
+    so a store collected here holds the same held-out set as Phase 4's. Skips when meta.json already exists.
+    """
+    from probes.collect import collect as collect_acts
+    from probes.data import load_documents, tokenize_documents
+    from probes.run import HERE as PROBES_DIR
+
+    data_dir = data_dir or os.path.join(PROBES_DIR, "data")
+    if os.path.exists(os.path.join(data_dir, "meta.json")):
+        click.echo(f"collect: {data_dir}/meta.json exists, skipping")
+        return
+    lm = _load(model, device)
+    docs = tokenize_documents(lm.tokenizer, load_documents(), tokens, 1024)
+    click.echo(f"collect: {len(docs)} documents, {sum(map(len, docs))} tokens -> {data_dir}")
+    meta = collect_acts(lm, docs, data_dir)
+    click.echo(f"collect done in {meta['collect_seconds']:.1f}s; acts.npy is "
+               f"{os.path.getsize(os.path.join(data_dir, 'acts.npy')) / 1e9:.2f} GB "
+               f"(val {meta['split']['val_tokens']} tokens in {len(meta['split']['val_docs'])} documents)")
 
 
 @main.command()
@@ -122,12 +155,15 @@ if __name__ == "__main__":
 @click.option("--max-epochs", default=5, show_default=True)
 @click.option("--batch", default=1024, show_default=True)
 @click.option("--notes", default=None, help="docs/phase-4-notes.md to update (default: none)")
+@click.option("--test-dir", default=None, help="held-out activation store (default: probes/data; see `collect`)")
+@click.option("--train-dir", default=None, help="training activation store (default: probes/data-train500k)")
+@click.option("--out", default=None, help="results json (default: probes/results/linear-500k.json)")
 @click.option("--device", default=None)
-def linear_probe(model, train_tokens, seed, boundaries, max_epochs, batch, notes, device) -> None:
+def linear_probe(model, train_tokens, seed, boundaries, max_epochs, batch, notes, test_dir, train_dir, out, device) -> None:
     """Linear probe with a large training set from the WikiText-103 train split; held-out set unchanged."""
     from probes.linear500k import run_linear500k
 
     lm = _load(model, device)
     bl = [int(b) for b in boundaries.split(",")] if boundaries else None
-    run_linear500k(lm, target_tokens=train_tokens, seed=seed, boundaries=bl, notes=notes,
-                   linear_kw={"max_epochs": max_epochs, "batch": batch})
+    run_linear500k(lm, test_dir=test_dir, train_dir=train_dir, out=out, target_tokens=train_tokens, seed=seed,
+                   boundaries=bl, notes=notes, linear_kw={"max_epochs": max_epochs, "batch": batch})

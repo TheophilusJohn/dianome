@@ -239,8 +239,42 @@ describe("split: session tokens", () => {
     expect(((await (await session({ max_ctx: 99999 })).json()) as { max_ctx: number }).max_ctx).toBe(4096);
     expect((await call("/v1/split/session")).status).toBe(405);
   });
-  it("503 when the signing key is not configured", async () => {
+  it("picks the server per model: ?model= wins over the body, the body over the map's first entry", async () => {
+    const q = await call("/v1/split/session?model=qwen2.5-7b-instruct", { method: "POST", headers: { "Content-Type": "application/json", Origin: ORIGIN }, body: JSON.stringify({ model: "qwen2.5-0.5b-instruct" }) });
+    expect(q.status).toBe(200);
+    const qb = await q.json() as { url: string; model: string; token: string };
+    expect(qb).toMatchObject({ url: "ws://127.0.0.1:8766", model: "qwen2.5-7b-instruct" });
+    expect((await verifyToken(qb.token, "test-signing-key"))?.model).toBe("qwen2.5-7b-instruct");
+    const b = await (await session({ model: "qwen2.5-7b-instruct" })).json() as { url: string; model: string };
+    expect(b).toMatchObject({ url: "ws://127.0.0.1:8766", model: "qwen2.5-7b-instruct" });
+    const none = await (await call("/v1/split/session", { method: "POST", headers: { Origin: ORIGIN } })).json() as { url: string; model: string };
+    expect(none).toMatchObject({ url: "ws://127.0.0.1:8765", model: "qwen2.5-0.5b-instruct" });
+    expect((await call("/v1/split/session?model=nope", { method: "POST", headers: { Origin: ORIGIN } })).status).toBe(400);
+  });
+  it("503 when the signing key or the server map is not configured, or the map is malformed", async () => {
     expect((await session({}, { Origin: ORIGIN }, { SPLIT_SIGNING_KEY: undefined })).status).toBe(503);
+    expect((await session({}, { Origin: ORIGIN }, { SPLIT_SERVERS: undefined })).status).toBe(503);
+    expect((await session({}, { Origin: ORIGIN }, { SPLIT_SERVERS: "not json" })).status).toBe(503);
+    expect((await session({}, { Origin: ORIGIN }, { SPLIT_SERVERS: JSON.stringify({ m: { ws: "http://x", plan: "http://x/plan" } }) })).status).toBe(503);
+    expect((await session({}, { Origin: ORIGIN }, { SPLIT_SERVERS: JSON.stringify({ "Bad Id": { ws: "ws://x", plan: "http://x/plan" } }) })).status).toBe(503);
+    expect((await session({}, { Origin: ORIGIN }, { SPLIT_SERVERS: "{}" })).status).toBe(503);
+  });
+});
+
+describe("split: servers", () => {
+  it("lists the SPLIT_SERVERS map in order with the default first", async () => {
+    const res = await call("/v1/split/servers");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Cache-Control")).toBe("public, max-age=60");
+    expect(await res.json()).toEqual({
+      default: "qwen2.5-0.5b-instruct",
+      models: [
+        { model: "qwen2.5-0.5b-instruct", ws: "ws://127.0.0.1:8765", plan: "http://127.0.0.1:8765/plan" },
+        { model: "qwen2.5-7b-instruct", ws: "ws://127.0.0.1:8766", plan: "http://127.0.0.1:8766/plan" },
+      ],
+    });
+    expect((await call("/v1/split/servers", {}, { SPLIT_SERVERS: undefined })).status).toBe(503);
+    expect((await call("/v1/split/servers", { method: "POST" })).status).toBe(404);
   });
 });
 
@@ -255,10 +289,11 @@ describe("split: rates and plan proxy", () => {
     expect(Object.keys(body).sort()).toEqual(["gpu", "rate_available", "retrieved", "source", "usd_per_hour"]);
     expect(body.rate_available).toBe(typeof body.usd_per_hour === "number");
   });
-  it("proxies the server's /plan and caches it for 5 s", async () => {
+  it("proxies the server's /plan per model and caches each for 5 s", async () => {
     vi.useFakeTimers({ now: 1_800_000_000_000, toFake: ["Date"] });
     const plan = { model: "qwen2.5-0.5b-instruct", L: 24, d_model: 896, active_sessions: 0, busy_fraction_60s: 0.01, ms_per_block_decode: 0.63, ms_per_block_prefill: 0.9, lm_head_ms: 3.0 };
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify(plan), { status: 200, headers: { "Content-Type": "application/json" } }));
+    const plan7b = { ...plan, model: "qwen2.5-7b-instruct", L: 28, d_model: 3584 };
+    const fetchMock = vi.fn(async (url: string) => new Response(JSON.stringify(url.startsWith("http://127.0.0.1:8766") ? plan7b : plan), { status: 200, headers: { "Content-Type": "application/json" } }));
     vi.stubGlobal("fetch", fetchMock);
     const a = await call("/v1/split/plan");
     expect(a.status).toBe(200);
@@ -269,16 +304,24 @@ describe("split: rates and plan proxy", () => {
     vi.setSystemTime(1_800_000_000_000 + PLAN_CACHE_MS - 1);
     expect(await (await call("/v1/split/plan")).json()).toEqual(plan);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    // another model is another cache entry
+    expect(await (await call("/v1/split/plan?model=qwen2.5-7b-instruct")).json()).toEqual(plan7b);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect((fetchMock.mock.calls[1] as unknown[])[0]).toBe("http://127.0.0.1:8766/plan");
+    expect(await (await call("/v1/split/plan?model=qwen2.5-0.5b-instruct")).json()).toEqual(plan);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     vi.setSystemTime(1_800_000_000_000 + PLAN_CACHE_MS + 1);
     await call("/v1/split/plan");
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect((await call("/v1/split/plan?model=nope")).status).toBe(400);
+    expect((await call("/v1/split/plan", {}, { SPLIT_SERVERS: undefined })).status).toBe(503);
   });
   it("503 with reachable: false when the server is down, and that is cached too", async () => {
     const fetchMock = vi.fn(async () => { throw new TypeError("connect ECONNREFUSED"); });
     vi.stubGlobal("fetch", fetchMock);
     const res = await call("/v1/split/plan");
     expect(res.status).toBe(503);
-    expect(await res.json()).toMatchObject({ error: "server_unreachable", reachable: false });
+    expect(await res.json()).toMatchObject({ error: "server_unreachable", reachable: false, model: "qwen2.5-0.5b-instruct" });
     await call("/v1/split/plan");
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });

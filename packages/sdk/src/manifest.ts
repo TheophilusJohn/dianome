@@ -171,10 +171,13 @@ export function validateManifest(input: unknown): Manifest {
     const tok = obj(top.tokenizer, c.at("tokenizer"), ["files"], ["files"]);
     const tokenizer = { files: arr(tok.files, c.at("tokenizer.files")).map((f, i) => file(f, c.at("tokenizer.files").at(i))) };
     tokenizer.files.forEach((f, i) => checkFile(f, c.at("tokenizer.files").at(i)));
-    const vs = obj(top.variants, c.at("variants"), ["fp16"], [...VARIANTS]);
-    const variants: ModelManifest["variants"] = { fp16: variant(vs.fp16, c.at("variants.fp16")) };
+    // fp16 was required until Phase 7 (3B/7B are uploaded as q8 + q4 only); at least one variant must be present.
+    const vs = obj(top.variants, c.at("variants"), [], [...VARIANTS]);
+    const variants: ModelManifest["variants"] = {};
+    if ("fp16" in vs) variants.fp16 = variant(vs.fp16, c.at("variants.fp16"));
     if ("q8" in vs) variants.q8 = variant(vs.q8, c.at("variants.q8"));
     if ("q4" in vs) variants.q4 = variant(vs.q4, c.at("variants.q4"));
+    if (Object.keys(variants).length === 0) c.at("variants").fail("no variants");
     for (const [vn, v] of Object.entries(variants)) {
       const vc = c.at("variants").at(vn);
       let vsum = 0;

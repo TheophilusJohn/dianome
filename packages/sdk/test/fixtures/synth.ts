@@ -114,7 +114,7 @@ export async function synthModel(o: SynthOptions = {}): Promise<SynthModel> {
   out.tokenizer.files.push({ name: "config.json", bytes: tokBytes.length, chunks: [tokSha], segments: [{ chunk: tokSha, offset: 0, length: tokBytes.length }] });
 
   for (const vn of variants) {
-    const groups: ModelManifest["variants"]["fp16"]["groups"] = [];
+    const groups: NonNullable<ModelManifest["variants"]["fp16"]>["groups"] = [];
     const embedStorage: Storage = vn === "fp16" ? { kind: "fp16" } : q8Storage(V, H);
     const defs: { name: string; entries: EntryDef[] }[] = [
       { name: "embed", entries: [{ name: "model.embed_tokens.weight", role: "embed_tokens.weight", shape: [V, H], storage: embedStorage, seed: 11 }] },

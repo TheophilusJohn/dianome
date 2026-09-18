@@ -42,7 +42,8 @@
     "variants": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fp16"],
+      "minProperties": 1,
+      "description": "At least one of fp16/q8/q4. fp16 was required until Phase 7, where 3B/7B are packed and uploaded as q8+q4 only (the split server loads fp16 from the HF cache).",
       "properties": {
         "fp16": { "$ref": "#/$defs/variant" },
         "q8": { "$ref": "#/$defs/variant" },

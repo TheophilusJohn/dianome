@@ -1,13 +1,20 @@
-// Phase 5b split endpoints.
-//   POST /v1/split/session → { url, token, expires_at }: a short-lived HMAC session token for the split server.
+// Phase 5b split endpoints; Phase 7 made them per model.
+//   GET  /v1/split/servers → { default, models: [{ model, ws, plan }] }: the SPLIT_SERVERS map (public; a session token
+//       still gates every WebSocket). The demo's model selector reads this.
+//   POST /v1/split/session[?model=] → { url, token, expires_at }: a short-lived HMAC session token for that model's server.
 //       token = base64url(payload) + "." + base64url(HMAC-SHA256(SPLIT_SIGNING_KEY, payload)),
-//       payload = { sid, model, exp (unix, now + 3600), max_ctx, origin }. The demo origin is the only allowed
-//       Origin (SPLIT_ALLOWED_ORIGINS); rate-limited per country:colo:minute like telemetry. Phase 6 puts
-//       per-developer API keys in front of this.
+//       payload = { sid, model, exp (unix, now + 3600), max_ctx, origin }. The model comes from ?model=, else the JSON
+//       body's `model`, else the map's first entry. The demo origin is the only allowed Origin (SPLIT_ALLOWED_ORIGINS);
+//       rate-limited per country:colo:minute like telemetry. Phase 6 puts per-developer API keys in front of this.
 //   GET  /v1/split/rates   → server/bench/rates.json (the stated GPU rate; the client computes cost from it).
-//   GET  /v1/split/plan    → the split server's public /plan, cached 5 s.
+//   GET  /v1/split/plan[?model=] → that model's server's public /plan, cached 5 s per server.
+//
+// SPLIT_SERVERS is a JSON map model id -> { ws, plan }, e.g.
+//   {"qwen2.5-0.5b-instruct":{"ws":"wss://split.dianome.dev","plan":"https://split.dianome.dev/plan"},
+//    "qwen2.5-7b-instruct":{"ws":"wss://gpu.dianome.dev","plan":"https://gpu.dianome.dev/plan"}}
 
 import { error, json } from "./http";
+import { ID_RE } from "./manifest";
 import ratesJson from "../../../server/bench/rates.json";
 import type { Env } from "./types";
 
@@ -16,7 +23,34 @@ export const SESSION_RATE_LIMIT_PER_MINUTE = 60;
 export const PLAN_CACHE_MS = 5000;
 export const PLAN_TIMEOUT_MS = 3000;
 export const MAX_CTX = 4096;
-export const DEFAULT_MODELS = "qwen2.5-0.5b-instruct";
+
+export interface SplitServer { ws: string; plan: string }
+
+/** Parsed SPLIT_SERVERS in insertion order (the first entry is the default model); null when unset or malformed. */
+export function splitServers(env: Env): Record<string, SplitServer> | null {
+  if (!env.SPLIT_SERVERS) return null;
+  let parsed: unknown;
+  try { parsed = JSON.parse(env.SPLIT_SERVERS); } catch { return null; }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+  const out: Record<string, SplitServer> = {};
+  for (const [model, v] of Object.entries(parsed as Record<string, unknown>)) {
+    if (!ID_RE.test(model) || typeof v !== "object" || v === null || Array.isArray(v)) return null;
+    const { ws, plan } = v as Record<string, unknown>;
+    if (typeof ws !== "string" || !/^wss?:\/\//.test(ws) || typeof plan !== "string" || !/^https?:\/\//.test(plan)) return null;
+    out[model] = { ws, plan };
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+const NOT_CONFIGURED = "SPLIT_SIGNING_KEY / SPLIT_SERVERS are not set (or SPLIT_SERVERS is not a JSON map of model -> { ws, plan })";
+
+/** GET /v1/split/servers */
+export function servers(env: Env): Response {
+  const map = splitServers(env);
+  if (!map) return error(503, "split_not_configured", NOT_CONFIGURED);
+  const models = Object.entries(map).map(([model, s]) => ({ model, ws: s.ws, plan: s.plan }));
+  return json({ default: models[0]!.model, models }, { headers: { "Cache-Control": "public, max-age=60" } });
+}
 
 export interface TokenPayload { sid: string; model: string; exp: number; max_ctx: number; origin: string }
 
@@ -67,9 +101,6 @@ export async function verifyToken(token: string, secret: string, now = Date.now(
 function allowedOrigins(env: Env): string[] {
   return (env.SPLIT_ALLOWED_ORIGINS ?? "").split(",").map((s) => s.trim().replace(/\/+$/, "")).filter(Boolean);
 }
-function allowedModels(env: Env): string[] {
-  return (env.SPLIT_MODELS ?? DEFAULT_MODELS).split(",").map((s) => s.trim()).filter(Boolean);
-}
 
 /** Same shape as telemetry's guard: a KV counter per country:colo:minute (approximate by design). */
 async function overLimit(env: Env, country: string, colo: string): Promise<boolean> {
@@ -82,7 +113,8 @@ async function overLimit(env: Env, country: string, colo: string): Promise<boole
 }
 
 export async function createSession(request: Request, env: Env): Promise<Response> {
-  if (!env.SPLIT_SIGNING_KEY || !env.SPLIT_WS_URL) return error(503, "split_not_configured", "SPLIT_SIGNING_KEY / SPLIT_WS_URL are not set");
+  const map = splitServers(env);
+  if (!env.SPLIT_SIGNING_KEY || !map) return error(503, "split_not_configured", NOT_CONFIGURED);
   const origin = (request.headers.get("Origin") ?? "").replace(/\/+$/, "");
   if (!origin || !allowedOrigins(env).includes(origin)) return error(403, "origin_not_allowed");
   let body: Record<string, unknown> = {};
@@ -91,8 +123,10 @@ export async function createSession(request: Request, env: Env): Promise<Respons
     try { const parsed: unknown = await request.json(); if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) body = parsed as Record<string, unknown>; else return error(400, "bad_json"); }
     catch { return error(400, "bad_json"); }
   }
-  const model = typeof body.model === "string" ? body.model : allowedModels(env)[0]!;
-  if (!allowedModels(env).includes(model)) return error(400, "model_not_allowed");
+  const query = new URL(request.url).searchParams.get("model");
+  const model = query ?? (typeof body.model === "string" ? body.model : Object.keys(map)[0]!);
+  const server = Object.prototype.hasOwnProperty.call(map, model) ? map[model]! : null;
+  if (!server) return error(400, "model_not_allowed");
   let maxCtx = MAX_CTX;
   if (body.max_ctx !== undefined) {
     if (typeof body.max_ctx !== "number" || !Number.isInteger(body.max_ctx) || body.max_ctx < 1) return error(400, "bad_max_ctx");
@@ -105,7 +139,7 @@ export async function createSession(request: Request, env: Env): Promise<Respons
   const exp = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
   const sid = b64u(crypto.getRandomValues(new Uint8Array(12)));
   const token = await mintToken(env.SPLIT_SIGNING_KEY, { sid, model, exp, max_ctx: maxCtx, origin });
-  return json({ url: env.SPLIT_WS_URL, token, expires_at: new Date(exp * 1000).toISOString(), sid, model, max_ctx: maxCtx }, { headers: { "Cache-Control": "no-store" } });
+  return json({ url: server.ws, token, expires_at: new Date(exp * 1000).toISOString(), sid, model, max_ctx: maxCtx }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export interface Rates { gpu: string; usd_per_hour: number | null; source: string; retrieved: string }
@@ -115,25 +149,31 @@ export function rates(): Response {
   return json({ gpu: r.gpu, usd_per_hour: r.usd_per_hour, source: r.source, retrieved: r.retrieved, rate_available: typeof r.usd_per_hour === "number" }, { headers: { "Cache-Control": "public, max-age=300" } });
 }
 
-let planMemo: { url: string; at: number; status: number; body: string } | null = null;
-/** Tests: forget the cached plan. */
-export function resetPlanCache(): void { planMemo = null; }
+const planMemo = new Map<string, { at: number; status: number; body: string }>();
+/** Tests: forget the cached plans. */
+export function resetPlanCache(): void { planMemo.clear(); }
 
-export async function planProxy(env: Env): Promise<Response> {
-  if (!env.SPLIT_PLAN_URL) return error(503, "split_not_configured", "SPLIT_PLAN_URL is not set");
-  const url = env.SPLIT_PLAN_URL;
+export async function planProxy(request: Request, env: Env): Promise<Response> {
+  const map = splitServers(env);
+  if (!map) return error(503, "split_not_configured", NOT_CONFIGURED);
+  const model = new URL(request.url).searchParams.get("model") ?? Object.keys(map)[0]!;
+  const server = Object.prototype.hasOwnProperty.call(map, model) ? map[model]! : null;
+  if (!server) return error(400, "model_not_allowed");
+  const url = server.plan;
   const now = Date.now();
-  if (!planMemo || planMemo.url !== url || now - planMemo.at > PLAN_CACHE_MS) {
-    let status = 503, body = JSON.stringify({ error: "server_unreachable", reachable: false });
+  let memo = planMemo.get(url);
+  if (!memo || now - memo.at > PLAN_CACHE_MS) {
+    let status = 503, body = JSON.stringify({ error: "server_unreachable", reachable: false, model });
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(PLAN_TIMEOUT_MS), headers: { Accept: "application/json" } });
       if (res.ok) { const text = await res.text(); JSON.parse(text); status = 200; body = text; }
-      else body = JSON.stringify({ error: "server_error", reachable: false, status: res.status });
+      else body = JSON.stringify({ error: "server_error", reachable: false, model, status: res.status });
     } catch (e) {
-      body = JSON.stringify({ error: "server_unreachable", reachable: false, detail: e instanceof Error ? e.message : String(e) });
+      body = JSON.stringify({ error: "server_unreachable", reachable: false, model, detail: e instanceof Error ? e.message : String(e) });
     }
-    planMemo = { url, at: now, status, body };
+    memo = { at: now, status, body };
+    planMemo.set(url, memo);
   }
-  const age = Math.floor((now - planMemo.at) / 1000);
-  return new Response(planMemo.body, { status: planMemo.status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": `public, max-age=${Math.ceil(PLAN_CACHE_MS / 1000)}`, Age: String(age) } });
+  const age = Math.floor((now - memo.at) / 1000);
+  return new Response(memo.body, { status: memo.status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": `public, max-age=${Math.ceil(PLAN_CACHE_MS / 1000)}`, Age: String(age) } });
 }

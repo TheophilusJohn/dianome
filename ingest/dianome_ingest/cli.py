@@ -1,6 +1,8 @@
 """`dianome-ingest` command line: pack-model, pack-dir, verify, inspect, upload."""
 from __future__ import annotations
 
+import datetime as dt
+import json
 import subprocess
 import sys
 import time
@@ -57,8 +59,8 @@ def pack_model_cmd(repo: str, artifact_id: str, variants: str, out: str, revisio
     """Pack a safetensors model into per-layer fp16/q8/q4 streams and write the manifest."""
     _require_upload_env(upload)
     vs = tuple(v.strip() for v in variants.split(",") if v.strip())
-    if "fp16" not in vs or any(v not in VARIANTS for v in vs):
-        raise click.ClickException(f"--variants must include fp16 and only use {VARIANTS}; got {vs}")
+    if not vs or any(v not in VARIANTS for v in vs):
+        raise click.ClickException(f"--variants must be a non-empty subset of {VARIANTS}; got {vs}")
     t0 = time.time()
     snapshot, sha = hf.resolve_snapshot(repo, revision)
     cfg, summary = hf.read_config(snapshot)
@@ -197,16 +199,45 @@ def verify_cmd(store_dir: str, artifact_id: str, against_hf: bool) -> None:
     click.echo("verify --against-hf: ok")
 
 
+def inspect_summary(m: dict) -> dict:
+    """Machine-readable sizes (what `inspect --json` writes): per variant bytes and chunk counts, dedup, tokenizer."""
+    table = m["chunks"]
+    out: dict = {
+        "id": m["id"], "source": m["source"], "manifest_sha256": mf.manifest_hash(m), "chunk_size": m["chunk_size"],
+        "unique_chunks": len(table), "unique_bytes": sum(c["bytes"] for c in table.values()),
+    }
+    if "files" in m:
+        out["runtime"] = m["runtime"]
+        out["files"] = [{"name": f["name"], "bytes": f["bytes"], "chunks": len(f["chunks"])} for f in m["files"]]
+        return out
+    out["family"], out["layers"], out["tied"] = m["family"], m["config"]["num_hidden_layers"], m["config"]["tie_word_embeddings"]
+    out["variants"] = {}
+    for vname in _variant_order(m):
+        variant = m["variants"][vname]
+        listed = [c for g in variant["groups"] for c in g["chunks"]]
+        out["variants"][vname] = {"bytes": variant["bytes"], "chunks_listed": len(listed), "chunks_unique": len(set(listed)),
+                                  "groups": len(variant["groups"])}
+    d = mf.dedup_stats(m)
+    out["dedup"] = {k: d[k] for k in ("listed_chunks", "listed_bytes", "unique_chunks", "unique_bytes", "shared_chunks", "shared_bytes", "bytes_saved")}
+    out["tokenizer"] = {"files": len(m["tokenizer"]["files"]), "bytes": sum(f["bytes"] for f in m["tokenizer"]["files"])}
+    return out
+
+
 @main.command("inspect")
 @click.option("--store", "store_dir", default="./store", show_default=True, type=click.Path(exists=True, file_okay=False))
 @click.option("--id", "artifact_id", required=True)
-def inspect_cmd(store_dir: str, artifact_id: str) -> None:
+@click.option("--json", "json_out", default=None, type=click.Path(dir_okay=False), help="also write the sizes as JSON to this path")
+def inspect_cmd(store_dir: str, artifact_id: str, json_out: str | None) -> None:
     """Sizes per variant/group, dedup stats, chunk counts."""
     store = LocalStore(store_dir)
     try:
         m = mf.load(store, artifact_id)
     except FileNotFoundError as e:
         raise click.ClickException(str(e))
+    if json_out:
+        Path(json_out).parent.mkdir(parents=True, exist_ok=True)
+        Path(json_out).write_text(json.dumps({**inspect_summary(m), "git_commit": _git_commit(), "date": dt.date.today().isoformat()}, indent=2) + "\n")
+        _err(f"wrote {json_out}")
     table = m["chunks"]
     click.echo(f"inspect {m['id']}  source={m['source']['repo']}@{m['source']['revision']}  manifest sha256={mf.manifest_hash(m)}")
     click.echo(f"  chunk table: {len(table)} unique chunks, {sum(c['bytes'] for c in table.values()):,} bytes ({_mib(sum(c['bytes'] for c in table.values()))}), chunk_size={m['chunk_size']}")
@@ -251,7 +282,8 @@ def inspect_cmd(store_dir: str, artifact_id: str) -> None:
 @main.command("upload")
 @click.option("--store", "store_dir", default="./store", show_default=True, type=click.Path(exists=True, file_okay=False))
 @click.option("--id", "artifact_id", required=True)
-def upload_cmd(store_dir: str, artifact_id: str) -> None:
+@click.option("--json", "json_out", default=None, type=click.Path(dir_okay=False), help="write the upload stats as JSON to this path (written only on success)")
+def upload_cmd(store_dir: str, artifact_id: str, json_out: str | None) -> None:
     """Upload an artifact's chunks and manifest to R2 (skips chunks already present)."""
     _require_upload_env(True)
     store = LocalStore(store_dir)
@@ -259,7 +291,18 @@ def upload_cmd(store_dir: str, artifact_id: str) -> None:
         m = mf.load(store, artifact_id)
     except FileNotFoundError as e:
         raise click.ClickException(str(e))
-    r2.upload_manifest(store, m, log=click.echo)
+    t0 = time.time()
+    stats = r2.upload_manifest(store, m, log=click.echo)
+    if json_out:
+        Path(json_out).parent.mkdir(parents=True, exist_ok=True)
+        Path(json_out).write_text(json.dumps({
+            "id": m["id"], "manifest_sha256": mf.manifest_hash(m), "bucket": r2.require_env()["R2_BUCKET"],
+            "variants": _variant_order(m) if "variants" in m else None,
+            "uploaded": stats.uploaded, "skipped": stats.skipped, "bytes_uploaded": stats.bytes,
+            "referenced_chunks": len(m["chunks"]), "referenced_bytes": sum(c["bytes"] for c in m["chunks"].values()),
+            "wall_seconds": round(time.time() - t0, 1), "git_commit": _git_commit(), "date": dt.date.today().isoformat(),
+        }, indent=2) + "\n")
+        _err(f"wrote {json_out}")
 
 
 if __name__ == "__main__":

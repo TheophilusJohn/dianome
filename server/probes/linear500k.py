@@ -62,10 +62,11 @@ def coverage(train_tokens: np.ndarray, val_tokens: np.ndarray) -> dict:
 def run_linear500k(lm: LoadedModel, test_dir: Optional[str] = None, train_dir: Optional[str] = None,
                    target_tokens: int = 500_000, max_doc_tokens: int = 1024, seed: int = 1,
                    boundaries: Optional[list[int]] = None, notes: Optional[str] = None,
-                   linear_kw: Optional[dict] = None) -> dict:
+                   linear_kw: Optional[dict] = None, out: Optional[str] = None) -> dict:
     test_dir = test_dir or os.path.join(HERE, "data")
     train_dir = train_dir or os.path.join(HERE, "data-train500k")
-    results_path = os.path.join(HERE, "results", "linear-500k.json")
+    results_path = out or os.path.join(HERE, "results", "linear-500k.json")
+    os.makedirs(os.path.dirname(os.path.abspath(results_path)), exist_ok=True)
     wall0 = time.perf_counter()
     if not os.path.exists(os.path.join(train_dir, "meta.json")):
         build_train_store(lm, train_dir, target_tokens, max_doc_tokens, seed)
